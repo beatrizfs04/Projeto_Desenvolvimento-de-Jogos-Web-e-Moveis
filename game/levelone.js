@@ -150,7 +150,8 @@ function KeyDownMovement(e) {
         jumpFrameCount = 0; 
         spriteIdle = true;
         isOnGround = false; // Não está mais no chão
-        isOnPlatform = false; // Não está mais em uma plataforma
+        isOnPlatform = false;
+        console.log("platform false"); // Não está mais em uma plataforma
       }
       break;
 
@@ -288,7 +289,9 @@ function applyGravity() {
   if (!isOnGround && !isOnPlatform) {
     playerY += gravityAction; 
   }
+}
 
+function applyGravityJump(){
   if (isJumping) {
     if (jumpFrameCount < jumpDuration) {
       playerY -= jumpPower - (jumpFrameCount * 0.1); 
@@ -314,7 +317,8 @@ function gameLoop() {
   drawParallax(ground1, ground1X, 225,424, 30);
 
   applyGravity();
-
+  applyGravityJump();
+  
   drawGround();
   drawPlatforms();
 
