@@ -298,6 +298,26 @@ function applyGravityJump(){
   }
 }
 
+function animation(){
+   //deixa as animações mais devagar
+   if (spriteRunning) {
+    if (frameCount >= frameDelayRunning) {
+      currentFrame = (currentFrame + 1) % numberOfFrames;
+      frameCount = 0; 
+    }
+  } 
+  else if (spriteIdle) {
+    if (frameCount >= frameDelayIdle) {
+      currentFrame = (currentFrame + 1) % numberOfFramesIdle; 
+      frameCount = 0; 
+    }
+  }
+}
+
+function playerMovement(){
+  
+}
+
 
 function gameLoop() {
   
@@ -326,7 +346,6 @@ function gameLoop() {
 
 
   //definindo a hitbox para ficar na posição certa da boneca
-  //!problema de quando acerto o y da hitbox, da problema com a colisão da plataforma!
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
   let defineHitboxX = playerX + 4;
   let defineHitboxY = playerY + 1; //aqui
@@ -337,20 +356,7 @@ function gameLoop() {
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-  //deixa as animações mais devagar
-  if (spriteRunning) {
-    if (frameCount >= frameDelayRunning) {
-      currentFrame = (currentFrame + 1) % numberOfFrames;
-      frameCount = 0; 
-    }
-  } 
-
-  else if (spriteIdle) {
-    if (frameCount >= frameDelayIdle) {
-      currentFrame = (currentFrame + 1) % numberOfFramesIdle; 
-      frameCount = 0; 
-    }
-  }
+  animation();
 
   //define o frame da imagem da animação (divide a imagem)
   const frameX = 5; 
@@ -372,7 +378,6 @@ function gameLoop() {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   }
-
   
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
