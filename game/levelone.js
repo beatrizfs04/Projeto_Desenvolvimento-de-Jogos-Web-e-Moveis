@@ -219,32 +219,28 @@ function checkGroundCollision() {
       if (!isJumping) {
         isOnGround = true;
         playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
-        console.log("está no chão");
+      } else {
+        isOnGround = false;
       }
     }
   });
 }
 
-
 function checkPlatformCollision() {
-  let isOnPlatform = false; //faz com que a variável on platform volte a ser falsa 
-  //assim, a boneca cai quando sai andando da plataforma
-  //entratanto está a entrar em conflito com a gravidade e não permite que ela pule na plataforma,
-
-  platforms.forEach(platform => {
-    const screenX = platform.x - worldOffsetX; 
+  platforms.forEach(platformElement => {
+    const platformScreenX = platformElement.x - worldOffsetX; // Ajusta a posição da plataforma com base no deslocamento do mundo
 
     if (
-      playerHitbox.x + playerHitbox.width > screenX &&
-      playerHitbox.x < screenX + platform.width &&
-      playerHitbox.y + playerHitbox.height >= platform.y &&
-      playerHitbox.y + playerHitbox.height <= platform.y + gravityAction 
+      playerHitbox.x + playerHitbox.width > platformScreenX &&
+      playerHitbox.x < platformScreenX + platformElement.width &&
+      playerHitbox.y + playerHitbox.height >= platformElement.y &&
+      playerHitbox.y + playerHitbox.height <= platformElement.y + gravityAction
     ) {
-      if (!isJumping) {
-        isOnPlatform = true; 
-        playerY = platform.y - playerHitbox.height; 
-        console.log("está na plataforma");
+      if(!isJumping){
+        isOnPlatform = true;
       }
+    } else {
+      isOnPlatform = false;
     }
   });
 }
@@ -322,9 +318,11 @@ function gameLoop() {
   drawGround();
   drawPlatforms();
 
+  console.log("Chão: " + isOnGround); 
+  console.log("Plataforma: " + isOnPlatform); 
 
+  checkGroundCollision();
   checkPlatformCollision();
-  checkGroundCollision()
 
 
   //definindo a hitbox para ficar na posição certa da boneca
