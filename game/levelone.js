@@ -118,73 +118,68 @@ let mushrooms = [
   { x: 300, y: 215, width: 10, height: 10 }
 ]
 
+let keysPressed = {};
+
+let CharMovement = function(e) {
+  keysPressed[e.keyCode] = true;
+};
+
+let CharStopMovement = function(e) {
+  keysPressed[e.keyCode] = false;
+};
+
 inicializar();
 
 function inicializar() {
   canvas = document.getElementById("myCanvas");
   context = canvas.getContext("2d");
 
-  document.addEventListener("keydown", KeyDownMovement);
-  document.addEventListener("keyup", KeyUpMovement);
+  //document.addEventListener("keydown", KeyDownMovement);
+  //document.addEventListener("keyup", KeyUpMovement);
+  window.addEventListener('keydown', CharMovement);
+  window.addEventListener('keyup', CharStopMovement);
 
   requestAnimationFrame(gameLoop); // Usar apenas requestAnimationFrame
 }
 
-function KeyDownMovement(e) {
-  switch (e.which) {
-    case 37: //trás
-      currentSprite = 1;
-      currentSpriteIdle = 1;
-      spriteRunning = true;
-      velPlayer = -3;
-      playerX = Math.max(0, playerX + velPlayer);
-      worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
-      //------
-      moveParallaxRight();
-      break;
-
-    case 39: //frente
-      currentSprite = 0;
-      currentSpriteIdle = 0;
-      spriteRunning = true;
-      velPlayer = 3;
-
-      if (playerX < canvas.width - frameWidth)
-        playerX += velPlayer;
-      moveParallaxLeft();
-      worldOffsetX += velPlayer;
-      break;
-
-    case 38:
-      if (!isJumping && (isOnGround || isOnPlatform)) { 
-        // Inicia o salto somente se não estiver no ar
-        isJumping = true;
-        jumpFrameCount = 0; 
-        spriteIdle = true;
-        isOnGround = false; // Não está mais no chão
-        isOnPlatform = false;
-        console.log("platform false"); // Não está mais em uma plataforma
-      }
-      break;
-
-    default:
-      //knownKey = false;
-      break;
+let updateCharacterMovement = function() {
+  if (keysPressed[37]) {
+    currentSprite = 1;
+    currentSpriteIdle = 1;
+    spriteRunning = true;
+    velPlayer = -0.7;
+    playerX = Math.max(0, playerX + velPlayer);
+    worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
+    //------
+    moveParallaxRight();
   }
-  if(!knownKey){
+  if (keysPressed[39]) {
+    currentSprite = 0;
+    currentSpriteIdle = 0;
+    spriteRunning = true;
+    velPlayer = 0.7;
+
+    if (playerX < canvas.width - frameWidth) playerX += velPlayer;
+    moveParallaxLeft();
+    worldOffsetX += velPlayer;
+  }
+  if (keysPressed[38]) {
+    if (!isJumping && (isOnGround || isOnPlatform)) { 
+      // Inicia o salto somente se não estiver no ar
+      isJumping = true;
+      jumpFrameCount = 0; 
+      spriteIdle = true;
+      isOnGround = false; // Não está mais no chão
+      isOnPlatform = false;
+      console.log("platform false"); // Não está mais em uma plataforma
+    }
+  }
+  if(!keysPressed[37] && !keysPressed[39]){
+    spriteIdle = true; // quando solto a tecla animcao volta a ser idle
     spriteRunning = false;
-    spriteIdle = true;
-  }else{
-    spriteIdle = true;
+    velPlayer = 0; // parar movimento horizontal
   }
-}
-
-function KeyUpMovement(e) {
-  spriteIdle = true; // quando solto a tecla animcao volta a ser idle
-  spriteRunning = false;
-  velPlayer = 0; // parar movimento horizontal
-}
-
+};
 
 function desenhaImagem(imagem, x, y, width, height) {
   context.drawImage(imagem, x, y, width, height);
@@ -282,11 +277,11 @@ function drawParallax(imagem, x, y, width, height){
 
 //função para mover o parallax quando aperto as teclas
 function moveParallaxRight() {
-  background5X += 0.5;
-  background4X += 1;
-  background3X += 1.5;
-  background2X += 2.5;
-  ground1X += 2;
+  background5X += 0.1;
+  background4X += 0.25;
+  background3X += 0.5;
+  background2X += 1;
+  ground1X += 1.5;
 
   if (background5X > 424) background5X = 0;
   if (background4X > 424) background4X = 0;
@@ -296,11 +291,11 @@ function moveParallaxRight() {
 }
 
 function moveParallaxLeft() {
-  background5X -= 0.5;
-  background4X -= 1;
-  background3X -= 1.5;
-  background2X -= 2.5;
-  ground1X -= 2;
+  background5X -= 0.1;
+  background4X -= 0.25;
+  background3X -= 0.5;
+  background2X -= 1;
+  ground1X -= 1.5;
 
   if (background5X < -424) background5X = 0;
   if (background4X < -424) background4X = 0;
@@ -421,6 +416,7 @@ function gameLoop() {
   context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
 
   
+  updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
 
