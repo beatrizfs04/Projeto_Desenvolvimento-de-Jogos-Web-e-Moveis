@@ -280,8 +280,8 @@ function moveParallaxRight() {
   background5X += 0.1;
   background4X += 0.25;
   background3X += 0.5;
-  background2X += 1;
-  ground1X += 1.5;
+  background2X += 0.75;
+  ground1X += 1;
 
   if (background5X > 424) background5X = 0;
   if (background4X > 424) background4X = 0;
@@ -294,8 +294,8 @@ function moveParallaxLeft() {
   background5X -= 0.1;
   background4X -= 0.25;
   background3X -= 0.5;
-  background2X -= 1;
-  ground1X -= 1.5;
+  background2X -= 0.75;
+  ground1X -= 1;
 
   if (background5X < -424) background5X = 0;
   if (background4X < -424) background4X = 0;
