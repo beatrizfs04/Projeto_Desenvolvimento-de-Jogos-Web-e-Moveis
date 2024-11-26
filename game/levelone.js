@@ -196,17 +196,6 @@ function drawPlatforms() {
   });
 }
 
-// function checkCollision(objeto) {
-//   if (
-//     playerHitbox.x + playerHitbox.width > objeto.x &&
-//     playerHitbox.x < objeto.x + objeto.width &&
-//     playerHitbox.y + playerHitbox.height >= objeto.y &&
-//     playerHitbox.y + playerHitbox.height <= objeto.y + gravityAction
-//   ) {
-//     return true; 
-//   }
-//   return false; 
-// }
 
 function checkGroundCollision() {
   ground.forEach(groundElement => {
