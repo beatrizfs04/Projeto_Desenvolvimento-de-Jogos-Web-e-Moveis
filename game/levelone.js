@@ -66,8 +66,8 @@ let velPlayer = 0;
 
 
 //deixar a animção mais devagar
-let frameDelayRunning = 5; 
-let frameDelayIdle = 10; 
+let frameDelayRunning = 15; 
+let frameDelayIdle = 15; 
 let frameCount = 0; 
 
 
@@ -168,7 +168,7 @@ function KeyDownMovement(e) {
       break;
 
     default:
-      knownKey = false;
+      //knownKey = false;
       break;
   }
   if(!knownKey){
