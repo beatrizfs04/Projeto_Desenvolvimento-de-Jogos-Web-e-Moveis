@@ -98,13 +98,25 @@ let ground = [{x: 0, y: 229, width: 1000, height:40}];
 //plataformas (blocos)
 
 let platforms = [
-  { x: 100, y: 150, width: 100, height: 10 },
-  { x: 250, y: 100, width: 120, height: 10 },
   { x: 400, y: 200, width: 150, height: 10 },
+  { x: 100, y: 200, width: 100, height: 10 }
 ];
-
-let worldOffsetX = 0; // Deslocamento horizontal do mundo
 let isOnPlatform = false;
+
+
+// deslocamento horizontal do mundo
+let worldOffsetX = 0; 
+
+//
+const mushroom = new Image();
+mushroom.src = "img/mushroom.png";
+
+//pontuação
+mushroomCount = 0;
+
+let mushrooms = [
+  { x: 300, y: 215, width: 10, height: 10 }
+]
 
 inicializar();
 
@@ -183,20 +195,45 @@ function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
 }
 
 function drawGround(){
-  context.fillStyle = "brown";
+  context.fillStyle = "transparent";
   ground.forEach(ground => {
     context.fillRect(ground.x, ground.y, ground.width, ground.height);
   });}
 
 function drawPlatforms() {
-  context.fillStyle = "brown";
-  platforms.forEach(platform => {
+  for (let i = 0; i < platforms.length; i++) {
+    const platform = platforms[i];
     const screenX = platform.x - worldOffsetX; 
-    context.fillRect(screenX, platform.y, platform.width, platform.height);
-  });
+    desenhaImagem(block, screenX, platform.y, platform.width, platform.height); 
+  }
 }
 
+function drawMushrooms() {
+  for (let i = 0; i < mushrooms.length; i++) {
+    const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
+    const screenX = mushroomObj.x - worldOffsetX;
+    desenhaImagem(mushroom, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+  }
+}
 
+//nao funciona se pressiona primeiro na plataforma(falta ajustar)
+function checkMushroomCollision() {
+  for (let i = 0; i < mushrooms.length; i++) {
+    const mushroomObj = mushrooms[i];
+    const screenX = mushroomObj.x - worldOffsetX;
+    if (
+      playerHitbox.x + playerHitbox.width > screenX &&
+      playerHitbox.x < screenX + mushroomObj.width &&
+      playerHitbox.y + playerHitbox.height >= mushroomObj.y &&
+      playerHitbox.y + playerHitbox.height <= mushroomObj.y + mushroomObj.height
+    ) {
+      mushrooms.splice(i, 1);  
+      i--;  
+      mushroomCount += 1;
+    }
+  }
+}
+  
 function checkGroundCollision() {
   ground.forEach(groundElement => {
     if (
@@ -216,23 +253,25 @@ function checkGroundCollision() {
 }
 
 function checkPlatformCollision() {
-  platforms.forEach(platformElement => {
+  for (let i = 0; i < platforms.length; i++) {
+    const platformElement = platforms[i];
     const platformScreenX = platformElement.x - worldOffsetX; // Ajusta a posição da plataforma com base no deslocamento do mundo
-
     if (
       playerHitbox.x + playerHitbox.width > platformScreenX &&
       playerHitbox.x < platformScreenX + platformElement.width &&
       playerHitbox.y + playerHitbox.height >= platformElement.y &&
       playerHitbox.y + playerHitbox.height <= platformElement.y + gravityAction
     ) {
-      if(!isJumping){
+      if (!isJumping) {
         isOnPlatform = true;
+        break; // Interrompe o loop assim que uma colisão é detectada
       }
     } else {
       isOnPlatform = false;
     }
-  });
+  }
 }
+
 
 function drawParallax(imagem, x, y, width, height){
   context.drawImage(imagem, x, y, width, height);
@@ -326,14 +365,13 @@ function gameLoop() {
   
   drawGround();
   drawPlatforms();
+  
+  //desenhaImagem(mushroom, 250, 200, 10,10);
 
   console.log("Chão: " + isOnGround); 
   console.log("Plataforma: " + isOnPlatform); 
 
-  checkGroundCollision();
-  checkPlatformCollision();
-
-
+  
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
   let defineHitboxX = playerX + 4;
@@ -342,15 +380,25 @@ function gameLoop() {
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
 
+  // console.log(`Player X: ${playerX}, Player Y: ${playerY}`);
+  // console.log(`Hitbox X: ${defineHitboxX}, Hitbox Y: ${defineHitboxY}`);
+
+
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
+  
+  checkGroundCollision();
+  checkPlatformCollision();
+
+  drawMushrooms();
+  checkMushroomCollision();
+  
   animation();
 
   //define o frame da imagem da animação (divide a imagem)
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
-
   //move os quadrados que detectam a colisão junto com a boneca
 
   //desenha a bruxinha
@@ -367,6 +415,11 @@ function gameLoop() {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   }
+
+  context.fillStyle = "white";  // Cor do texto
+  context.font = "9px Arial";  // Tamanho da fonte
+  context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
+
   
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
