@@ -403,7 +403,7 @@ function gameLoop() {
 
   //desenha a bruxinha
   if (spriteRunning) {
-    if (currentSprite === 0) {
+    if (currentSprite == 0) {
       desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     } else {
       desenhaPlayer(playerBack, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
