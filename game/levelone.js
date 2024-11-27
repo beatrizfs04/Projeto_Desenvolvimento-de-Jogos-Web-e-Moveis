@@ -147,7 +147,7 @@ let updateCharacterMovement = function() {
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
-    velPlayer = -0.7;
+    velPlayer = -1;
     playerX = Math.max(0, playerX + velPlayer);
     worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
     //------
@@ -157,7 +157,7 @@ let updateCharacterMovement = function() {
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
-    velPlayer = 0.7;
+    velPlayer = 1;
 
     if (playerX < canvas.width - frameWidth) playerX += velPlayer;
     moveParallaxLeft();
