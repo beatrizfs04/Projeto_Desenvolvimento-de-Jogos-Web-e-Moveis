@@ -85,9 +85,8 @@ let gravity = true;
 let knownKey = true;
 
 //blocks
-
 var block = new Image();
-block.src = "img/block.png";
+block.src = "img/block2.png";
 
 let blockX = 480;
 let blockY = 180;
@@ -100,8 +99,8 @@ let ground = [{x: 0, y: 229, width: 1000, height:40}];
 //plataformas (blocos)
 
 let platforms = [
-  { x: 400, y: 200, width: 150, height: 10 },
-  { x: 100, y: 200, width: 100, height: 10 }
+  { x: 400, y: 189, width: 45, height: 20 },
+  { x: 100, y: 189, width: 45, height: 20 }
 ];
 let isOnPlatform = false;
 
