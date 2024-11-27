@@ -34,8 +34,8 @@ let spriteIdle = true;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: frameWidth * 0.42,  //opcional
-  height: frameHeight * 0.70 //opcional
+  width: frameWidth * 0.6,  //opcional
+  height: frameHeight * 0.8 //opcional
 };
 
 //backgrounds
@@ -154,7 +154,7 @@ let updateCharacterMovement = function() {
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
-    velPlayer = -1;
+    velPlayer = -0.8;
     playerX = Math.max(0, playerX + velPlayer);
     worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
     //------
@@ -164,7 +164,7 @@ let updateCharacterMovement = function() {
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
-    velPlayer = 1;
+    velPlayer = 0.8;
 
     if (playerX < canvas.width - frameWidth) playerX += velPlayer;
     moveParallaxLeft();
@@ -258,7 +258,7 @@ function checkGroundCollision() {
     ) {
       if (!isJumping) {
         isOnGround = true;
-        //playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
+        playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
       } else {
         isOnGround = false;
       }
@@ -274,7 +274,7 @@ function checkPlatformCollision() {
       playerHitbox.x + playerHitbox.width > platformScreenX &&
       playerHitbox.x < platformScreenX + platformElement.width &&
       playerHitbox.y + playerHitbox.height >= platformElement.y &&
-      playerHitbox.y + playerHitbox.height <= platformElement.y + gravityAction
+      playerHitbox.y <= platformElement.y + gravityAction
     ) {
       if (!isJumping) {
         isOnPlatform = true;
@@ -384,8 +384,8 @@ function gameLoop() {
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  let defineHitboxX = playerX + 4;
-  let defineHitboxY = playerY + 1; //aqui
+  let defineHitboxX = playerX + 1.5;
+  let defineHitboxY = playerY + 2; //aqui
 
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
