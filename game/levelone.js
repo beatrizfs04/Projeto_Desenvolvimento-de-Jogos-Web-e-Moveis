@@ -60,6 +60,8 @@ var ground1 = new Image();
 ground1.src = "img/ground.png";
 ground1X = 0;
 
+const highGround = new Image();
+highGround.src = "img/ground.png";
 
 //não me parece que esteja sendo usada. é definida no keydown
 let velPlayer = 0;
@@ -103,6 +105,11 @@ let platforms = [
 ];
 let isOnPlatform = false;
 
+//high grounds
+let highGrounds = [
+  { x: 400, y: 200, width: 150, height: 10 },
+]
+
 
 // deslocamento horizontal do mundo
 let worldOffsetX = 0; 
@@ -115,7 +122,8 @@ mushroom.src = "img/mushroom.png";
 mushroomCount = 0;
 
 let mushrooms = [
-  { x: 300, y: 215, width: 10, height: 10 }
+  { x: 300, y: 215, width: 10, height: 10 },
+  { x: 350, y: 215, width: 10, height: 10 }
 ]
 
 let keysPressed = {};
@@ -203,6 +211,14 @@ function drawPlatforms() {
   }
 }
 
+// function drawHighGrounds() {
+//   for (let i = 0; i < highGrounds.length; i++) {
+//     const highGround = highGrounds[i];
+//     const screenX = highGround.x - worldOffsetX; 
+//     desenhaImagem(ground, screenX, highGround.y, highGround.width, highGround.height); 
+//   }
+// }
+
 function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
@@ -216,18 +232,22 @@ function checkMushroomCollision() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];
     const screenX = mushroomObj.x - worldOffsetX;
+
+    const toleranceY = 5; // Ajuste para permitir colisões mais suaves no eixo Y
+
     if (
       playerHitbox.x + playerHitbox.width > screenX &&
       playerHitbox.x < screenX + mushroomObj.width &&
-      playerHitbox.y + playerHitbox.height >= mushroomObj.y &&
-      playerHitbox.y + playerHitbox.height <= mushroomObj.y + mushroomObj.height
+      playerHitbox.y + playerHitbox.height >= mushroomObj.y - toleranceY &&
+      playerHitbox.y + playerHitbox.height <= mushroomObj.y + mushroomObj.height + toleranceY
     ) {
-      mushrooms.splice(i, 1);  
-      i--;  
-      mushroomCount += 1;
+      mushrooms.splice(i, 1); // Remove o cogumelo da lista
+      i--; // Ajusta o índice devido à remoção
+      mushroomCount += 1; // Incrementa a pontuação
     }
   }
 }
+
   
 function checkGroundCollision() {
   ground.forEach(groundElement => {
@@ -239,7 +259,7 @@ function checkGroundCollision() {
     ) {
       if (!isJumping) {
         isOnGround = true;
-        playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
+        //playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
       } else {
         isOnGround = false;
       }
@@ -337,11 +357,6 @@ function animation(){
   }
 }
 
-function playerMovement(){
-  
-}
-
-
 function gameLoop() {
   
   context.clearRect(0, 0, canvas.width, canvas.height); 
@@ -360,6 +375,7 @@ function gameLoop() {
   
   drawGround();
   drawPlatforms();
+  //drawHighGrounds();
   
   //desenhaImagem(mushroom, 250, 200, 10,10);
 
