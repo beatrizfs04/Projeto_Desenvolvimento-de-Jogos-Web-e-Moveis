@@ -34,7 +34,7 @@ let spriteIdle = true;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: frameWidth * 0.6,  //opcional
+  width: frameWidth * 0.4,  //opcional
   height: frameHeight * 0.8 //opcional
 };
 
@@ -99,10 +99,13 @@ let ground = [{x: 0, y: 229, width: 1000, height:40}];
 //plataformas (blocos)
 
 let platforms = [
-  { x: 400, y: 189, width: 45, height: 20 },
-  { x: 100, y: 189, width: 45, height: 20 }
+  { x: 250, y: 189, width: 45, height: 20 },
+  { x: 100, y: 170, width: 45, height: 20 }
 ];
 let isOnPlatform = false;
+let isCollidingRight = false;
+let isCollidingLeft = false;
+let isCollidingBottom = false;0
 
 //high grounds
 let highGrounds = [
@@ -135,6 +138,7 @@ let CharStopMovement = function(e) {
   keysPressed[e.keyCode] = false;
 };
 
+let collidePlatformX = false;
 inicializar();
 
 function inicializar() {
@@ -150,25 +154,29 @@ function inicializar() {
 }
 
 let updateCharacterMovement = function() {
-  if (keysPressed[37]) {
+  if (keysPressed[37]) { //pra trás
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
-    velPlayer = -0.8;
-    playerX = Math.max(0, playerX + velPlayer);
-    worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
+    velPlayer = -2;
+    if (canMoveLeft){
+      playerX = Math.max(0, playerX + velPlayer);
+      worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
+      moveParallaxRight();
+    }
     //------
-    moveParallaxRight();
   }
-  if (keysPressed[39]) {
+  if (keysPressed[39]) { //pra frente
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
-    velPlayer = 0.8;
-
-    if (playerX < canvas.width - frameWidth) playerX += velPlayer;
-    moveParallaxLeft();
-    worldOffsetX += velPlayer;
+    velPlayer = 2;
+    if (canMoveRight){
+      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
+      moveParallaxLeft();
+      worldOffsetX += velPlayer;
+    }
+    
   }
   if (keysPressed[38]) {
     if (!isJumping && (isOnGround || isOnPlatform)) { 
@@ -205,7 +213,7 @@ function drawGround(){
 function drawPlatforms() {
   for (let i = 0; i < platforms.length; i++) {
     const platform = platforms[i];
-    const screenX = platform.x - worldOffsetX; 
+    const screenX = platform.x //- worldOffsetX; 
     desenhaImagem(block, screenX, platform.y, platform.width, platform.height); 
   }
 }
@@ -258,7 +266,7 @@ function checkGroundCollision() {
     ) {
       if (!isJumping) {
         isOnGround = true;
-        playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
+        //playerY = groundElement.y - playerHitbox.height; // Ajusta a posição do jogador no chão
       } else {
         isOnGround = false;
       }
@@ -266,25 +274,92 @@ function checkGroundCollision() {
   });
 }
 
+// function checkPlatformCollision() {
+//   for (let i = 0; i < platforms.length; i++) {
+//     const platformElement = platforms[i];
+//     const platformScreenX = platformElement.x - worldOffsetX; // Ajusta a posição da plataforma com base no deslocamento do mundo
+//     if (
+//       playerHitbox.x + playerHitbox.width >= platformScreenX &&
+//       playerHitbox.x < platformScreenX + platformElement.width &&
+//       playerHitbox.y + playerHitbox.height >= platformElement.y &&
+//       playerHitbox.y <= platformElement.y + gravityAction
+//     ) {
+//       if (!isJumping) {
+//         isOnPlatform = true;
+//         break; // Interrompe o loop assim que uma colisão é detectada
+//       }
+//     } else {
+//       isOnPlatform = false;
+//     }
+//   }
+// }
+
 function checkPlatformCollision() {
+  isOnPlatform = false; // Reseta o estado da colisão vertical
+  let isCollidingLeft = false; // Colisão à esquerda
+  let isCollidingRight = false; // Colisão à direita
+
   for (let i = 0; i < platforms.length; i++) {
-    const platformElement = platforms[i];
-    const platformScreenX = platformElement.x - worldOffsetX; // Ajusta a posição da plataforma com base no deslocamento do mundo
+    const platform = platforms[i];
+
+    // Colisão vertical (em cima da plataforma)
     if (
-      playerHitbox.x + playerHitbox.width > platformScreenX &&
-      playerHitbox.x < platformScreenX + platformElement.width &&
-      playerHitbox.y + playerHitbox.height >= platformElement.y &&
-      playerHitbox.y <= platformElement.y + gravityAction
+      playerHitbox.x + playerHitbox.width > platform.x && // Jogador dentro da largura da plataforma
+      playerHitbox.x < platform.x + platform.width && 
+      playerHitbox.y + playerHitbox.height >= platform.y && // Jogador encostando no topo
+      playerHitbox.y + playerHitbox.height <= platform.y + gravityAction // Não atravessou a plataforma
     ) {
-      if (!isJumping) {
-        isOnPlatform = true;
-        break; // Interrompe o loop assim que uma colisão é detectada
-      }
-    } else {
-      isOnPlatform = false;
+      isOnPlatform = true; // Sai do loop, pois já está em cima de uma plataforma
+    }
+
+    // if (
+    //   playerHitbox.x + playerHitbox.width > platform.x && // Jogador dentro da largura da plataforma
+    //   playerHitbox.x <= platform.x + platform.width && 
+    //   playerHitbox.y + playerHitbox.height >= platform.y && // Jogador encostando no fundo da plataforma
+    //   playerHitbox.y + playerHitbox.height <= platform.y + platform.height + Math.abs(gravityAction) // Jogador não atravessa o fundo
+    // ) {
+    //   isCollidingBottom = true;
+    //   console.log("colidiu embaixo"); // Sai do loop, pois já colidiu com um teto
+    // }
+
+    // Colisão lateral à direita
+    if (
+      playerHitbox.x + playerHitbox.width >= platform.x && // Lado direito do jogador encosta
+      playerHitbox.x < platform.x && // Dentro do limite esquerdo da plataforma
+      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
+      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
+      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
+    ) {
+      isCollidingRight = true;
+    }
+
+    // Colisão lateral à esquerda
+    if (
+      playerHitbox.x <= platform.x + platform.width && // Lado esquerdo do jogador encosta
+      playerHitbox.x + playerHitbox.width > platform.x + platform.width && // Dentro do limite direito da plataforma
+      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
+      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
+      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
+    ) {
+      isCollidingLeft = true;
     }
   }
+
+  // Impede movimento horizontal baseado nas colisões laterais
+  if (isCollidingRight) {
+    canMoveRight = false;
+  } else {
+    canMoveRight = true;
+  }
+
+  if (isCollidingLeft) {
+    canMoveLeft = false;
+  } else {
+    canMoveLeft = true;
+  }
 }
+
+
 
 
 function drawParallax(imagem, x, y, width, height){
@@ -378,13 +453,13 @@ function gameLoop() {
   
   //desenhaImagem(mushroom, 250, 200, 10,10);
 
-  console.log("Chão: " + isOnGround); 
-  console.log("Plataforma: " + isOnPlatform); 
+  //console.log("Chão: " + isOnGround); 
+  //console.log("Plataforma: " + isOnPlatform); 
 
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  let defineHitboxX = playerX + 1.5;
+  let defineHitboxX = playerX + 4;
   let defineHitboxY = playerY + 2; //aqui
 
   playerHitbox.x = defineHitboxX; 
