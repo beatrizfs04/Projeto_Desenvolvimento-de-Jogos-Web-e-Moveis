@@ -12,8 +12,11 @@ playerIdleRight.src = "img/idle_right.png";
 var playerIdleLeft = new Image();
 playerIdleLeft.src = "img/idle_left.png";
 
-let playerX = 200;
+let playerX = 28;
 let playerY = 190;
+
+let freezedParallax = false;
+let fell = false;
 
 
 //frames and sprites
@@ -97,7 +100,9 @@ isOnGround = true;
 
 let ground = [
   {x: 0, y: 229, width: 250, height:40, size: 0},
-  {x: 270, y: 229, width: 300, height:40, size: 0}
+  {x: 270, y: 229, width: 300, height:40, size: 0},
+  {x: 500, y: 200, width: 50, height:70, size: 0},
+  {x: 700, y: 200, width: 100, height:80, size: 0},
 ];
 
 //plataformas (blocos)
@@ -110,11 +115,6 @@ let isOnPlatform = false;
 let isCollidingRight = false;
 let isCollidingLeft = false;
 let isCollidingBottom = false;0
-
-//high grounds
-let highGrounds = [
-  { x: 400, y: 200, width: 150, height: 10 },
-]
 
 
 // deslocamento horizontal do mundo
@@ -197,7 +197,17 @@ let updateCharacterMovement = function() {
     spriteRunning = false;
     velPlayer = 0; // parar movimento horizontal
   }
+  if(keysPressed[37] && keysPressed[39]){
+    //adicionar tratamento para que o parallax não se mexa.
+  }
 };
+
+function freezeParallax(){
+  if(playerX < 6){
+    freezedParallax = true;
+  }
+}
+
 
 function desenhaImagem(imagem, x, y, width, height) {
   context.drawImage(imagem, x, y, width, height);
@@ -252,15 +262,14 @@ function drawMushrooms() {
 function checkMushroomCollision() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];
-    const screenX = mushroomObj.x - worldOffsetX;
+    const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
 
-    const toleranceY = 5; // Ajuste para permitir colisões mais suaves no eixo Y
-
+    // Verifica colisão com o cogumelo
     if (
-      playerHitbox.x + playerHitbox.width > screenX &&
-      playerHitbox.x < screenX + mushroomObj.width &&
-      playerHitbox.y + playerHitbox.height >= mushroomObj.y - toleranceY &&
-      playerHitbox.y + playerHitbox.height <= mushroomObj.y + mushroomObj.height + toleranceY
+      playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cogumelo
+      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cogumelo
+      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cogumelo
+      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cogumelo
     ) {
       mushrooms.splice(i, 1); // Remove o cogumelo da lista
       i--; // Ajusta o índice devido à remoção
@@ -268,6 +277,7 @@ function checkMushroomCollision() {
     }
   }
 }
+
 
 function checkGroundCollision() {
   let onGround = false; 
@@ -350,6 +360,12 @@ function checkPlatformCollision() {
   }
 }
 
+function checkFall(){
+  if(playerY > 250){
+    fell = true;
+  }
+}
+
 function drawParallax(imagem, x, y, width, height){
   context.drawImage(imagem, x, y, width, height);
   context.drawImage(imagem, x-canvas.width, y, width, height);
@@ -359,6 +375,8 @@ function drawParallax(imagem, x, y, width, height){
 
 //função para mover o parallax quando aperto as teclas
 function moveParallaxRight() {
+  if (freezeParallax) return; 
+
   background5X += 0.1;
   background4X += 0.25;
   background3X += 0.5;
@@ -373,6 +391,7 @@ function moveParallaxRight() {
 }
 
 function moveParallaxLeft() {
+  
   background5X -= 0.1;
   background4X -= 0.25;
   background3X -= 0.5;
@@ -420,6 +439,13 @@ function animation(){
 }
 
 function gameLoop() {
+  checkFall();
+  if (fell) {
+    context.fillStyle = "red";  
+    context.font = "30px Arial";  
+    context.fillText("You Lost!", canvas.width / 2 - 60, canvas.height / 1.8); 
+    return;
+  }
   
   context.clearRect(0, 0, canvas.width, canvas.height); 
 
@@ -452,6 +478,8 @@ function gameLoop() {
 
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
+  //console.log(playerX);
+  console.log(playerY);
 
   // console.log(`Player X: ${playerX}, Player Y: ${playerY}`);
   // console.log(`Hitbox X: ${defineHitboxX}, Hitbox Y: ${defineHitboxY}`);
@@ -488,6 +516,9 @@ function gameLoop() {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   }
+  freezeParallax();
+  console.log(freezedParallax);
+
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
