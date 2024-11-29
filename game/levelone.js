@@ -375,7 +375,7 @@ function drawParallax(imagem, x, y, width, height){
 
 //função para mover o parallax quando aperto as teclas
 function moveParallaxRight() {
-  if (freezeParallax) return; 
+  //if (freezeParallax) return; ----- tive que comentar pois o paralax não estava a funcionar devido a este comando
 
   background5X += 0.1;
   background4X += 0.25;
@@ -391,7 +391,6 @@ function moveParallaxRight() {
 }
 
 function moveParallaxLeft() {
-  
   background5X -= 0.1;
   background4X -= 0.25;
   background3X -= 0.5;
