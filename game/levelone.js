@@ -192,13 +192,9 @@ let updateCharacterMovement = function() {
       isOnPlatform = false;
     }
   }
-  if(!keysPressed[37] && !keysPressed[39]){
-    spriteIdle = true; // quando solto a tecla animcao volta a ser idle
-    spriteRunning = false;
-    velPlayer = 0; // parar movimento horizontal
-  }
-  if(keysPressed[37] && keysPressed[39]){
-    //adicionar tratamento para que o parallax não se mexa.
+  // Prevent movement if both keys are pressed (left and right)
+  if (keysPressed[37] && keysPressed[39]) {
+    velPlayer = 0; // no movement if both keys are pressed
   }
 };
 
@@ -280,8 +276,6 @@ function checkMushroomCollision() {
 
 function checkGroundCollision() {
   let onGround = false; 
-  let isCollidingLeft = false; // Colisão à esquerda
-  let isCollidingRight = false; // Colisão à direita
 
   for (let i = 0; i < ground.length; i++) { 
     let groundElement = ground[i];   
@@ -302,27 +296,32 @@ function checkGroundCollision() {
 
     // Colisão lateral à direita
     if (
-      playerHitbox.x + playerHitbox.width >= screenX && // Lado direito do jogador encosta
-      playerHitbox.x < screenX && // Dentro do limite esquerdo da plataforma
-      playerHitbox.y + playerHitbox.height > ground.y && // Dentro da altura da plataforma
-      playerHitbox.y < ground.y + ground.height // Jogador não está "em cima"
+      playerHitbox.x + playerHitbox.width > screenX && // Lado direito do jogador encostando no chão
+      playerHitbox.x < screenX + groundElement.width &&
+      playerHitbox.y + playerHitbox.height > groundElement.y && // Jogador está dentro da altura do chão
+      playerHitbox.y < groundElement.y + groundElement.height
     ) {
-      isCollidingRight = true;
+      // Impede movimento lateral à direita
+      playerX = screenX - playerHitbox.width;
+      canMoveRight = false;
     }
 
     // Colisão lateral à esquerda
     if (
-      playerHitbox.x < screenX + groundElement.width && 
+      playerHitbox.x < screenX + groundElement.width && // Lado esquerdo do jogador encostando no chão
       playerHitbox.x + playerHitbox.width > screenX &&
-      playerHitbox.y + playerHitbox.height > groundElement.y && 
+      playerHitbox.y + playerHitbox.height > groundElement.y && // Jogador está dentro da altura do chão
       playerHitbox.y < groundElement.y + groundElement.height
     ) {
-      isCollidingLeft = true;
+      // Impede movimento lateral à esquerda
+      playerX = screenX + groundElement.width;
+      canMoveLeft = false;
     }
   }
 
   isOnGround = onGround; 
 }
+
 
 
 function checkPlatformCollision() {
@@ -425,9 +424,16 @@ function moveParallaxLeft() {
   if (ground1X < -424) ground1X = 0;
 }
 
+// Adjusting gravity more smoothly
 function applyGravity() {
   if (!isOnGround && !isOnPlatform) {
     playerY += gravityAction; 
+  }
+  // Ensure player doesn't fall below ground level
+  if (playerY >= 229) { // Ground level
+    playerY = 229;
+    isOnGround = true;
+    isJumping = false;
   }
 }
 
