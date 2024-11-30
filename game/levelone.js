@@ -101,7 +101,7 @@ isOnGround = true;
 let ground = [
   {x: 0, y: 229, width: 250, height:40, size: 0},
   {x: 270, y: 229, width: 300, height:40, size: 0},
-  {x: 500, y: 200, width: 50, height:70, size: 0},
+  {x: 400, y: 100, width: 50, height:70, size: 0},
   {x: 700, y: 200, width: 100, height:80, size: 0},
 ];
 
@@ -278,14 +278,16 @@ function checkMushroomCollision() {
   }
 }
 
-
 function checkGroundCollision() {
   let onGround = false; 
+  let isCollidingLeft = false; // Colisão à esquerda
+  let isCollidingRight = false; // Colisão à direita
 
   for (let i = 0; i < ground.length; i++) { 
     let groundElement = ground[i];   
     const screenX = groundElement.x - worldOffsetX;
 
+    // Verificação de colisão vertical (em cima do chão)
     if (
       playerHitbox.x + playerHitbox.width > screenX &&
       playerHitbox.x < screenX + groundElement.width &&
@@ -297,10 +299,29 @@ function checkGroundCollision() {
         break; 
       }
     }
+
+    // Colisão lateral à direita
+    if (
+      playerHitbox.x + playerHitbox.width >= screenX && // Lado direito do jogador encosta
+      playerHitbox.x < screenX && // Dentro do limite esquerdo da plataforma
+      playerHitbox.y + playerHitbox.height > ground.y && // Dentro da altura da plataforma
+      playerHitbox.y < ground.y + ground.height // Jogador não está "em cima"
+    ) {
+      isCollidingRight = true;
+    }
+
+    // Colisão lateral à esquerda
+    if (
+      playerHitbox.x < screenX + groundElement.width && 
+      playerHitbox.x + playerHitbox.width > screenX &&
+      playerHitbox.y + playerHitbox.height > groundElement.y && 
+      playerHitbox.y < groundElement.y + groundElement.height
+    ) {
+      isCollidingLeft = true;
+    }
   }
 
   isOnGround = onGround; 
-
 }
 
 
