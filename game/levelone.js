@@ -13,7 +13,7 @@ var playerIdleLeft = new Image();
 playerIdleLeft.src = "img/idle_left.png";
 
 let playerX = 28;
-let playerY = 190;
+let playerY = 180;
 
 let freezedParallax = false;
 let fell = false;
@@ -63,8 +63,8 @@ var ground1 = new Image();
 ground1.src = "img/ground.png";
 ground1X = 0;
 
-const highGround = new Image();
-highGround.src = "img/ground.png";
+const earth = new Image();
+earth.src = "img/highground.png";
 
 //não me parece que esteja sendo usada. é definida no keydown
 let velPlayer = 0;
@@ -91,6 +91,7 @@ let knownKey = true;
 var block = new Image();
 block.src = "img/block2.png";
 
+
 let blockX = 480;
 let blockY = 180;
 
@@ -99,22 +100,24 @@ let blockY = 180;
 isOnGround = true;
 
 let ground = [
-  {x: 0, y: 229, width: 250, height:40, size: 0},
-  {x: 270, y: 229, width: 300, height:40, size: 0},
-  {x: 400, y: 100, width: 50, height:70, size: 0},
-  {x: 700, y: 200, width: 100, height:80, size: 0},
+  {x: 0, y: 229, width: 550, height:40},
+  {x: 700, y: 200, width: 100, height:80},
+  {x: 900, y: 200, width: 100, height:80},
 ];
 
 //plataformas (blocos)
 
 let platforms = [
-  { x: 250, y: 189, width: 45, height: 20 },
-  { x: 100, y: 170, width: 45, height: 20 }
+  { x: 280, y: 189, width: 45, height: 20, type: "block" },
+  { x: 400, y: 170, width: 45, height: 20, type: "block" },
+  { x: 520, y: 150, width: 80, height: 150, type: "earth" }
 ];
 let isOnPlatform = false;
 let isCollidingRight = false;
 let isCollidingLeft = false;
-let isCollidingBottom = false;0
+let isCollidingBottom = false;
+let platformImage;
+
 
 
 // deslocamento horizontal do mundo
@@ -140,6 +143,11 @@ let CharMovement = function(e) {
 
 let CharStopMovement = function(e) {
   keysPressed[e.keyCode] = false;
+
+  if (!keysPressed[37] && !keysPressed[39]) {
+    spriteRunning = false; 
+    spriteIdle = true;     
+  }
 };
 
 let collidePlatformX = false;
@@ -153,19 +161,22 @@ function inicializar() {
   //document.addEventListener("keyup", KeyUpMovement);
   window.addEventListener('keydown', CharMovement);
   window.addEventListener('keyup', CharStopMovement);
+  
 
   requestAnimationFrame(gameLoop); // Usar apenas requestAnimationFrame
 }
+
+let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
   if (keysPressed[37]) { //pra trás
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
-    velPlayer = -2;
+    velPlayer = -1;
     if (canMoveLeft){
       playerX = Math.max(0, playerX + velPlayer);
-      worldOffsetX = Math.max(0, worldOffsetX + velPlayer);
+      worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
     }
     //------
@@ -174,11 +185,11 @@ let updateCharacterMovement = function() {
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
-    velPlayer = 2;
+    velPlayer = 1;
     if (canMoveRight){
       if (playerX < canvas.width - frameWidth) playerX += velPlayer;
       moveParallaxLeft();
-      worldOffsetX += velPlayer;
+      worldOffsetX += velPlayer * worldMovementSpeed;
     }
     
   }
@@ -217,15 +228,11 @@ function drawGround() {
   for (let i = 0; i < ground.length; i++) {
     const groundSegment = ground[i];
     const screenX = groundSegment.x - worldOffsetX; // Ajusta a posição no eixo X
-    if (groundSegment.size === 0) {
-      context.fillStyle = "blue";  
-    } 
-    else if (groundSegment.size === 1) {
-      context.fillStyle = "red";  
-    }
 
+    context.fillStyle = "transparent";  
     context.fillRect(screenX, groundSegment.y, groundSegment.width, groundSegment.height);
-
+    
+    context.drawImage(ground1, screenX, groundSegment.y -6, groundSegment.width, groundSegment.height);
   }
 }
 
@@ -234,17 +241,20 @@ function drawPlatforms() {
   for (let i = 0; i < platforms.length; i++) {
     const platform = platforms[i];
     const screenX = platform.x - worldOffsetX; 
-    desenhaImagem(block, screenX, platform.y, platform.width, platform.height); 
+    let platformImage;
+
+    if (platform.type === "block") {
+      platformImage = block;
+    } else if (platform.type === "earth") {
+      platformImage = earth;
+    }
+
+    // Desenhe a plataforma
+    if (platformImage) {
+      desenhaImagem(platformImage, screenX, platform.y, platform.width, platform.height);
+    }  
   }
 }
-
-//  function drawHighGrounds() {
-//    for (let i = 0; i < highGrounds.length; i++) {
-//      const highGround = highGrounds[i];
-//      const screenX = highGround.x - worldOffsetX; 
-//      desenhaImagem(ground, screenX, highGround.y, highGround.width, highGround.height); 
-//    }
-//  }
 
 function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
@@ -276,15 +286,17 @@ function checkMushroomCollision() {
 
 function checkGroundCollision() {
   let onGround = false; 
+  let isCollidingLeft = false; // Colisão à esquerda
+  let isCollidingRight = false; // Colisão à direita
 
   for (let i = 0; i < ground.length; i++) { 
     let groundElement = ground[i];   
-    const screenX = groundElement.x - worldOffsetX;
+    const groundScreenX = groundElement.x - worldOffsetX;
 
     // Verificação de colisão vertical (em cima do chão)
     if (
-      playerHitbox.x + playerHitbox.width > screenX &&
-      playerHitbox.x < screenX + groundElement.width &&
+      playerHitbox.x + playerHitbox.width > groundScreenX &&
+      playerHitbox.x < groundScreenX + groundElement.width &&
       playerHitbox.y + playerHitbox.height >= groundElement.y &&
       playerHitbox.y + playerHitbox.height <= groundElement.y + gravityAction
     ) {
@@ -296,30 +308,57 @@ function checkGroundCollision() {
 
     // Colisão lateral à direita
     if (
-      playerHitbox.x + playerHitbox.width > screenX && // Lado direito do jogador encostando no chão
-      playerHitbox.x < screenX + groundElement.width &&
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Jogador está dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height
+      playerHitbox.x + playerHitbox.width >= groundScreenX && // Lado direito do jogador encosta
+      playerHitbox.x < groundScreenX && // Dentro do limite esquerdo do chão
+      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
+      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
-      // Impede movimento lateral à direita
-      playerX = screenX - playerHitbox.width;
-      canMoveRight = false;
+      isCollidingRight = true;
+      console.log("colidiu direita");
     }
 
     // Colisão lateral à esquerda
     if (
-      playerHitbox.x < screenX + groundElement.width && // Lado esquerdo do jogador encostando no chão
-      playerHitbox.x + playerHitbox.width > screenX &&
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Jogador está dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height
+      playerHitbox.x <= screenX + groundElement.width && // Lado esquerdo do jogador encosta
+      playerHitbox.x + playerHitbox.width > screenX + groundElement.width && // Dentro do limite direito do chão
+      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
+      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
-      // Impede movimento lateral à esquerda
-      playerX = screenX + groundElement.width;
-      canMoveLeft = false;
+      isCollidingLeft = true;
+      console.log("colidiu esquerda");
     }
   }
 
+  // Atualiza estados de colisão
   isOnGround = onGround; 
+
+  // Impede movimento horizontal baseado nas colisões laterais
+  if (isCollidingRight) {
+    canMoveRight = false;
+  } else {
+    canMoveRight = true;
+  }
+
+  if (isCollidingLeft) {
+    canMoveLeft = false;
+  } else {
+    canMoveLeft = true;
+  }
+}
+
+function debugDraw() {
+  context.strokeStyle = "red";
+  context.strokeRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
+
+  ground.forEach((g) => {
+    let groundScreenX = g.x - worldOffsetX;
+    context.strokeRect(groundScreenX, g.y, g.width, g.height);
+  });
+
+  platforms.forEach((p) => {
+    let platformScreenX = p.x - worldOffsetX;
+    context.strokeRect(platformScreenX, p.y, p.width, p.height);
+  });
 }
 
 
@@ -379,10 +418,9 @@ function checkPlatformCollision() {
     canMoveLeft = true;
   }
 }
-
-function checkFall(){
-  if(playerY > 250){
-    fell = true;
+function gameOver(){
+  if(playerY > 250) {
+    fell = true; 
   }
 }
 
@@ -395,7 +433,7 @@ function drawParallax(imagem, x, y, width, height){
 
 //função para mover o parallax quando aperto as teclas
 function moveParallaxRight() {
-  //if (freezeParallax) return; ----- tive que comentar pois o paralax não estava a funcionar devido a este comando
+  //if (freezeParallax) return;// ----- tive que comentar pois o paralax não estava a funcionar devido a este comando
 
   background5X += 0.1;
   background4X += 0.25;
@@ -429,12 +467,12 @@ function applyGravity() {
   if (!isOnGround && !isOnPlatform) {
     playerY += gravityAction; 
   }
-  // Ensure player doesn't fall below ground level
-  if (playerY >= 229) { // Ground level
-    playerY = 229;
-    isOnGround = true;
-    isJumping = false;
-  }
+  // // Ensure player doesn't fall below ground level
+  // if (playerY >= 229) { // Ground level
+  //   playerY = 229;
+  //   isOnGround = true;
+  //   isJumping = false;
+  // }
 }
 
 function applyGravityJump(){
@@ -465,13 +503,16 @@ function animation(){
 }
 
 function gameLoop() {
-  checkFall();
+  gameOver();
   if (fell) {
     context.fillStyle = "red";  
     context.font = "30px Arial";  
-    context.fillText("You Lost!", canvas.width / 2 - 60, canvas.height / 1.8); 
+    context.fillText("Game Over!", canvas.width / 2 - 60, canvas.height / 1.8); 
     return;
   }
+  console.log(playerY);
+  console.log(playerX);
+  checkGroundCollision();
   
   context.clearRect(0, 0, canvas.width, canvas.height); 
 
@@ -482,16 +523,13 @@ function gameLoop() {
   drawParallax(background4, background4X, backgroundY,524, 246);
   drawParallax(background3, background3X, backgroundY,524, 246);
   drawParallax(background2, background2X, backgroundY,524, 246);
-  drawParallax(ground1, ground1X, 225,424, 30);
 
   applyGravity();
   applyGravityJump();
   
   drawGround();
   drawPlatforms();
-  //drawHighGrounds();
   
-  //desenhaImagem(mushroom, 250, 200, 10,10);
 
   //console.log("Chão: " + isOnGround); 
   //console.log("Plataforma: " + isOnPlatform); 
@@ -504,8 +542,6 @@ function gameLoop() {
 
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-  //console.log(playerX);
-  console.log(playerY);
 
   // console.log(`Player X: ${playerX}, Player Y: ${playerY}`);
   // console.log(`Hitbox X: ${defineHitboxX}, Hitbox Y: ${defineHitboxY}`);
@@ -515,7 +551,7 @@ function gameLoop() {
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
   
-  checkGroundCollision();
+  //checkGroundCollision();
   checkPlatformCollision();
 
   drawMushrooms();
@@ -543,14 +579,12 @@ function gameLoop() {
     }
   }
   freezeParallax();
-  console.log(freezedParallax);
 
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
 
-  
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
