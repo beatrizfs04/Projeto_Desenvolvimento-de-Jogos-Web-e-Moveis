@@ -54,6 +54,9 @@ let InimigoHitbox = {
   height: frameHeight * 0.8
 };
 
+//Vida da Bruxinha
+VidaCount = 5;
+
 //backgrounds
 var background5 = new Image();
 background5.src = "img/background5.png";
@@ -565,7 +568,7 @@ function gameLoop() {
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Vida Restante: " + mushroomCount, 5, 15);  // Posição e texto
+  context.fillText("Vida Restante: " + VidaCount, 5, 15);  // Posição e texto
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
