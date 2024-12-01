@@ -35,6 +35,7 @@ const scaledHeight = frameHeight * scaleFactor; // Nova altura
 const heightDifference = scaledHeight - frameHeight; // Diferença na altura
 playerY -= heightDifference; // Move a posição para cima
 
+
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 4;
 const numberOfFramesIdle = 8;
@@ -143,16 +144,16 @@ let platformImage;
 // deslocamento horizontal do mundo
 let worldOffsetX = 0; 
 
-//cristal
-const cristal = new Image();
-cristal.src = "img2/cristal.png";
-let cristal = [
+//mushroom
+const mushroom = new Image();
+mushroom.src = "img2/cristal.png";
+let mushrooms = [
   { x: 300, y: 215, width: 10, height: 10 },
   { x: 350, y: 215, width: 10, height: 10 }
 ]
 
 //pontuação
-cristalCount = 0;
+mushroomCount = 0;
 
 let keysPressed = {};
 
@@ -269,29 +270,29 @@ function drawPlatforms() {
   }
 }
 
-function drawCristal() {
-  for (let i = 0; i < cristal.length; i++) {
-    const cristalObj = cristal[i];  // nome da variável na lista de cristais
-    const screenX = cristalObj.x - worldOffsetX;
-    desenhaImagem(cristal, screenX, cristalObj.y, cristalObj.width, cristalObj.height);
+function drawMushrooms() {
+  for (let i = 0; i < mushrooms.length; i++) {
+    const mushroomObj = mushrooms[i];  // nome da variável na lista de cristais
+    const screenX = mushroomObj.x - worldOffsetX;
+    desenhaImagem(mushroom, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
   }
 }
 
-function checkCristalCollision() {
-  for (let i = 0; i < cristal.length; i++) {
-    const cristalObj = cristal[i];
-    const screenX = cristalObj.x - worldOffsetX; // Considera o deslocamento do mundo
+function checkMushroomCollision() {
+  for (let i = 0; i < mushrooms.length; i++) {
+    const mushroomObj = mushrooms[i];
+    const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
 
     // Verifica colisão com o cristal
     if (
       playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cristal
-      playerHitbox.x < screenX + cristalObj.width && // O player está à esquerda do cristal
-      playerHitbox.y + playerHitbox.height > cristalObj.y && // O player está abaixo do cristal
-      playerHitbox.y < cristalObj.y + cristalObj.height // O player está acima do cristal
+      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cristal
+      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cristal
+      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cristal
     ) {
-      cristal.splice(i, 1); // Remove o cristal da lista
+      mushrooms.splice(i, 1); // Remove o cristal da lista
       i--; // Ajusta o índice devido à remoção
-      cristalCount += 1; // Incrementa a pontuação
+      mushroomCount += 1; // Incrementa a pontuação
     }
   }
 }
@@ -547,8 +548,8 @@ function gameLoop() {
   //checkGroundCollision();
   checkPlatformCollision();
 
-  drawCristal();
-  checkCristalCollision();
+  drawMushrooms();
+  checkMushroomCollision();
   
   animation();
 
@@ -580,7 +581,7 @@ function gameLoop() {
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Cristais Coletados: " + cristalCount, 5, 30);  // Posição e texto
+  context.fillText("Cristais Coletados: " + mushroomCount, 5, 30);  // Posição e texto
 
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
