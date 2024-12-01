@@ -11,17 +11,11 @@ playerIdleRight.src = "img/idle_right.png";
 
 var playerIdleLeft = new Image();
 playerIdleLeft.src = "img/idle_left.png";
-let playerX = 28;
-let playerY = 180;
 
 let freezedParallax = false;
 let fell = false;
 
-//Inimigo
-var Inimigo = new Image();
-Inimigo.src = "img/Inimigo.png";
-let InimigoX = 40;
-let IninmigoY = 180;
+
 
 //frames and sprites
 const frameWidth = 30;
@@ -38,21 +32,33 @@ let currentSpriteIdle = 0; // 0: right, 1: left
 let spriteRunning = false;
 let spriteIdle = true;
 
-//player hitbox
-let playerHitbox = {
-  x: playerX ,
-  y: playerY ,
-  width: frameWidth * 0.4,  //opcional
-  height: frameHeight * 0.8 //opcional
-};
 
-//Inimigo hitbox
-let InimigoHitbox = {
-  x: InimigoX ,
-  y: InimigoX ,
-  width: frameWidth * 0.4,  
-  height: frameHeight * 0.8
-};
+//Inimigo
+var enemy1 = new Image();
+enemy1.src = "img/enemy1.png";
+let enemy1X = 40;
+let enemy1Y = 220;
+
+let frameWidthEnemy1 = 25.5;
+let frameHeightEnemy1 = 20;
+
+const numberOfFramesEnemy1 = 2;
+let currentFrameEnemy = 0;
+
+let enemyFrameX = 1;
+let enemyFrameY = 1;
+
+let hitBoxEnemy1 = {
+	x: enemy1X,
+	y: enemy1Y,
+	width: frameWidthEnemy1 * 0.8, //opcional
+	height: frameHeightEnemy1 * 0.6, //opcional
+}
+
+let hitboxFramesEnemy1 = [
+  { width: 14, height: 10, offsetX: 6, offsetY: 0 },  // Para o frame 0
+  { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
+];
 
 //Vida da Bruxinha
 VidaCount = 5;
@@ -86,10 +92,15 @@ earth.src = "img/highground.png";
 let velPlayer = 0;
 
 
-//deixar a animção mais devagar
+//deixar a animção do player mais devagar
 let frameDelayRunning = 18; 
 let frameDelayIdle = 18; 
 let frameCount = 0; 
+
+//deixa a animação do enemy mais devagar
+let frameDelayEnemy = 30; 
+let frameCountEnemy = 0;
+
 
 //salto 
 let isJumping = false; 
@@ -112,19 +123,24 @@ let blockY = 180;
 
 //ground
 isOnGround = true;
-
 let ground = [
-  {x: 0, y: 229, width: 550, height:40},
-  {x: 700, y: 200, width: 100, height:80},
-  {x: 900, y: 200, width: 100, height:80},
+  { x: 520, y: 150, width: 160, height: 150, type: "earth" },
+  {x: 0, y: 229, width: 800, height:40, type: "ground"},
+  {x: 1000, y: 229, width: 400, height:40, type: "ground"},
 ];
+
 
 //plataformas (blocos)
 let platforms = [
   { x: 280, y: 189, width: 45, height: 20, type: "block" },
-  { x: 400, y: 170, width: 45, height: 20, type: "block" },
-  { x: 520, y: 150, width: 80, height: 150, type: "earth" }
+  { x: 395, y: 170, width: 45, height: 20, type: "block" },
+  {x: 800, y: 150, width: 100, height: 150, type: "earth"},
+  {x: 900, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1400, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1500, y: 150, width: 100, height:120, type: "earth"},
+  {x: 1700, y: 150, width: 100, height:120, type: "earth"},
 ];
+
 
 let isOnPlatform = false;
 let isCollidingRight = false;
@@ -133,15 +149,17 @@ let isCollidingBottom = false;
 let platformImage;
 
 // deslocamento horizontal do mundo
-let worldOffsetX = 0; 
 
 //mushroom
 const mushroom = new Image();
 mushroom.src = "img/mushroom.png";
+
 let mushrooms = [
-  { x: 300, y: 215, width: 10, height: 10 },
-  { x: 350, y: 215, width: 10, height: 10 }
+  { x: 740, y: 80, width: 10, height: 10 },
+  { x: 1050, y: 140, width: 10, height: 10 },
+  { x: 1645, y: 90, width: 10, height: 10 },
 ]
+
 
 //pontuação
 mushroomCount = 0;
@@ -172,32 +190,47 @@ function inicializar() {
   
   requestAnimationFrame(gameLoop);
 }
+let worldOffsetX = 0; 
+
+
+let playerX = (canvas.width / 2) - (frameWidth / 2); // Centraliza o player
+let playerY = 180;
+
+
+//player hitbox
+let playerHitbox = {
+  x: playerX ,
+  y: playerY ,
+  width: frameWidth * 0.4,  //opcional
+  height: frameHeight * 0.8 //opcional
+};
+
+
 
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
-  if (keysPressed[37]) { //pra trás
+  if (keysPressed[37]) { // Esquerda
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    if (canMoveLeft){
-      playerX = Math.max(0, playerX + velPlayer);
+
+    if (canMoveLeft) {
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
     }
   }
-  if (keysPressed[39]) { //pra frente
+  if (keysPressed[39]) { // Direita
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-    if (canMoveRight){
-      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
-      moveParallaxLeft();
+
+    if (canMoveRight) {
       worldOffsetX += velPlayer * worldMovementSpeed;
+      moveParallaxLeft();
     }
-    
   }
   if (keysPressed[38]) { //salto
     if (!isJumping && (isOnGround || isOnPlatform)) { // Inicia o salto somente se não estiver no ar
@@ -227,19 +260,47 @@ function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
   context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
 }
 
-function desenhaInimigo(imagem, x, y, width, height, frameX, frameY) {
-  context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
+
+//desenha o inimigo
+function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
+
+  let currentHitbox = hitboxFramesEnemy1[currentFrameEnemy];
+
+  hitBoxEnemy1.x = x + currentHitbox.offsetX; // Ajusta a posição X da hitbox
+  hitBoxEnemy1.y = y + currentHitbox.offsetY; // Ajusta a posição Y da hitbox
+  hitBoxEnemy1.width = currentHitbox.width;    // Atualiza a largura da hitbox
+  hitBoxEnemy1.height = currentHitbox.height;  // Atualiza a altura da hitbox
+
+  context.fillStyle = "rgba(255, 0, 0, 0.5)"; // Cor semi-transparente
+  context.fillRect(hitBoxEnemy1.x, hitBoxEnemy1.y, hitBoxEnemy1.width, hitBoxEnemy1.height);
+  context.drawImage(imagem, frameX, frameY, frameWidthEnemy1, frameHeightEnemy1, x, y, width, height);
+
 }
+
+
+
+
+
+
 
 function drawGround() {
   for (let i = 0; i < ground.length; i++) {
     const groundSegment = ground[i];
-    const screenX = groundSegment.x - worldOffsetX; // Ajusta a posição no eixo X
-
+    const screenX = groundSegment.x - worldOffsetX; // ajusta a posição no eixo X
+    const screenY = groundSegment.y * 0.97; //ajusta o chão com a hitbox do chão (o fillrect)
     context.fillStyle = "transparent";  
     context.fillRect(screenX, groundSegment.y, groundSegment.width, groundSegment.height);
-    
-    context.drawImage(ground1, screenX, groundSegment.y -6, groundSegment.width, groundSegment.height);
+    let groundImage;
+
+    if (groundSegment.type === "ground") {
+      groundImage = ground1;
+    } else if (groundSegment.type === "earth") {
+      groundImage = earth;
+    }
+
+    if(groundImage){
+      desenhaImagem(groundImage, screenX, screenY, groundSegment.width, groundSegment.height);
+    }
   }
 }
 
@@ -481,6 +542,33 @@ function applyGravityJump(){
   }
 }
 
+function animateEnemy() {
+  frameCountEnemy++;
+
+  if (frameCountEnemy >= frameDelayEnemy) {
+    currentFrameEnemy = (currentFrameEnemy + 1) % numberOfFramesEnemy1; 
+    frameCountEnemy = 0;
+  }
+}
+
+let direction = 1; // 1 para direita, -1 para esquerda
+
+
+function updateEnemyPosition() {
+  // Atualiza a posição do inimigo com base na direção atual
+  enemy1X += 1 * direction; 
+
+  // Verifica se atingiu o limite direito (200)
+  if (enemy1X >= 200) {
+    direction = -1; // Muda a direção para a esquerda
+  }
+
+  // Verifica se atingiu o limite esquerdo (40)
+  if (enemy1X <= 40) {
+    direction = 1; // Muda a direção para a direita
+  }
+}
+
 function animation(){
    //deixa as animações mais devagar
    if (spriteRunning) {
@@ -497,6 +585,8 @@ function animation(){
   }
 }
 
+
+
 function gameLoop() {
   gameOver();
   if (fell) {
@@ -505,8 +595,8 @@ function gameLoop() {
     context.fillText("Game Over!", canvas.width / 2 - 60, canvas.height / 1.8); 
     return;
   }
-  console.log(playerY);
-  console.log(playerX);
+  //console.log(playerY);
+  //console.log(playerX);
   checkGroundCollision();
   
   context.clearRect(0, 0, canvas.width, canvas.height); 
@@ -539,6 +629,13 @@ function gameLoop() {
   //checkGroundCollision();
   checkPlatformCollision();
 
+  const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
+  drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
+
+  animateEnemy(); 
+  updateEnemyPosition(); 
+
+
   drawMushrooms();
   checkMushroomCollision();
   
@@ -549,7 +646,9 @@ function gameLoop() {
   const frameY = currentFrame * frameHeight; 
   //move os quadrados que detectam a colisão junto com a boneca
 
-  desenhaInimigo(Inimigo, InimigoX, IninmigoY, frameWidth, frameHeight, frameX, frameY)
+  
+  //drawEnemy(enemy1, enemy1X, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, frameEnemyX, frameEnemyY);
+
   //desenha a bruxinha
   if (spriteRunning) {
     if (currentSprite == 0) {
