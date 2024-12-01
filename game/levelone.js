@@ -36,7 +36,7 @@ let spriteIdle = true;
 //Inimigo
 var enemy1 = new Image();
 enemy1.src = "img/enemy1.png";
-let enemy1X = 40;
+let enemy1X = 100;
 let enemy1Y = 220;
 
 let frameWidthEnemy1 = 25.5;
@@ -411,19 +411,17 @@ function checkGroundCollision() {
   }
 }
 
-function debugDraw() {
-  context.strokeStyle = "red";
-  context.strokeRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-  ground.forEach((g) => {
-    let groundScreenX = g.x - worldOffsetX;
-    context.strokeRect(groundScreenX, g.y, g.width, g.height);
-  });
-
-  platforms.forEach((p) => {
-    let platformScreenX = p.x - worldOffsetX;
-    context.strokeRect(platformScreenX, p.y, p.width, p.height);
-  });
+function checkEnemyCollision(playerHitbox, enemyHitbox){
+  if (
+    playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
+    playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
+    playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
+    playerHitbox.y + playerHitbox.height > enemyHitbox.y
+  ) {
+    // Colisão detectada!
+    console.log("Colisão com o inimigo!");
+  }
 }
 
 function checkPlatformCollision() {
@@ -558,13 +556,12 @@ function updateEnemyPosition() {
   // Atualiza a posição do inimigo com base na direção atual
   enemy1X += 1 * direction; 
 
-  // Verifica se atingiu o limite direito (200)
-  if (enemy1X >= 200) {
+  if (enemy1X >= 300) {
     direction = -1; // Muda a direção para a esquerda
   }
 
   // Verifica se atingiu o limite esquerdo (40)
-  if (enemy1X <= 40) {
+  if (enemy1X <= 100) {
     direction = 1; // Muda a direção para a direita
   }
 }
@@ -584,7 +581,6 @@ function animation(){
     }
   }
 }
-
 
 
 function gameLoop() {
@@ -634,6 +630,7 @@ function gameLoop() {
 
   animateEnemy(); 
   updateEnemyPosition(); 
+  checkEnemyCollision(playerHitbox, hitBoxEnemy1);
 
 
   drawMushrooms();
@@ -647,8 +644,6 @@ function gameLoop() {
   //move os quadrados que detectam a colisão junto com a boneca
 
   
-  //drawEnemy(enemy1, enemy1X, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, frameEnemyX, frameEnemyY);
-
   //desenha a bruxinha
   if (spriteRunning) {
     if (currentSprite == 0) {
