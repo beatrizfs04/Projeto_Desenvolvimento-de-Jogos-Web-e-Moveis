@@ -15,7 +15,11 @@ playerIdleLeft.src = "img/idle_left.png";
 let freezedParallax = false;
 let fell = false;
 
+var playerDamageRight = new Image();
+playerDamageRight.src = "img/damageright.png";
 
+var playerDamageLeft = new Image();
+playerDamageLeft.src = "img/damageleft.png";
 
 //frames and sprites
 const frameWidth = 30;
@@ -36,7 +40,7 @@ let spriteIdle = true;
 //Inimigo
 var enemy1 = new Image();
 enemy1.src = "img/enemy1.png";
-let enemy1X = 100;
+let enemy1X = 1000;
 let enemy1Y = 220;
 
 let frameWidthEnemy1 = 25.5;
@@ -121,12 +125,17 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
+
+let worldOffsetX = 1550; 
+
+
 //ground
 isOnGround = true;
 let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
   {x: 0, y: 229, width: 800, height:40, type: "ground"},
   {x: 1000, y: 229, width: 400, height:40, type: "ground"},
+  {x: 2300, y: 229, width: 400, height:40, type: "ground"},
 ];
 
 
@@ -139,6 +148,10 @@ let platforms = [
   {x: 1400, y: 200, width: 100, height:80, type: "earth"},
   {x: 1500, y: 150, width: 100, height:120, type: "earth"},
   {x: 1700, y: 150, width: 100, height:120, type: "earth"},
+  {x: 1880, y: 130, width: 45, height:20, type: "block"},
+  {x: 2000, y: 110, width: 45, height:20, type: "block"},
+  {x: 2100, y: 150, width: 100, height:120, type: "earth"},
+  {x: 2200, y: 200, width: 100, height:120, type: "earth"},
 ];
 
 
@@ -158,6 +171,7 @@ let mushrooms = [
   { x: 740, y: 80, width: 10, height: 10 },
   { x: 1050, y: 140, width: 10, height: 10 },
   { x: 1645, y: 90, width: 10, height: 10 },
+  {x: 1950, y: 80, width: 10, height: 10 },
 ]
 
 
@@ -178,7 +192,27 @@ let CharStopMovement = function(e) {
     spriteIdle = true;     
   }
 };
+//dano 
 
+let playerDamage = false;
+let enemy1Damage = false;
+
+
+
+
+//som
+// Música de fundo
+var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+backgroundMusic.loop = true; // Faz a música tocar em loop
+backgroundMusic.volume = 0.5; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var walkingSound = new Audio("audio/walk.mp3");
+walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var gameOverSound = new Audio("audio/gameover.mp3");
 inicializar();
 
 function inicializar() {
@@ -190,11 +224,10 @@ function inicializar() {
   
   requestAnimationFrame(gameLoop);
 }
-let worldOffsetX = 0; 
 
 
 let playerX = (canvas.width / 2) - (frameWidth / 2); // Centraliza o player
-let playerY = 180;
+let playerY = 50;
 
 
 //player hitbox
@@ -215,10 +248,13 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-
+    
     if (canMoveLeft) {
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
+      if (isOnGround || isOnPlatform){
+        walkingSound.play(); 
+      }
     }
   }
   if (keysPressed[39]) { // Direita
@@ -226,10 +262,14 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
+    backgroundMusic.play(); // Inicia a reprodu//ção da música
 
     if (canMoveRight) {
       worldOffsetX += velPlayer * worldMovementSpeed;
       moveParallaxLeft();
+      if (isOnGround || isOnPlatform){
+        walkingSound.play(); 
+      }
     }
   }
   if (keysPressed[38]) { //salto
@@ -239,6 +279,8 @@ let updateCharacterMovement = function() {
       spriteIdle = true;
       isOnGround = false; 
       isOnPlatform = false;
+      jumpSound.play(); // Toca o som do pulo
+
     }
   }
   if (keysPressed[37] && keysPressed[39]) { // Prevent movement if both keys are pressed
@@ -411,7 +453,6 @@ function checkGroundCollision() {
   }
 }
 
-
 function checkEnemyCollision(playerHitbox, enemyHitbox){
   if (
     playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
@@ -423,6 +464,7 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
     console.log("Colisão com o inimigo!");
   }
 }
+
 
 function checkPlatformCollision() {
   isOnPlatform = false; // Reseta o estado da colisão vertical
@@ -551,17 +593,16 @@ function animateEnemy() {
 
 let direction = 1; // 1 para direita, -1 para esquerda
 
-
+//as variáveis 1380 e 998 tem que ser 
 function updateEnemyPosition() {
-  // Atualiza a posição do inimigo com base na direção atual
   enemy1X += 1 * direction; 
 
-  if (enemy1X >= 300) {
+  if (enemy1X >= 1380) {
     direction = -1; // Muda a direção para a esquerda
   }
 
   // Verifica se atingiu o limite esquerdo (40)
-  if (enemy1X <= 100) {
+  if (enemy1X <= 998) {
     direction = 1; // Muda a direção para a direita
   }
 }
@@ -589,6 +630,8 @@ function gameLoop() {
     context.fillStyle = "red";  
     context.font = "30px Arial";  
     context.fillText("Game Over!", canvas.width / 2 - 60, canvas.height / 1.8); 
+    backgroundMusic.pause();
+    gameOverSound.play(); // Inicia a reprodu//ção da música
     return;
   }
   //console.log(playerY);
@@ -628,6 +671,13 @@ function gameLoop() {
   const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
   drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
 
+  playerHitbox.x = playerX;
+  playerHitbox.y = playerY;
+
+  // Atualiza hitbox do inimigo
+  hitBoxEnemy1.x = enemy1X;
+  hitBoxEnemy1.y = enemy1Y;
+
   animateEnemy(); 
   updateEnemyPosition(); 
   checkEnemyCollision(playerHitbox, hitBoxEnemy1);
@@ -656,6 +706,12 @@ function gameLoop() {
       desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     } else {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+    }
+  }else if (playerDamage){
+    if (currentSprite == 0) {
+      desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+    }else {
+      desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   }
   freezeParallax();
