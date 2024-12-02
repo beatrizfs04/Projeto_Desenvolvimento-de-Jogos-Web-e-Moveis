@@ -196,7 +196,7 @@ let CharStopMovement = function(e) {
 
 let playerDamage = false;
 let enemy1Damage = false;
-
+let enemyColided = false;
 
 
 
@@ -454,8 +454,7 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
     playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
     playerHitbox.y + playerHitbox.height > enemyHitbox.y
   ) {
-    // Colisão detectada!
-    console.log("Colisão com o inimigo!");
+    enemyColided = true;
   }
 }
 
@@ -516,9 +515,52 @@ function checkPlatformCollision() {
 }
 
 function gameOver(){
-  if(playerY > 250) {
-    fell = true; 
+  // Configura cor do botão
+  context.fillStyle = "white";
+  drawRoundedRect(context, 80, 50, 265, 170, 15);
+
+  context.fillStyle = "red";  
+  context.font = "30px Arial";  
+  context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
+  backgroundMusic.pause();
+  gameOverSound.play(); // Inicia a reprodu//ção da música
+  
+  // Desenhar botão
+  const buttonX = canvas.width / 2 - 75; // Posição X
+  const buttonY = canvas.height / 2 + 30;  // Posição Y
+  const buttonWidth = 150;
+  const buttonHeight = 50;
+  const borderRadius = 15; // Raio das bordas
+
+  // Configura cor do botão
+  context.fillStyle = "green";
+  drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
+
+  // Adiciona texto no botão
+  context.fillStyle = "white";
+  context.font = "16px Arial";
+  context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
+
+  // Adiciona evento de clique ao canvas
+  canvas.addEventListener("click", handleCanvasClick);
+
+  function handleCanvasClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // Verifica se o clique foi dentro do botão
+    if (
+      mouseX >= buttonX &&
+      mouseX <= buttonX + buttonWidth &&
+      mouseY >= buttonY &&
+      mouseY <= buttonY + buttonHeight
+    ) {
+      // Recarregar a página
+      window.location.reload();
+    }
   }
+  return;
 }
 
 function drawParallax(imagem, x, y, width, height){
@@ -632,64 +674,7 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 }
 
 function gameLoop() {
-  gameOver();
-  if (fell) {
-    // Configura cor do botão
-    context.fillStyle = "white";
-    drawRoundedRect(context, 80, 50, 265, 170, 15);
- 
-    context.fillStyle = "red";  
-    context.font = "30px Arial";  
-    context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
-    backgroundMusic.pause();
-    gameOverSound.play(); // Inicia a reprodu//ção da música
-    
-    // Desenhar botão
-    const buttonX = canvas.width / 2 - 75; // Posição X
-    const buttonY = canvas.height / 2 + 30;  // Posição Y
-    const buttonWidth = 150;
-    const buttonHeight = 50;
-    const borderRadius = 15; // Raio das bordas
-
-    // Configura cor do botão
-    context.fillStyle = "green";
-    drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
- 
-    // Adiciona texto no botão
-    context.fillStyle = "white";
-    context.font = "16px Arial";
-    context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
-
-    // Adiciona evento de clique ao canvas
-    canvas.addEventListener("click", handleCanvasClick);
-
-    function handleCanvasClick(event) {
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const mouseY = event.clientY - rect.top;
-
-      // Verifica se o clique foi dentro do botão
-      if (
-        mouseX >= buttonX &&
-        mouseX <= buttonX + buttonWidth &&
-        mouseY >= buttonY &&
-        mouseY <= buttonY + buttonHeight
-      ) {
-        // Recarregar a página
-        window.location.reload();
-      }
-    }
-    
-    return;
-  }
-  //console.log(playerY);
-  //console.log(playerX);
-  checkGroundCollision();
-  
-  context.clearRect(0, 0, canvas.width, canvas.height); 
-
   frameCount++; 
-
   //desenha o parallax
   drawParallax(background5, background5X, backgroundY,524, 246);
   drawParallax(background4, background4X, backgroundY,524, 246);
@@ -704,12 +689,10 @@ function gameLoop() {
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  let defineHitboxX = playerX + 4;
-  let defineHitboxY = playerY + 2; //aqui
-
+  defineHitboxX = playerX + 4;
+  defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
@@ -734,12 +717,12 @@ function gameLoop() {
   drawMushrooms();
   checkMushroomCollision();
   
+  checkGroundCollision();
+
   animation();
 
-  //define o frame da imagem da animação (divide a imagem)
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
-  //move os quadrados que detectam a colisão junto com a boneca
 
   
   //desenha a bruxinha
@@ -771,6 +754,13 @@ function gameLoop() {
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
+
+  if(playerY > 250) {
+    gameOver();
+  }if(enemyColided) {
+    gameOver();
+    console.log("game over");
+  }
 
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
