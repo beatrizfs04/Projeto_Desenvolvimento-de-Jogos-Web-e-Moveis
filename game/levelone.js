@@ -623,15 +623,70 @@ function animation(){
   }
 }
 
+function drawRoundedRect(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
+  context.lineTo(x + width - radius, y); // Linha superior
+  context.arcTo(x + width, y, x + width, y + radius, radius); // Canto superior direito
+  context.lineTo(x + width, y + height - radius); // Linha direita
+  context.arcTo(x + width, y + height, x + width - radius, y + height, radius); // Canto inferior direito
+  context.lineTo(x + radius, y + height); // Linha inferior
+  context.arcTo(x, y + height, x, y + height - radius, radius); // Canto inferior esquerdo
+  context.lineTo(x, y + radius); // Linha esquerda
+  context.arcTo(x, y, x + radius, y, radius); // Canto superior esquerdo
+  context.closePath();
+  context.fill(); // Preencher o retângulo
+}
 
 function gameLoop() {
   gameOver();
   if (fell) {
+    // Configura cor do botão
+    context.fillStyle = "white";
+    drawRoundedRect(context, 80, 50, 265, 170, 15);
+ 
     context.fillStyle = "red";  
     context.font = "30px Arial";  
-    context.fillText("Game Over!", canvas.width / 2 - 60, canvas.height / 1.8); 
+    context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
     backgroundMusic.pause();
     gameOverSound.play(); // Inicia a reprodu//ção da música
+    
+    // Desenhar botão
+    const buttonX = canvas.width / 2 - 75; // Posição X
+    const buttonY = canvas.height / 2 + 30;  // Posição Y
+    const buttonWidth = 150;
+    const buttonHeight = 50;
+    const borderRadius = 15; // Raio das bordas
+
+    // Configura cor do botão
+    context.fillStyle = "green";
+    drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
+ 
+    // Adiciona texto no botão
+    context.fillStyle = "white";
+    context.font = "16px Arial";
+    context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
+
+    // Adiciona evento de clique ao canvas
+    canvas.addEventListener("click", handleCanvasClick);
+
+    function handleCanvasClick(event) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // Verifica se o clique foi dentro do botão
+      if (
+        mouseX >= buttonX &&
+        mouseX <= buttonX + buttonWidth &&
+        mouseY >= buttonY &&
+        mouseY <= buttonY + buttonHeight
+      ) {
+        // Recarregar a página
+        window.location.reload();
+      }
+    }
+    
     return;
   }
   //console.log(playerY);
