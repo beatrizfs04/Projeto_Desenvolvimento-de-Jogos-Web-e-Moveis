@@ -141,12 +141,12 @@ let ground = [
 
 //plataformas (blocos)
 let platforms = [
-  { x: 280, y: 189, width: 45, height: 20, type: "block" },
-  { x: 395, y: 170, width: 45, height: 20, type: "block" },
+  {x: 280, y: 189, width: 45, height: 20, type: "block" },
+  {x: 395, y: 170, width: 45, height: 20, type: "block" },
   {x: 800, y: 150, width: 100, height: 150, type: "earth"},
   {x: 900, y: 200, width: 100, height:80, type: "earth"},
   {x: 1400, y: 200, width: 100, height:80, type: "earth"},
-  {x: 1500, y: 150, width: 100, height:120, type: "earth"},
+  {x: 1500, y: 150, width: 100, height:120, type: "earth"}, // não está a colidir à direita
   {x: 1700, y: 150, width: 100, height:120, type: "earth"},
   {x: 1880, y: 130, width: 45, height:20, type: "block"},
   {x: 2000, y: 110, width: 45, height:20, type: "block"},
@@ -319,12 +319,6 @@ function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
 
 }
 
-
-
-
-
-
-
 function drawGround() {
   for (let i = 0; i < ground.length; i++) {
     const groundSegment = ground[i];
@@ -464,7 +458,6 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
     console.log("Colisão com o inimigo!");
   }
 }
-
 
 function checkPlatformCollision() {
   isOnPlatform = false; // Reseta o estado da colisão vertical
