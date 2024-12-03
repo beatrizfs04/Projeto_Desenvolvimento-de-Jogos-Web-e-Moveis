@@ -269,7 +269,7 @@ let updateCharacterMovement = function() {
     backgroundMusic.play(); // Inicia a reprodu//ção da música
 
     if (canMoveRight){
-      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
+      if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
       worldOffsetX += velPlayer * worldMovementSpeed;
       if (isOnGround || isOnPlatform){
@@ -412,45 +412,10 @@ function checkGroundCollision() {
       }
       console.log("chao")
     }
-
-    // Colisão lateral à direita
-    if (
-      playerHitbox.x + playerHitbox.width >= groundScreenX && // Lado direito do jogador encosta
-      playerHitbox.x < groundScreenX && // Dentro do limite esquerdo do chão
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
-    ) {
-      isCollidingRight = true;
-      console.log("colidiu direita chão");
-    }
-
-    // Colisão lateral à esquerda
-    if (
-      playerHitbox.x <= screenX + groundElement.width && // Lado esquerdo do jogador encosta
-      playerHitbox.x + playerHitbox.width > screenX + groundElement.width && // Dentro do limite direito do chão
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
-    ) {
-      isCollidingLeft = true;
-      console.log("colidiu esquerda chão");
-    }
   }
-
   // Atualiza estados de colisão
   isOnGround = onGround; 
 
-  // Impede movimento horizontal baseado nas colisões laterais
-  if (isCollidingRight) {
-    canMoveRight = false;
-  } else {
-    canMoveRight = true;
-  }
-
-  if (isCollidingLeft) {
-    canMoveLeft = false;
-  } else {
-    canMoveLeft = true;
-  }
 }
 
 function checkEnemyCollision(playerHitbox, enemyHitbox){
@@ -459,12 +424,14 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
   //return xCollision && yCollision
   console.log("Player:", playerHitbox);
   console.log("Enemy:", hitBoxEnemy1);
+  const screenX = hitBoxEnemy1.x - worldOffsetX; // Considera o deslocamento do mundo
+
 
   if (
-    playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
-    playerHitbox.x + playerHitbox.width <= enemyHitbox.x &&
-    playerHitbox.y <= enemyHitbox.y + enemyHitbox.height && 
-    playerHitbox.x + playerHitbox.height >= enemyHitbox.y
+    playerHitbox.x + playerHitbox.width > screenX && 
+    playerHitbox.x < screenX + hitBoxEnemy1.width && 
+    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y && 
+    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height 
     //playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
     //playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
     //playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
