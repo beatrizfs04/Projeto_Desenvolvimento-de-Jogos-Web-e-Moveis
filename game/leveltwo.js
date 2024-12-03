@@ -1,22 +1,34 @@
+
 //player
 var player = new Image();
-player.src = "img2/boyidle_right.png";
+player.src = "img2/antigos/boy_run_right.png";
+diminuicaoX = 100;
+diminuicaoY = 115;
 
 var playerBack = new Image();
-playerBack.src = "img2/boyidle_left.png";
+playerBack.src = "img2/antigos/boy_run_left.png";
 
 var playerIdleRight = new Image();
-playerIdleRight.src = "img2/character_blue_run_right.png";
+playerIdleRight.src = "img2/antigos/boy_idle_right.png";
 
 var playerIdleLeft = new Image();
-playerIdleLeft.src = "img2/character_blue_run_left.png";
+playerIdleLeft.src = "img2/antigos/boy_idle_left.png";
 
 let freezedParallax = false;
 let fell = false;
 
+var playerDamageRight = new Image();
+playerDamageRight.src = "img2/antigos/boy_damage_right.png";
+
+var playerDamageLeft = new Image();
+playerDamageLeft.src = "img2/antigos/boy_damage_left.png";
+
+let damageTimer = 0;// Temporizador para controlar a duração da sprite de dano
+const damageDuration = 200;//
+
 //frames and sprites
 const frameWidth = 129;
-const frameHeight = 134;
+const frameHeight = 150;
 
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 8;
@@ -32,11 +44,11 @@ let spriteIdle = true;
 
 //Inimigo
 var enemy1 = new Image();
-enemy1.src = "img/enemy1.png";
+enemy1.src = "img/enemy1new.png";
 let enemy1X = 1000;
-let enemy1Y = 220;
+let enemy1Y = 210;
 
-let frameWidthEnemy1 = 25.5;
+let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
 
 const numberOfFramesEnemy1 = 2;
@@ -48,13 +60,13 @@ let enemyFrameY = 1;
 let hitBoxEnemy1 = {
 	x: enemy1X,
 	y: enemy1Y,
-	width: frameWidthEnemy1 * 0.8, //opcional
+	width: frameWidthEnemy1 * 0.1, //opcional
 	height: frameHeightEnemy1 * 0.6, //opcional
 }
 
 let hitboxFramesEnemy1 = [
-  { width: 14, height: 10, offsetX: 6, offsetY: 0 },  // Para o frame 0
-  { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
+  { width: 28, height: 20, offsetX: 11, offsetY: 0 },  // Para o frame 0
+  { width: 30, height: 18, offsetX: 8, offsetY: 2},   // Para o frame 1
 ];
 
 //Vida da Bruxinha
@@ -90,8 +102,8 @@ let velPlayer = 0;
 
 
 //deixar a animção do player mais devagar
-let frameDelayRunning = 18; 
-let frameDelayIdle = 18; 
+let frameDelayRunning = 12; 
+let frameDelayIdle = 12; 
 let frameCount = 0; 
 
 //deixa a animação do enemy mais devagar
@@ -103,8 +115,8 @@ let frameCountEnemy = 0;
 let isJumping = false; 
 let jumpFrameCount = 0; 
 const jumpDuration = 30; 
-const jumpPower = 5;
-const gravityAction = 1.5; 
+const jumpPower = 5.5;
+const gravityAction = 1.8; 
 let gravity = true;
 
 //movimentação + teclado
@@ -112,7 +124,7 @@ let knownKey = true;
 
 //blocks
 var block = new Image();
-block.src = "img2/block2.png";
+block.src = "img/block2.png";
 
 
 let blockX = 480;
@@ -217,10 +229,6 @@ function inicializar() {
 
   window.addEventListener('keydown', CharMovement);
   window.addEventListener('keyup', CharStopMovement);
-
-  player.onload = function() {
-    console.log('Imagem background5 carregada com sucesso!');
-  };
   
   requestAnimationFrame(gameLoop);
 }
@@ -234,8 +242,8 @@ let playerY = 50;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: frameWidth * 0.4,  //opcional
-  height: frameHeight * 0.8 //opcional
+  width: (frameWidth - diminuicaoX)*0.75,  //opcional
+  height: (frameHeight - diminuicaoY)*0.8 //opcional
 };
 
 
@@ -266,7 +274,7 @@ let updateCharacterMovement = function() {
     backgroundMusic.play(); // Inicia a reprodu//ção da música
 
     if (canMoveRight){
-      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
+      if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
       worldOffsetX += velPlayer * worldMovementSpeed;
       if (isOnGround || isOnPlatform){
@@ -301,7 +309,7 @@ function desenhaImagem(imagem, x, y, width, height) {
 }
 
 function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
-  context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
+  context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width-diminuicaoX, height-diminuicaoY);
 }
 
 
@@ -408,67 +416,43 @@ function checkGroundCollision() {
         break; 
       }
     }
-
-    // Colisão lateral à direita
-    if (
-      playerHitbox.x + playerHitbox.width >= groundScreenX && // Lado direito do jogador encosta
-      playerHitbox.x < groundScreenX && // Dentro do limite esquerdo do chão
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
-    ) {
-      isCollidingRight = true;
-      console.log("colidiu direita chão");
-    }
-
-    // Colisão lateral à esquerda
-    if (
-      playerHitbox.x <= screenX + groundElement.width && // Lado esquerdo do jogador encosta
-      playerHitbox.x + playerHitbox.width > screenX + groundElement.width && // Dentro do limite direito do chão
-      playerHitbox.y + playerHitbox.height > groundElement.y && // Dentro da altura do chão
-      playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
-    ) {
-      isCollidingLeft = true;
-      console.log("colidiu esquerda chão");
-    }
   }
-
   // Atualiza estados de colisão
   isOnGround = onGround; 
 
-  // Impede movimento horizontal baseado nas colisões laterais
-  if (isCollidingRight) {
-    canMoveRight = false;
-  } else {
-    canMoveRight = true;
-  }
-
-  if (isCollidingLeft) {
-    canMoveLeft = false;
-  } else {
-    canMoveLeft = true;
-  }
 }
 
-function checkEnemyCollision(playerHitbox, enemyHitbox){
-  //xCollision = box1.right >= box2.left && box1.left <= box2.right
-  //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
-  //return xCollision && yCollision
-  //console.log("Player:", playerHitbox);
-  //console.log("Enemy:", hitBoxEnemy1);
+function checkEnemyCollision() {
+  const screenX = hitBoxEnemy1.x - worldOffsetX; 
 
-  if (
-    playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
-    playerHitbox.x + playerHitbox.width <= enemyHitbox.x &&
-    playerHitbox.y <= enemyHitbox.y + enemyHitbox.height && 
-    playerHitbox.x + playerHitbox.height >= enemyHitbox.y
-    //playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
-    //playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
-    //playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
-    //playerHitbox.y + playerHitbox.height > enemyHitbox.y
-  ) {
-    enemyColided = true;
-    //console.log("Enemy!")
+  //colisao horizontal
+  const xCollision =
+    playerHitbox.x + playerHitbox.width > screenX &&
+    playerHitbox.x < screenX + hitBoxEnemy1.width;
+
+  //colisao vertical
+  const yCollision =
+    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y &&
+    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height;
+
+  if (xCollision && yCollision) {
+    //verifica se a base do inimigo (player.y + player height)
+    //colide (<=) com o meio vertical do inimigo 
+    const isKillingEnemy =
+      playerHitbox.y + playerHitbox.height <= hitBoxEnemy1.y + hitBoxEnemy1.height / 2;
+
+    if (isKillingEnemy) {
+      console.log("Enemy killed!");
+      enemy1Y = enemy1Y + 25; //adicionar aqui uma logística para que o enemy caia pra fora da tela
+      return "killed"; 
+    } else {
+      console.log("Damage taken!");
+      damageTimer = Date.now(); // Define o início do temporizador
+      playerDamage = true;
+      return "damage";
+    }
   }
+  return null;
 }
 
 function checkPlatformCollision() {
@@ -651,7 +635,6 @@ function gameLoop() {
 
   applyGravity();
   applyGravityJump();
- // console.log(isOnPlatform);
   
   drawGround();
   drawPlatforms();
@@ -678,7 +661,7 @@ function gameLoop() {
 
   animateEnemy(); 
   updateEnemyPosition(); 
-  checkEnemyCollision(playerHitbox, hitBoxEnemy1);
+  checkEnemyCollision();
 
 
   drawMushrooms();
@@ -686,24 +669,40 @@ function gameLoop() {
 
   animation();
 
-  const frameX = 5; 
-  const frameY = currentFrame * frameHeight; 
+  const frameX = currentFrame * frameWidth; 
+  const frameY = 4; 
 
-  
+  console.log(playerDamage);
   //desenha a bruxinha
-  if (spriteRunning) {
+  if (playerDamage) {
+    // Verifica se o tempo do dano acabou
+    if (Date.now() - damageTimer > damageDuration) {
+      playerDamage = false; // Sai do estado de dano
+    }
+  
+    // Renderiza a sprite de dano
     if (currentSprite == 0) {
-      desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     } else {
-      desenhaPlayer(playerBack, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
-  } else if (spriteIdle) {
-    if (currentSpriteIdle == 0) {
-      desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    } else {
-      desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+  } else {
+    // Renderiza os outros estados do jogador
+    if (spriteRunning) {
+      if (currentSprite == 0) {
+        desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      } else {
+        desenhaPlayer(playerBack, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      }
+    } else if (spriteIdle) {
+      if (currentSpriteIdle == 0) {
+        desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      } else {
+        desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      }
     }
-  } 
+  }
+  
 
   freezeParallax();
 
