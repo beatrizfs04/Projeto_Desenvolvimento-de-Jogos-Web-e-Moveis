@@ -126,7 +126,7 @@ let blockX = 480;
 let blockY = 180;
 
 
-let worldOffsetX = 1550; 
+let worldOffsetX = 1100; 
 
 
 //ground
@@ -145,8 +145,9 @@ let platforms = [
   {x: 395, y: 170, width: 45, height: 20, type: "block" },
   {x: 800, y: 150, width: 100, height: 150, type: "earth"},
   {x: 900, y: 200, width: 100, height:80, type: "earth"},
-  {x: 1400, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1400, y: 200, width: 50, height:80, type: "earth"},
   {x: 1500, y: 150, width: 100, height:120, type: "earth"}, // não está a colidir à direita
+  //{x: 1600, y: 200, width: 100, height:80, type: "earth"},
   {x: 1700, y: 150, width: 100, height:120, type: "earth"},
   {x: 1880, y: 130, width: 45, height:20, type: "block"},
   {x: 2000, y: 110, width: 45, height:20, type: "block"},
@@ -204,7 +205,7 @@ let enemyColided = false;
 // Música de fundo
 var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
 backgroundMusic.loop = true; // Faz a música tocar em loop
-backgroundMusic.volume = 0.5; // Define o volume entre 0 (mudo) e 1 (máximo)
+backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 var walkingSound = new Audio("audio/walk.mp3");
 walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
@@ -405,6 +406,7 @@ function checkGroundCollision() {
         onGround = true; 
         break; 
       }
+      console.log("chao")
     }
 
     // Colisão lateral à direita
@@ -415,7 +417,7 @@ function checkGroundCollision() {
       playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
       isCollidingRight = true;
-      console.log("colidiu direita");
+      console.log("colidiu direita chão");
     }
 
     // Colisão lateral à esquerda
@@ -426,7 +428,7 @@ function checkGroundCollision() {
       playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
       isCollidingLeft = true;
-      console.log("colidiu esquerda");
+      console.log("colidiu esquerda chão");
     }
   }
 
@@ -448,13 +450,21 @@ function checkGroundCollision() {
 }
 
 function checkEnemyCollision(playerHitbox, enemyHitbox){
+  //xCollision = box1.right >= box2.left && box1.left <= box2.right
+  //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
+  //return xCollision && yCollision
   if (
-    playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
-    playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
-    playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
-    playerHitbox.y + playerHitbox.height > enemyHitbox.y
+    playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
+    playerHitbox.x + playerHitbox.width <= enemyHitbox.x &&
+    playerHitbox.y <= enemyHitbox.y + enemyHitbox.height && 
+    playerHitbox.x + playerHitbox.height >= enemyHitbox.y
+    //playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
+    //playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
+    //playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
+    //playerHitbox.y + playerHitbox.height > enemyHitbox.y
   ) {
     enemyColided = true;
+    console.log("Enemy!")
   }
 }
 
@@ -477,27 +487,28 @@ function checkPlatformCollision() {
       isOnPlatform = true; // Sai do loop, pois já está em cima de uma plataforma
     }
 
-    // Colisão lateral à direita
-    if (
-      playerHitbox.x + playerHitbox.width >= platformScreenX && // Lado direito do jogador encosta
-      playerHitbox.x < platformScreenX && // Dentro do limite esquerdo da plataforma
-      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
-      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
-    ) {
-      isCollidingRight = true;
-    }
-
     // Colisão lateral à esquerda
     if (
       playerHitbox.x <= platformScreenX + platform.width && // Lado esquerdo do jogador encosta
       playerHitbox.x + playerHitbox.width > platformScreenX + platform.width && // Dentro do limite direito da plataforma
       playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
-      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform // Garante que a colisão lateral não interfira na vertical
     ) {
       isCollidingLeft = true;
+      console.log("colidiu esquerda plataforma");
     }
+
+     // Colisão lateral à direita
+     if (
+      playerHitbox.x + playerHitbox.width >= platformScreenX && // Lado direito do jogador encosta
+      playerHitbox.x <= platformScreenX && // Dentro do limite esquerdo da plataforma
+      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform// Garante que a colisão lateral não interfira na vertical
+    ) {
+      isCollidingRight = true;
+      console.log("colidiu direita plataforma");
+    }
+
   }
 
   // Impede movimento horizontal baseado nas colisões laterais
@@ -674,6 +685,10 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 }
 
 function gameLoop() {
+  
+  checkGroundCollision();
+  checkPlatformCollision();  
+
   frameCount++; 
   //desenha o parallax
   drawParallax(background5, background5X, backgroundY,524, 246);
@@ -683,6 +698,7 @@ function gameLoop() {
 
   applyGravity();
   applyGravityJump();
+  console.log(isOnPlatform);
   
   drawGround();
   drawPlatforms();
@@ -696,8 +712,6 @@ function gameLoop() {
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-  //checkGroundCollision();
-  checkPlatformCollision();
 
   const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
   drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
@@ -716,8 +730,6 @@ function gameLoop() {
 
   drawMushrooms();
   checkMushroomCollision();
-  
-  checkGroundCollision();
 
   animation();
 
@@ -745,6 +757,7 @@ function gameLoop() {
       desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   }
+
   freezeParallax();
 
   context.fillStyle = "white";  // Cor do texto
