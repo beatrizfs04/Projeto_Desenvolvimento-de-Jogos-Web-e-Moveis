@@ -266,7 +266,7 @@ let updateCharacterMovement = function() {
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
-    velPlayer = -1;
+    velPlayer = -1.5;
     
     if (canMoveLeft) {
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
@@ -280,7 +280,7 @@ let updateCharacterMovement = function() {
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
-    velPlayer = 1;
+    velPlayer = 1.5;
     backgroundMusic.play(); // Inicia a reprodu//ção da música
 
     if (canMoveRight) {
