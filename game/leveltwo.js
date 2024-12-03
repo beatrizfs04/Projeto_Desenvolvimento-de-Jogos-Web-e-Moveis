@@ -11,34 +11,27 @@ playerIdleRight.src = "img2/character_blue_idle_right.png";
 
 var playerIdleLeft = new Image();
 playerIdleLeft.src = "img2/character_blue_idle_left.png";
-let playerX = 28;
-let playerY = 180;
-
 
 let freezedParallax = false;
 let fell = false;
 
-//Inimigo
-var Inimigo = new Image();
-Inimigo.src = "img2/Inimigo.png";
-let InimigoX = 40;
-let IninmigoY = 180;
+var playerDamageRight = new Image();
+playerDamageRight.src = "img/damageright.png";
+
+var playerDamageLeft = new Image();
+playerDamageLeft.src = "img/damageleft.png";
 
 //frames and sprites
 const frameWidth = 130;
-const frameHeight = 155;
+const frameHeight = 151;
 
 const scaleFactor = 1.5; // Aumentar altura (150%)
 const scaledWidth = frameWidth; // Largura permanece igual
 const scaledHeight = frameHeight * scaleFactor; // Nova altura
 
-const heightDifference = scaledHeight - frameHeight; // Diferença na altura
-playerY -= heightDifference; // Move a posição para cima
-
-
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
-const numberOfFrames = 4;
-const numberOfFramesIdle = 8;
+const numberOfFrames = 5;
+const numberOfFramesIdle = 5;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
@@ -47,21 +40,33 @@ let currentSpriteIdle = 0; // 0: right, 1: left
 let spriteRunning = false;
 let spriteIdle = true;
 
-//player hitbox
-let playerHitbox = {
-  x: playerX ,
-  y: playerY ,
-  width: frameWidth * 0.4,  //opcional
-  height: frameHeight * 0.8 //opcional
-};
 
-//Inimigo hitbox
-let InimigoHitbox = {
-  x: InimigoX ,
-  y: InimigoX ,
-  width: frameWidth * 0.4,  
-  height: frameHeight * 0.8
-};
+//Inimigo
+var enemy1 = new Image();
+enemy1.src = "img/enemy1.png";
+let enemy1X = 1000;
+let enemy1Y = 220;
+
+let frameWidthEnemy1 = 25.5;
+let frameHeightEnemy1 = 20;
+
+const numberOfFramesEnemy1 = 2;
+let currentFrameEnemy = 0;
+
+let enemyFrameX = 1;
+let enemyFrameY = 1;
+
+let hitBoxEnemy1 = {
+	x: enemy1X,
+	y: enemy1Y,
+	width: frameWidthEnemy1 * 0.8, //opcional
+	height: frameHeightEnemy1 * 0.6, //opcional
+}
+
+let hitboxFramesEnemy1 = [
+  { width: 14, height: 10, offsetX: 6, offsetY: 0 },  // Para o frame 0
+  { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
+];
 
 //Vida da Bruxinha
 VidaCount = 5;
@@ -95,10 +100,15 @@ earth.src = "img2/highground.png";
 let velPlayer = 0;
 
 
-//deixar a animção mais devagar
+//deixar a animção do player mais devagar
 let frameDelayRunning = 18; 
 let frameDelayIdle = 18; 
 let frameCount = 0; 
+
+//deixa a animação do enemy mais devagar
+let frameDelayEnemy = 30; 
+let frameCountEnemy = 0;
+
 
 //salto 
 let isJumping = false; 
@@ -119,21 +129,36 @@ block.src = "img2/block2.png";
 let blockX = 480;
 let blockY = 180;
 
+
+let worldOffsetX = 1100; 
+
+
 //ground
 isOnGround = true;
-
 let ground = [
-  {x: 0, y: 229, width: 550, height:40},
-  {x: 700, y: 200, width: 100, height:80},
-  {x: 900, y: 200, width: 100, height:80},
+  { x: 520, y: 150, width: 160, height: 150, type: "earth" },
+  {x: 0, y: 229, width: 800, height:40, type: "ground"},
+  {x: 1000, y: 229, width: 400, height:40, type: "ground"},
+  {x: 2300, y: 229, width: 400, height:40, type: "ground"},
 ];
+
 
 //plataformas (blocos)
 let platforms = [
-  { x: 280, y: 189, width: 45, height: 20, type: "block" },
-  { x: 400, y: 170, width: 45, height: 20, type: "block" },
-  { x: 520, y: 150, width: 80, height: 150, type: "earth" }
+  {x: 280, y: 189, width: 45, height: 20, type: "block" },
+  {x: 395, y: 170, width: 45, height: 20, type: "block" },
+  {x: 800, y: 150, width: 100, height: 150, type: "earth"},
+  {x: 900, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1400, y: 200, width: 50, height:80, type: "earth"},
+  {x: 1500, y: 150, width: 100, height:120, type: "earth"}, // não está a colidir à direita
+  //{x: 1600, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1700, y: 150, width: 100, height:120, type: "earth"},
+  {x: 1880, y: 130, width: 45, height:20, type: "block"},
+  {x: 2000, y: 110, width: 45, height:20, type: "block"},
+  {x: 2100, y: 150, width: 100, height:120, type: "earth"},
+  {x: 2200, y: 200, width: 100, height:120, type: "earth"},
 ];
+
 
 let isOnPlatform = false;
 let isCollidingRight = false;
@@ -142,15 +167,18 @@ let isCollidingBottom = false;
 let platformImage;
 
 // deslocamento horizontal do mundo
-let worldOffsetX = 0; 
 
 //mushroom
 const mushroom = new Image();
 mushroom.src = "img2/cristal.png";
+
 let mushrooms = [
-  { x: 300, y: 215, width: 10, height: 10 },
-  { x: 350, y: 215, width: 10, height: 10 }
+  { x: 740, y: 80, width: 10, height: 10 },
+  { x: 1050, y: 140, width: 10, height: 10 },
+  { x: 1645, y: 90, width: 10, height: 10 },
+  {x: 1950, y: 80, width: 10, height: 10 },
 ]
+
 
 //pontuação
 mushroomCount = 0;
@@ -169,7 +197,27 @@ let CharStopMovement = function(e) {
     spriteIdle = true;     
   }
 };
+//dano 
 
+let playerDamage = false;
+let enemy1Damage = false;
+let enemyColided = false;
+
+
+
+//som
+// Música de fundo
+var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+backgroundMusic.loop = true; // Faz a música tocar em loop
+backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var walkingSound = new Audio("audio/walk.mp3");
+walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var gameOverSound = new Audio("audio/gameover.mp3");
 inicializar();
 
 function inicializar() {
@@ -182,31 +230,52 @@ function inicializar() {
   requestAnimationFrame(gameLoop);
 }
 
+
+let playerX = (canvas.width / 2) - (frameWidth / 2); // Centraliza o player
+let playerY = 50;
+
+
+//player hitbox
+let playerHitbox = {
+  x: playerX ,
+  y: playerY ,
+  width: frameWidth * 0.8,  //opcional
+  height: frameHeight * 0.8 //opcional
+};
+
+
+
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
-  if (keysPressed[37]) { //pra trás
+  if (keysPressed[37]) { // Esquerda
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    if (canMoveLeft){
-      playerX = Math.max(0, playerX + velPlayer);
+    
+    if (canMoveLeft) {
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
+      if (isOnGround || isOnPlatform){
+        walkingSound.play(); 
+      }
     }
   }
-  if (keysPressed[39]) { //pra frente
+  if (keysPressed[39]) { // Direita
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-    if (canMoveRight){
-      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
-      moveParallaxLeft();
+    backgroundMusic.play(); // Inicia a reprodu//ção da música
+
+    if (canMoveRight) {
       worldOffsetX += velPlayer * worldMovementSpeed;
+      moveParallaxLeft();
+      if (isOnGround || isOnPlatform){
+        walkingSound.play(); 
+      }
     }
-    
   }
   if (keysPressed[38]) { //salto
     if (!isJumping && (isOnGround || isOnPlatform)) { // Inicia o salto somente se não estiver no ar
@@ -215,6 +284,8 @@ let updateCharacterMovement = function() {
       spriteIdle = true;
       isOnGround = false; 
       isOnPlatform = false;
+      jumpSound.play(); // Toca o som do pulo
+
     }
   }
   if (keysPressed[37] && keysPressed[39]) { // Prevent movement if both keys are pressed
@@ -236,19 +307,41 @@ function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
   context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
 }
 
-function desenhaInimigo(imagem, x, y, width, height, frameX, frameY) {
-  context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
+
+//desenha o inimigo
+function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
+
+  let currentHitbox = hitboxFramesEnemy1[currentFrameEnemy];
+
+  hitBoxEnemy1.x = x + currentHitbox.offsetX; // Ajusta a posição X da hitbox
+  hitBoxEnemy1.y = y + currentHitbox.offsetY; // Ajusta a posição Y da hitbox
+  hitBoxEnemy1.width = currentHitbox.width;    // Atualiza a largura da hitbox
+  hitBoxEnemy1.height = currentHitbox.height;  // Atualiza a altura da hitbox
+
+  context.fillStyle = "rgba(255, 0, 0, 0.5)"; // Cor semi-transparente
+  context.fillRect(hitBoxEnemy1.x, hitBoxEnemy1.y, hitBoxEnemy1.width, hitBoxEnemy1.height);
+  context.drawImage(imagem, frameX, frameY, frameWidthEnemy1, frameHeightEnemy1, x, y, width, height);
+
 }
 
 function drawGround() {
   for (let i = 0; i < ground.length; i++) {
     const groundSegment = ground[i];
-    const screenX = groundSegment.x - worldOffsetX; // Ajusta a posição no eixo X
-
+    const screenX = groundSegment.x - worldOffsetX; // ajusta a posição no eixo X
+    const screenY = groundSegment.y * 0.97; //ajusta o chão com a hitbox do chão (o fillrect)
     context.fillStyle = "transparent";  
     context.fillRect(screenX, groundSegment.y, groundSegment.width, groundSegment.height);
-    
-    context.drawImage(ground1, screenX, groundSegment.y -6, groundSegment.width, groundSegment.height);
+    let groundImage;
+
+    if (groundSegment.type === "ground") {
+      groundImage = ground1;
+    } else if (groundSegment.type === "earth") {
+      groundImage = earth;
+    }
+
+    if(groundImage){
+      desenhaImagem(groundImage, screenX, screenY, groundSegment.width, groundSegment.height);
+    }
   }
 }
 
@@ -272,7 +365,7 @@ function drawPlatforms() {
 
 function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
-    const mushroomObj = mushrooms[i];  // nome da variável na lista de cristais
+    const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
     const screenX = mushroomObj.x - worldOffsetX;
     desenhaImagem(mushroom, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
   }
@@ -283,14 +376,14 @@ function checkMushroomCollision() {
     const mushroomObj = mushrooms[i];
     const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
 
-    // Verifica colisão com o cristal
+    // Verifica colisão com o cogumelo
     if (
-      playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cristal
-      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cristal
-      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cristal
-      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cristal
+      playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cogumelo
+      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cogumelo
+      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cogumelo
+      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cogumelo
     ) {
-      mushrooms.splice(i, 1); // Remove o cristal da lista
+      mushrooms.splice(i, 1); // Remove o cogumelo da lista
       i--; // Ajusta o índice devido à remoção
       mushroomCount += 1; // Incrementa a pontuação
     }
@@ -317,6 +410,7 @@ function checkGroundCollision() {
         onGround = true; 
         break; 
       }
+      console.log("chao")
     }
 
     // Colisão lateral à direita
@@ -327,7 +421,7 @@ function checkGroundCollision() {
       playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
       isCollidingRight = true;
-      console.log("colidiu direita");
+      console.log("colidiu direita chão");
     }
 
     // Colisão lateral à esquerda
@@ -338,7 +432,7 @@ function checkGroundCollision() {
       playerHitbox.y < groundElement.y + groundElement.height // Jogador não está "em cima"
     ) {
       isCollidingLeft = true;
-      console.log("colidiu esquerda");
+      console.log("colidiu esquerda chão");
     }
   }
 
@@ -359,19 +453,23 @@ function checkGroundCollision() {
   }
 }
 
-function debugDraw() {
-  context.strokeStyle = "red";
-  context.strokeRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
-
-  ground.forEach((g) => {
-    let groundScreenX = g.x - worldOffsetX;
-    context.strokeRect(groundScreenX, g.y, g.width, g.height);
-  });
-
-  platforms.forEach((p) => {
-    let platformScreenX = p.x - worldOffsetX;
-    context.strokeRect(platformScreenX, p.y, p.width, p.height);
-  });
+function checkEnemyCollision(playerHitbox, enemyHitbox){
+  //xCollision = box1.right >= box2.left && box1.left <= box2.right
+  //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
+  //return xCollision && yCollision
+  if (
+    playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
+    playerHitbox.x + playerHitbox.width <= enemyHitbox.x &&
+    playerHitbox.y <= enemyHitbox.y + enemyHitbox.height && 
+    playerHitbox.x + playerHitbox.height >= enemyHitbox.y
+    //playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
+    //playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
+    //playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
+    //playerHitbox.y + playerHitbox.height > enemyHitbox.y
+  ) {
+    enemyColided = true;
+    console.log("Enemy!")
+  }
 }
 
 function checkPlatformCollision() {
@@ -393,27 +491,28 @@ function checkPlatformCollision() {
       isOnPlatform = true; // Sai do loop, pois já está em cima de uma plataforma
     }
 
-    // Colisão lateral à direita
-    if (
-      playerHitbox.x + playerHitbox.width >= platformScreenX && // Lado direito do jogador encosta
-      playerHitbox.x < platformScreenX && // Dentro do limite esquerdo da plataforma
-      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
-      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
-    ) {
-      isCollidingRight = true;
-    }
-
     // Colisão lateral à esquerda
     if (
       playerHitbox.x <= platformScreenX + platform.width && // Lado esquerdo do jogador encosta
       playerHitbox.x + playerHitbox.width > platformScreenX + platform.width && // Dentro do limite direito da plataforma
       playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && // Jogador não está "em cima"
-      !isOnPlatform // Garante que a colisão lateral não interfira na vertical
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform // Garante que a colisão lateral não interfira na vertical
     ) {
       isCollidingLeft = true;
+      console.log("colidiu esquerda plataforma");
     }
+
+     // Colisão lateral à direita
+     if (
+      playerHitbox.x + playerHitbox.width >= platformScreenX && // Lado direito do jogador encosta
+      playerHitbox.x <= platformScreenX && // Dentro do limite esquerdo da plataforma
+      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform// Garante que a colisão lateral não interfira na vertical
+    ) {
+      isCollidingRight = true;
+      console.log("colidiu direita plataforma");
+    }
+
   }
 
   // Impede movimento horizontal baseado nas colisões laterais
@@ -431,9 +530,52 @@ function checkPlatformCollision() {
 }
 
 function gameOver(){
-  if(playerY > 250) {
-    fell = true; 
+  // Configura cor do botão
+  context.fillStyle = "white";
+  drawRoundedRect(context, 80, 50, 265, 170, 15);
+
+  context.fillStyle = "red";  
+  context.font = "30px Arial";  
+  context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
+  backgroundMusic.pause();
+  gameOverSound.play(); // Inicia a reprodu//ção da música
+  
+  // Desenhar botão
+  const buttonX = canvas.width / 2 - 75; // Posição X
+  const buttonY = canvas.height / 2 + 30;  // Posição Y
+  const buttonWidth = 150;
+  const buttonHeight = 50;
+  const borderRadius = 15; // Raio das bordas
+
+  // Configura cor do botão
+  context.fillStyle = "green";
+  drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
+
+  // Adiciona texto no botão
+  context.fillStyle = "white";
+  context.font = "16px Arial";
+  context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
+
+  // Adiciona evento de clique ao canvas
+  canvas.addEventListener("click", handleCanvasClick);
+
+  function handleCanvasClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // Verifica se o clique foi dentro do botão
+    if (
+      mouseX >= buttonX &&
+      mouseX <= buttonX + buttonWidth &&
+      mouseY >= buttonY &&
+      mouseY <= buttonY + buttonHeight
+    ) {
+      // Recarregar a página
+      window.location.reload();
+    }
   }
+  return;
 }
 
 function drawParallax(imagem, x, y, width, height){
@@ -490,6 +632,31 @@ function applyGravityJump(){
   }
 }
 
+function animateEnemy() {
+  frameCountEnemy++;
+
+  if (frameCountEnemy >= frameDelayEnemy) {
+    currentFrameEnemy = (currentFrameEnemy + 1) % numberOfFramesEnemy1; 
+    frameCountEnemy = 0;
+  }
+}
+
+let direction = 1; // 1 para direita, -1 para esquerda
+
+//as variáveis 1380 e 998 tem que ser 
+function updateEnemyPosition() {
+  enemy1X += 1 * direction; 
+
+  if (enemy1X >= 1380) {
+    direction = -1; // Muda a direção para a esquerda
+  }
+
+  // Verifica se atingiu o limite esquerdo (40)
+  if (enemy1X <= 998) {
+    direction = 1; // Muda a direção para a direita
+  }
+}
+
 function animation(){
    //deixa as animações mais devagar
    if (spriteRunning) {
@@ -506,22 +673,27 @@ function animation(){
   }
 }
 
+function drawRoundedRect(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
+  context.lineTo(x + width - radius, y); // Linha superior
+  context.arcTo(x + width, y, x + width, y + radius, radius); // Canto superior direito
+  context.lineTo(x + width, y + height - radius); // Linha direita
+  context.arcTo(x + width, y + height, x + width - radius, y + height, radius); // Canto inferior direito
+  context.lineTo(x + radius, y + height); // Linha inferior
+  context.arcTo(x, y + height, x, y + height - radius, radius); // Canto inferior esquerdo
+  context.lineTo(x, y + radius); // Linha esquerda
+  context.arcTo(x, y, x + radius, y, radius); // Canto superior esquerdo
+  context.closePath();
+  context.fill(); // Preencher o retângulo
+}
+
 function gameLoop() {
-  gameOver();
-  if (fell) {
-    context.fillStyle = "red";  
-    context.font = "30px Arial";  
-    context.fillText("Game Over!", canvas.width / 2 - 60, canvas.height / 1.8); 
-    return;
-  }
-  console.log(playerY);
-  console.log(playerX);
-  checkGroundCollision();
   
-  context.clearRect(0, 0, canvas.width, canvas.height); 
+  checkGroundCollision();
+  checkPlatformCollision();  
 
   frameCount++; 
-
   //desenha o parallax
   drawParallax(background5, background5X, backgroundY,524, 246);
   drawParallax(background4, background4X, backgroundY,524, 246);
@@ -530,35 +702,45 @@ function gameLoop() {
 
   applyGravity();
   applyGravityJump();
+  console.log(isOnPlatform);
   
   drawGround();
   drawPlatforms();
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  let defineHitboxX = playerX + 4;
-  let defineHitboxY = playerY + 2; //aqui
-
+  defineHitboxX = playerX + 4;
+  defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-  //checkGroundCollision();
-  checkPlatformCollision();
+
+  const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
+  drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
+
+  playerHitbox.x = playerX;
+  playerHitbox.y = playerY;
+
+  // Atualiza hitbox do inimigo
+  hitBoxEnemy1.x = enemy1X;
+  hitBoxEnemy1.y = enemy1Y;
+
+  animateEnemy(); 
+  updateEnemyPosition(); 
+  checkEnemyCollision(playerHitbox, hitBoxEnemy1);
+
 
   drawMushrooms();
   checkMushroomCollision();
-  
+
   animation();
 
-  //define o frame da imagem da animação (divide a imagem)
-  const frameX = currentFrame * frameWidth; 
+  const frameX = currentFrame * frameWidth;
   const frameY = 5; 
-  //move os quadrados que detectam a colisão junto com a boneca
 
-  desenhaInimigo(Inimigo, InimigoX, IninmigoY, frameWidth, frameHeight, frameX, frameY)
+  
   //desenha a bruxinha
   if (spriteRunning) {
     if (currentSprite == 0) {
@@ -572,7 +754,14 @@ function gameLoop() {
     } else {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
+  }else if (playerDamage){
+    if (currentSprite == 0) {
+      desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+    }else {
+      desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+    }
   }
+
   freezeParallax();
 
   context.fillStyle = "white";  // Cor do texto
@@ -581,7 +770,14 @@ function gameLoop() {
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Cristais Coletados: " + mushroomCount, 5, 30);  // Posição e texto
+  context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
+
+  if(playerY > 250) {
+    gameOver();
+  }if(enemyColided) {
+    gameOver();
+    console.log("game over");
+  }
 
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
