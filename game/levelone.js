@@ -21,6 +21,9 @@ playerDamageRight.src = "img/damageright.png";
 var playerDamageLeft = new Image();
 playerDamageLeft.src = "img/damageleft.png";
 
+let damageTimer = 0;      // Temporizador para controlar a duração da sprite de dano
+const damageDuration = 200; //
+
 //frames and sprites
 const frameWidth = 30;
 const frameHeight = 48;
@@ -442,6 +445,8 @@ function checkEnemyCollision() {
       return "killed"; 
     } else {
       console.log("Damage taken!");
+      damageTimer = Date.now(); // Define o início do temporizador
+      playerDamage = true;
       return "damage";
     }
   }
@@ -665,27 +670,37 @@ function gameLoop() {
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
 
-  
+  console.log(playerDamage);
   //desenha a bruxinha
-  if (spriteRunning) {
-    if (currentSprite == 0) {
-      desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    } else {
-      desenhaPlayer(playerBack, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+  if (playerDamage) {
+    // Verifica se o tempo do dano acabou
+    if (Date.now() - damageTimer > damageDuration) {
+      playerDamage = false; // Sai do estado de dano
     }
-  } else if (spriteIdle) {
-    if (currentSpriteIdle == 0) {
-      desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    } else {
-      desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    }
-  }else if (playerDamage){
+  
+    // Renderiza a sprite de dano
     if (currentSprite == 0) {
       desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    }else {
+    } else {
       desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
+  } else {
+    // Renderiza os outros estados do jogador
+    if (spriteRunning) {
+      if (currentSprite == 0) {
+        desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      } else {
+        desenhaPlayer(playerBack, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      }
+    } else if (spriteIdle) {
+      if (currentSpriteIdle == 0) {
+        desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      } else {
+        desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+      }
+    }
   }
+  
 
   freezeParallax();
 
