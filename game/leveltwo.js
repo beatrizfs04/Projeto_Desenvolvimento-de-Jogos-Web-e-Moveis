@@ -1,15 +1,15 @@
 //player
 var player = new Image();
-player.src = "img2/character_blue_run_rigth.png";
+player.src = "img2/boyidle_right.png";
 
 var playerBack = new Image();
-playerBack.src = "img2/character_blue_run_left.png";
+playerBack.src = "img2/boyidle_left.png";
 
 var playerIdleRight = new Image();
-playerIdleRight.src = "img2/character_blue_idle_rigth.png";
+playerIdleRight.src = "img2/character_blue_run_right.png";
 
 var playerIdleLeft = new Image();
-playerIdleLeft.src = "img2/character_blue_idle_left.png";
+playerIdleLeft.src = "img2/character_blue_run_left.png";
 
 let freezedParallax = false;
 let fell = false;
@@ -407,7 +407,6 @@ function checkGroundCollision() {
         onGround = true; 
         break; 
       }
-      console.log("chao")
     }
 
     // Colisão lateral à direita
@@ -454,8 +453,8 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
   //xCollision = box1.right >= box2.left && box1.left <= box2.right
   //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
   //return xCollision && yCollision
-  console.log("Player:", playerHitbox);
-  console.log("Enemy:", hitBoxEnemy1);
+  //console.log("Player:", playerHitbox);
+  //console.log("Enemy:", hitBoxEnemy1);
 
   if (
     playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
@@ -468,7 +467,7 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
     //playerHitbox.y + playerHitbox.height > enemyHitbox.y
   ) {
     enemyColided = true;
-    console.log("Enemy!")
+    //console.log("Enemy!")
   }
 }
 
@@ -652,7 +651,7 @@ function gameLoop() {
 
   applyGravity();
   applyGravityJump();
-  console.log(isOnPlatform);
+ // console.log(isOnPlatform);
   
   drawGround();
   drawPlatforms();
