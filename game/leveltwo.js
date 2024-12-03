@@ -1,33 +1,26 @@
-
 //player
 var player = new Image();
-player.src = "img/run_right.png";
+player.src = "img2/character_blue_run_rigth.png";
 
 var playerBack = new Image();
-playerBack.src = "img/run_left.png";
+playerBack.src = "img2/character_blue_run_left.png";
 
 var playerIdleRight = new Image();
-playerIdleRight.src = "img/idle_right.png";
+playerIdleRight.src = "img2/character_blue_idle_rigth.png";
 
 var playerIdleLeft = new Image();
-playerIdleLeft.src = "img/idle_left.png";
+playerIdleLeft.src = "img2/character_blue_idle_left.png";
 
 let freezedParallax = false;
 let fell = false;
 
-var playerDamageRight = new Image();
-playerDamageRight.src = "img/damageright.png";
-
-var playerDamageLeft = new Image();
-playerDamageLeft.src = "img/damageleft.png";
-
 //frames and sprites
-const frameWidth = 30;
-const frameHeight = 48;
+const frameWidth = 129;
+const frameHeight = 134;
 
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
-const numberOfFrames = 5;
-const numberOfFramesIdle = 5;
+const numberOfFrames = 8;
+const numberOfFramesIdle = 4;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
@@ -224,6 +217,10 @@ function inicializar() {
 
   window.addEventListener('keydown', CharMovement);
   window.addEventListener('keyup', CharStopMovement);
+
+  player.onload = function() {
+    console.log('Imagem background5 carregada com sucesso!');
+  };
   
   requestAnimationFrame(gameLoop);
 }
@@ -707,13 +704,7 @@ function gameLoop() {
     } else {
       desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
-  }else if (playerDamage){
-    if (currentSprite == 0) {
-      desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    }else {
-      desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    }
-  }
+  } 
 
   freezeParallax();
 

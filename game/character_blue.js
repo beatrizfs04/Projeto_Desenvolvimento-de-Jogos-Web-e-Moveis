@@ -1,15 +1,15 @@
 var myCanvas = document.getElementById("myCanvas");
 var ctx = myCanvas.getContext("2d");
 
-var jogadorPosicaoX = myCanvas.width * 0.35; // Posição fixa no eixo X
-var jogadorPosicaoY = myCanvas.height * 0.25; // Posição fixa no eixo Y
+var playerX = 200; // Posição fixa no eixo X
+var playerX = 50; // Posição fixa no eixo Y
 
 // Lista para armazenar as imagens
-var imagens = [];
+var imagensPlayer = [];
 for (let i = 1; i <= 27; i++) {
-    let imagem = new Image();
-    imagem.src = `character_blue_sprites/character_blue_${i}.png`; // Assumindo que as imagens são nomeadas character_blue1.png, character_blue2.png, ..., character_blue27.png
-    imagens.push(imagem);
+    let player = new Image();
+    player.src = `character_blue_sprites/character_blue_${i}.png`; // Assumindo que as imagens são nomeadas character_blue1.png, character_blue2.png, ..., character_blue27.png
+    imagensPlayer.push(player);
 }
 
 var frameAtual = 0;
@@ -22,20 +22,11 @@ function inicializar() {
 function gameLoop() {
     ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
 
-    // Atualizar o frame da animação
     contadorFrame++;
     if (contadorFrame % 10 === 0) {
-        frameAtual = (frameAtual + 1) % imagens.length; // Alterna entre as 16 imagens
+        frameAtual = (frameAtual + 1) % imagens.length; 
     }
-
-    // Desenhar a imagem atual
-    ctx.drawImage(
-        imagens[frameAtual], 
-        jogadorPosicaoX, jogadorPosicaoY, // Posição no canvas
-        100, 100 // Tamanho da imagem no canvas (ajuste como desejar)
-    );
-
-    // Sem movimentação: o jogador permanece parado no lugar
+    ctx.drawImage(imagensPlayer[frameAtual], playerX, playerY, 100, 100);
 }
 
 inicializar();
