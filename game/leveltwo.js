@@ -25,11 +25,7 @@ playerDamageLeft.src = "img/damageleft.png";
 const frameWidth = 130;
 const frameHeight = 151;
 
-const scaleFactor = 1.5; // Aumentar altura (150%)
-const scaledWidth = frameWidth; // Largura permanece igual
-const scaledHeight = frameHeight * scaleFactor; // Nova altura
-
-//number of frames tem a ver com a quantidade de imagens do character blue na image original.
+//number of frames tem a ver com a quantidade de imagens da personagem na imagem original.
 const numberOfFrames = 5;
 const numberOfFramesIdle = 8;
 
@@ -68,7 +64,7 @@ let hitboxFramesEnemy1 = [
   { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
 ];
 
-//Vida da Bruxinha
+//Vida da personagem
 VidaCount = 5;
 
 //backgrounds
