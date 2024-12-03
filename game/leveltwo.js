@@ -29,9 +29,9 @@ const scaleFactor = 1.5; // Aumentar altura (150%)
 const scaledWidth = frameWidth; // Largura permanece igual
 const scaledHeight = frameHeight * scaleFactor; // Nova altura
 
-//number of frames tem a ver com a quantidade de imagens da boneca na image original.
+//number of frames tem a ver com a quantidade de imagens do character blue na image original.
 const numberOfFrames = 5;
-const numberOfFramesIdle = 5;
+const numberOfFramesIdle = 8;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
