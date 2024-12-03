@@ -64,7 +64,7 @@ let hitboxFramesEnemy1 = [
   { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
 ];
 
-//Vida da personagem
+//Vida da Bruxinha
 VidaCount = 5;
 
 //backgrounds
@@ -126,7 +126,7 @@ let blockX = 480;
 let blockY = 180;
 
 let Lost = false;
-let worldOffsetX = 20; 
+let worldOffsetX = 0; 
 
 
 //ground
@@ -175,7 +175,6 @@ let mushrooms = [
   {x: 1950, y: 80, width: 10, height: 10 },
 ]
 
-
 //pontuação
 mushroomCount = 0;
 
@@ -217,21 +216,6 @@ var gameOverSound = new Audio("audio/gameover.mp3");
 gameOverSound.loop = false; // Define o volume entre 0 (mudo) e 1 (máximo)
 gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
-
-
-//som
-// Música de fundo
-var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-backgroundMusic.loop = true; // Faz a música tocar em loop
-backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
-
-var walkingSound = new Audio("audio/walk.mp3");
-walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
-
-var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
-
-var gameOverSound = new Audio("audio/gameover.mp3");
 inicializar();
 
 function inicializar() {
@@ -245,7 +229,7 @@ function inicializar() {
 }
 
 
-let playerX = (canvas.width / 2) - (frameWidth / 2); // Centraliza o player
+let playerX = 200; // Centraliza o player
 let playerY = 50;
 
 
@@ -268,7 +252,8 @@ let updateCharacterMovement = function() {
     spriteRunning = true;
     velPlayer = -1.5;
     
-    if (canMoveLeft) {
+    if (canMoveLeft){
+      playerX = Math.max(0, playerX + velPlayer);
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
       if (isOnGround || isOnPlatform){
@@ -283,9 +268,10 @@ let updateCharacterMovement = function() {
     velPlayer = 1.5;
     backgroundMusic.play(); // Inicia a reprodu//ção da música
 
-    if (canMoveRight) {
-      worldOffsetX += velPlayer * worldMovementSpeed;
+    if (canMoveRight){
+      if (playerX < canvas.width - frameWidth) playerX += velPlayer;
       moveParallaxLeft();
+      worldOffsetX += velPlayer * worldMovementSpeed;
       if (isOnGround || isOnPlatform){
         walkingSound.play(); 
       }
@@ -471,6 +457,9 @@ function checkEnemyCollision(playerHitbox, enemyHitbox){
   //xCollision = box1.right >= box2.left && box1.left <= box2.right
   //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
   //return xCollision && yCollision
+  console.log("Player:", playerHitbox);
+  console.log("Enemy:", hitBoxEnemy1);
+
   if (
     playerHitbox.x >= enemyHitbox.x + enemyHitbox.width && 
     playerHitbox.x + playerHitbox.width <= enemyHitbox.x &&
