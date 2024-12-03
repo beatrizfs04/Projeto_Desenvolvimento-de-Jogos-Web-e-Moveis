@@ -131,7 +131,7 @@ let blockX = 480;
 let blockY = 180;
 
 let Lost = false;
-let worldOffsetX = 0; 
+let worldOffsetX = 2000; 
 
 
 //ground
@@ -140,7 +140,7 @@ let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
   {x: 0, y: 229, width: 800, height:40, type: "ground"},
   {x: 1000, y: 229, width: 400, height:40, type: "ground"},
-  {x: 2300, y: 229, width: 400, height:40, type: "ground"},
+  {x: 2300, y: 229, width: 800, height:40, type: "ground"},
 ];
 
 
@@ -179,6 +179,17 @@ let mushrooms = [
   { x: 1645, y: 90, width: 10, height: 10 },
   {x: 1950, y: 80, width: 10, height: 10 },
 ]
+
+//portal
+const portal = new Image();
+portal.src = "img2/portal_gruta.png";
+
+let portalSegment = {
+  x: 2800, 
+  y: 140, 
+  width: 90, 
+  height: 102
+}
 
 //pontuação
 mushroomCount = 0;
@@ -247,7 +258,6 @@ let playerHitbox = {
 };
 
 
-
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
@@ -310,6 +320,15 @@ function desenhaImagem(imagem, x, y, width, height) {
 
 function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
   context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width-diminuicaoX, height-diminuicaoY);
+}
+
+function drawPortal(){
+  const portalscreenX = portalSegment.x - worldOffsetX; 
+  const portalscreenY = portalSegment.y * 0.97; 
+  context.fillStyle = "transparent";  
+  context.fillRect(portalscreenX, portalSegment.y, portalSegment.width, portalSegment.height);
+  let portalImage = portal;
+  desenhaImagem(portalImage, portalscreenX, portalscreenY, portalSegment.width, portalSegment.height);
 }
 
 
@@ -666,6 +685,9 @@ function gameLoop() {
 
   drawMushrooms();
   checkMushroomCollision();
+
+  
+  drawPortal();
 
   animation();
 

@@ -124,12 +124,11 @@ let knownKey = true;
 var block = new Image();
 block.src = "img/block2.png";
 
-
 let blockX = 480;
 let blockY = 180;
 
 let Lost = false;
-let worldOffsetX = 800; 
+let worldOffsetX = 2000; 
 
 
 //ground
@@ -138,7 +137,7 @@ let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
   {x: 0, y: 229, width: 800, height:40, type: "ground"},
   {x: 1000, y: 229, width: 400, height:40, type: "ground"},
-  {x: 2300, y: 229, width: 400, height:40, type: "ground"},
+  {x: 2300, y: 229, width: 800, height:40, type: "ground"},
 ];
 
 
@@ -178,6 +177,18 @@ let mushrooms = [
   {x: 1950, y: 80, width: 10, height: 10 },
 ]
 
+
+//portal
+const portal = new Image();
+portal.src = "img/portal_floresta.png";
+
+let portalSegment = {
+  x: 2800, 
+  y: 140, 
+  width: 90, 
+  height: 102
+}
+
 //pontuação
 mushroomCount = 0;
 
@@ -200,7 +211,6 @@ let CharStopMovement = function(e) {
 let playerDamage = false;
 let enemy1Damage = false;
 let enemyColided = false;
-
 
 
 //som
@@ -309,6 +319,17 @@ function desenhaImagem(imagem, x, y, width, height) {
 function desenhaPlayer(imagem, x, y, width, height, frameX, frameY) {
   context.drawImage(imagem, frameX, frameY, frameWidth, frameHeight, x, y, width, height);
 }
+
+function drawPortal(){
+  const portalscreenX = portalSegment.x - worldOffsetX; 
+  const portalscreenY = portalSegment.y * 0.97; 
+  context.fillStyle = "transparent";  
+  context.fillRect(portalscreenX, portalSegment.y, portalSegment.width, portalSegment.height);
+  let portalImage = portal;
+  desenhaImagem(portalImage, portalscreenX, portalscreenY, portalSegment.width, portalSegment.height);
+  console.log(portalscreenX + portalscreenY + portalSegment.width + portalSegment.height)
+}
+
 
 
 //desenha o inimigo
@@ -626,10 +647,10 @@ function gameLoop() {
 
   frameCount++; 
   //desenha o parallax
-  drawParallax(background5, background5X, backgroundY,524, 246);
-  drawParallax(background4, background4X, backgroundY,524, 246);
-  drawParallax(background3, background3X, backgroundY,524, 246);
-  drawParallax(background2, background2X, backgroundY,524, 246);
+  drawParallax(background5, background5X, backgroundY,424, 246);
+  drawParallax(background4, background4X, backgroundY,424, 246);
+  drawParallax(background3, background3X, backgroundY,424, 246);
+  drawParallax(background2, background2X, backgroundY,424, 246);
 
   applyGravity();
   applyGravityJump();
@@ -665,6 +686,9 @@ function gameLoop() {
   drawMushrooms();
   checkMushroomCollision();
 
+  
+  drawPortal();
+  
   animation();
 
   const frameX = 5; 
