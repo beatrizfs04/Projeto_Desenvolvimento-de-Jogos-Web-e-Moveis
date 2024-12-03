@@ -39,11 +39,11 @@ let spriteIdle = true;
 
 //Inimigo
 var enemy1 = new Image();
-enemy1.src = "img/enemy1.png";
+enemy1.src = "img/enemy1new.png";
 let enemy1X = 1000;
-let enemy1Y = 220;
+let enemy1Y = 210;
 
-let frameWidthEnemy1 = 25.5;
+let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
 
 const numberOfFramesEnemy1 = 2;
@@ -55,13 +55,13 @@ let enemyFrameY = 1;
 let hitBoxEnemy1 = {
 	x: enemy1X,
 	y: enemy1Y,
-	width: frameWidthEnemy1 * 0.8, //opcional
+	width: frameWidthEnemy1 * 0.1, //opcional
 	height: frameHeightEnemy1 * 0.6, //opcional
 }
 
 let hitboxFramesEnemy1 = [
-  { width: 14, height: 10, offsetX: 6, offsetY: 0 },  // Para o frame 0
-  { width: 17, height: 8, offsetX: 3, offsetY: 1},   // Para o frame 1
+  { width: 28, height: 20, offsetX: 11, offsetY: 0 },  // Para o frame 0
+  { width: 30, height: 18, offsetX: 8, offsetY: 2},   // Para o frame 1
 ];
 
 //Vida da Bruxinha
@@ -110,8 +110,8 @@ let frameCountEnemy = 0;
 let isJumping = false; 
 let jumpFrameCount = 0; 
 const jumpDuration = 30; 
-const jumpPower = 5;
-const gravityAction = 1.5; 
+const jumpPower = 5.5;
+const gravityAction = 1.8; 
 let gravity = true;
 
 //movimentação + teclado
@@ -126,7 +126,7 @@ let blockX = 480;
 let blockY = 180;
 
 let Lost = false;
-let worldOffsetX = 0; 
+let worldOffsetX = 800; 
 
 
 //ground
@@ -410,7 +410,6 @@ function checkGroundCollision() {
         onGround = true; 
         break; 
       }
-      console.log("chao")
     }
   }
   // Atualiza estados de colisão
@@ -418,28 +417,35 @@ function checkGroundCollision() {
 
 }
 
-function checkEnemyCollision(playerHitbox, enemyHitbox){
-  //xCollision = box1.right >= box2.left && box1.left <= box2.right
-  //yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom
-  //return xCollision && yCollision
-  console.log("Player:", playerHitbox);
-  console.log("Enemy:", hitBoxEnemy1);
-  const screenX = hitBoxEnemy1.x - worldOffsetX; // Considera o deslocamento do mundo
+function checkEnemyCollision() {
+  const screenX = hitBoxEnemy1.x - worldOffsetX; 
 
+  //colisao horizontal
+  const xCollision =
+    playerHitbox.x + playerHitbox.width > screenX &&
+    playerHitbox.x < screenX + hitBoxEnemy1.width;
 
-  if (
-    playerHitbox.x + playerHitbox.width > screenX && 
-    playerHitbox.x < screenX + hitBoxEnemy1.width && 
-    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y && 
-    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height 
-    //playerHitbox.x < enemyHitbox.x + enemyHitbox.width &&
-    //playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
-    //playerHitbox.y < enemyHitbox.y + enemyHitbox.height &&
-    //playerHitbox.y + playerHitbox.height > enemyHitbox.y
-  ) {
-    enemyColided = true;
-    console.log("Enemy!")
+  //colisao vertical
+  const yCollision =
+    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y &&
+    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height;
+
+  if (xCollision && yCollision) {
+    //verifica se a base do inimigo (player.y + player height)
+    //colide (<=) com o meio vertical do inimigo 
+    const isKillingEnemy =
+      playerHitbox.y + playerHitbox.height <= hitBoxEnemy1.y + hitBoxEnemy1.height / 2;
+
+    if (isKillingEnemy) {
+      console.log("Enemy killed!");
+      enemy1Y = enemy1Y + 25; //adicionar aqui uma logística para que o enemy caia pra fora da tela
+      return "killed"; 
+    } else {
+      console.log("Damage taken!");
+      return "damage";
+    }
   }
+  return null;
 }
 
 function checkPlatformCollision() {
@@ -622,7 +628,6 @@ function gameLoop() {
 
   applyGravity();
   applyGravityJump();
-  console.log(isOnPlatform);
   
   drawGround();
   drawPlatforms();
@@ -649,7 +654,7 @@ function gameLoop() {
 
   animateEnemy(); 
   updateEnemyPosition(); 
-  checkEnemyCollision(playerHitbox, hitBoxEnemy1);
+  checkEnemyCollision();
 
 
   drawMushrooms();
