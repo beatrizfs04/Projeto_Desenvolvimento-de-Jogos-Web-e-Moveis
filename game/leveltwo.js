@@ -1,4 +1,6 @@
 
+let Win = false;
+
 //player
 var player = new Image();
 player.src = "img2/antigos/boy_run_right.png";
@@ -68,9 +70,6 @@ let hitboxFramesEnemy1 = [
   { width: 28, height: 20, offsetX: 11, offsetY: 0 },  // Para o frame 0
   { width: 30, height: 18, offsetX: 8, offsetY: 2},   // Para o frame 1
 ];
-
-//Vida da Bruxinha
-VidaCount = 5;
 
 //backgrounds
 var background5 = new Image();
@@ -190,6 +189,16 @@ let portalSegment = {
   width: 90, 
   height: 102
 }
+
+let portalHitbox = {
+  x: 2777.5, 
+  y: 140, 
+  width: 45, 
+  height: 114.5
+}
+
+const logo = new Image();
+logo.src = 'img/logo_game.png';
 
 //pontuação
 mushroomCount = 0;
@@ -461,11 +470,9 @@ function checkEnemyCollision() {
       playerHitbox.y + playerHitbox.height <= hitBoxEnemy1.y + hitBoxEnemy1.height / 2;
 
     if (isKillingEnemy) {
-      console.log("Enemy killed!");
       enemy1Y = enemy1Y + 25; //adicionar aqui uma logística para que o enemy caia pra fora da tela
       return "killed"; 
     } else {
-      console.log("Damage taken!");
       damageTimer = Date.now(); // Define o início do temporizador
       playerDamage = true;
       return "damage";
@@ -473,6 +480,18 @@ function checkEnemyCollision() {
   }
   return null;
 }
+
+function checkPortalCollision(){ 
+  if (
+    portalHitbox.x = 0 //coloquei isto só para n dar erro
+    // colocar condições ainda
+  ) {
+    Win = true; 
+    console.log("Win = true");
+  }
+}
+
+portalHitbox
 
 function checkPlatformCollision() {
   isOnPlatform = false; // Reseta o estado da colisão vertical
@@ -501,7 +520,6 @@ function checkPlatformCollision() {
       playerHitbox.y < platform.y + platform.height && !isOnPlatform // Garante que a colisão lateral não interfira na vertical
     ) {
       isCollidingLeft = true;
-      console.log("colidiu esquerda plataforma");
     }
 
      // Colisão lateral à direita
@@ -512,7 +530,6 @@ function checkPlatformCollision() {
       playerHitbox.y < platform.y + platform.height && !isOnPlatform// Garante que a colisão lateral não interfira na vertical
     ) {
       isCollidingRight = true;
-      console.log("colidiu direita plataforma");
     }
 
   }
@@ -641,6 +658,27 @@ function drawRoundedRect(context, x, y, width, height, radius) {
   context.fill(); // Preencher o retângulo
 }
 
+function drawRoundedImage(context, image, x, y, width, height, radius) {
+  // Criar o caminho do retângulo arredondado
+  context.beginPath();
+  context.moveTo(x + radius, y);
+  context.lineTo(x + width - radius, y);
+  context.arcTo(x + width, y, x + width, y + radius, radius);
+  context.lineTo(x + width, y + height - radius);
+  context.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  context.lineTo(x + radius, y + height);
+  context.arcTo(x, y + height, x, y + height - radius, radius);
+  context.lineTo(x, y + radius);
+  context.arcTo(x, y, x + radius, y, radius);
+  context.closePath();
+
+  // Aplicar o recorte
+  context.clip();
+
+  // Desenhar a imagem dentro do recorte
+  context.drawImage(image, x, y, width, height);
+}
+
 function gameLoop() {
   checkGroundCollision();
   checkPlatformCollision();  
@@ -686,15 +724,14 @@ function gameLoop() {
   drawMushrooms();
   checkMushroomCollision();
 
-  
   drawPortal();
+  checkPortalCollision();
 
   animation();
 
   const frameX = currentFrame * frameWidth; 
   const frameY = 4; 
 
-  console.log(playerDamage);
   //desenha a bruxinha
   if (playerDamage) {
     // Verifica se o tempo do dano acabou
@@ -730,27 +767,22 @@ function gameLoop() {
 
   context.fillStyle = "white";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Vida Restante: " + VidaCount, 5, 15);  // Posição e texto
-
-  context.fillStyle = "white";  // Cor do texto
-  context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
 
   if(playerY > 250 || enemyColided){
-    // Configura cor do botão
     context.fillStyle = "white";
-    drawRoundedRect(context, 80, 50, 265, 170, 15);
-
+    drawRoundedRect(context, 130, 45, 175, 180, 15);
+    
     context.fillStyle = "red";  
-    context.font = "30px Arial";  
-    context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
+    context.font = "20px Arial";  
+    context.fillText("Game Over!", 160, (canvas.height / 2) + 55); 
 
     // Desenhar botão
-    const buttonX = canvas.width / 2 - 75; // Posição X
-    const buttonY = canvas.height / 2 + 30;  // Posição Y
+    const buttonX = canvas.width / 2 - 70; // Posição X
+    const buttonY = (canvas.height / 2) + 70;  // Posição Y
     const buttonWidth = 150;
-    const buttonHeight = 50;
-    const borderRadius = 15; // Raio das bordas
+    const buttonHeight = 20;
+    const borderRadius = 10; // Raio das bordas
 
     // Configura cor do botão
     context.fillStyle = "green";
@@ -758,8 +790,10 @@ function gameLoop() {
 
     // Adiciona texto no botão
     context.fillStyle = "white";
-    context.font = "16px Arial";
-    context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
+    context.font = "10px Arial";
+    context.fillText("Tentar Novamente", buttonX + 35, buttonY + 13);
+
+    drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
     // Adiciona evento de clique ao canvas
     canvas.addEventListener("click", handleCanvasClick);
@@ -786,7 +820,6 @@ function gameLoop() {
     } else {
       backgroundMusic.pause();
       gameOverSound.play();
-      console.log("game over"); // Inicia a reprodução da música
       Ended = true;
     }
   }
