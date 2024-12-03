@@ -125,7 +125,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-
+let Lost = false;
 let worldOffsetX = 1100; 
 
 
@@ -155,7 +155,7 @@ let platforms = [
   {x: 2200, y: 200, width: 100, height:120, type: "earth"},
 ];
 
-
+let Ended = false;
 let isOnPlatform = false;
 let isCollidingRight = false;
 let isCollidingLeft = false;
@@ -214,6 +214,9 @@ var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu ar
 jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 var gameOverSound = new Audio("audio/gameover.mp3");
+gameOverSound.loop = false; // Define o volume entre 0 (mudo) e 1 (máximo)
+gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
 inicializar();
 
 function inicializar() {
@@ -525,55 +528,6 @@ function checkPlatformCollision() {
   }
 }
 
-function gameOver(){
-  // Configura cor do botão
-  context.fillStyle = "white";
-  drawRoundedRect(context, 80, 50, 265, 170, 15);
-
-  context.fillStyle = "red";  
-  context.font = "30px Arial";  
-  context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
-  backgroundMusic.pause();
-  gameOverSound.play(); // Inicia a reprodu//ção da música
-  
-  // Desenhar botão
-  const buttonX = canvas.width / 2 - 75; // Posição X
-  const buttonY = canvas.height / 2 + 30;  // Posição Y
-  const buttonWidth = 150;
-  const buttonHeight = 50;
-  const borderRadius = 15; // Raio das bordas
-
-  // Configura cor do botão
-  context.fillStyle = "green";
-  drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
-
-  // Adiciona texto no botão
-  context.fillStyle = "white";
-  context.font = "16px Arial";
-  context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
-
-  // Adiciona evento de clique ao canvas
-  canvas.addEventListener("click", handleCanvasClick);
-
-  function handleCanvasClick(event) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    // Verifica se o clique foi dentro do botão
-    if (
-      mouseX >= buttonX &&
-      mouseX <= buttonX + buttonWidth &&
-      mouseY >= buttonY &&
-      mouseY <= buttonY + buttonHeight
-    ) {
-      // Recarregar a página
-      window.location.reload();
-    }
-  }
-  return;
-}
-
 function drawParallax(imagem, x, y, width, height){
   context.drawImage(imagem, x, y, width, height);
   context.drawImage(imagem, x-canvas.width, y, width, height);
@@ -685,7 +639,6 @@ function drawRoundedRect(context, x, y, width, height, radius) {
 }
 
 function gameLoop() {
-  
   checkGroundCollision();
   checkPlatformCollision();  
 
@@ -768,11 +721,59 @@ function gameLoop() {
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
 
-  if(playerY > 250) {
-    gameOver();
-  }if(enemyColided) {
-    gameOver();
-    console.log("game over");
+  if(playerY > 250 || enemyColided){
+    // Configura cor do botão
+    context.fillStyle = "white";
+    drawRoundedRect(context, 80, 50, 265, 170, 15);
+
+    context.fillStyle = "red";  
+    context.font = "30px Arial";  
+    context.fillText("Game Over!", canvas.width / 2 - 80, canvas.height / 2); 
+
+    // Desenhar botão
+    const buttonX = canvas.width / 2 - 75; // Posição X
+    const buttonY = canvas.height / 2 + 30;  // Posição Y
+    const buttonWidth = 150;
+    const buttonHeight = 50;
+    const borderRadius = 15; // Raio das bordas
+
+    // Configura cor do botão
+    context.fillStyle = "green";
+    drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
+
+    // Adiciona texto no botão
+    context.fillStyle = "white";
+    context.font = "16px Arial";
+    context.fillText("Tentar Novamente", buttonX + 10, buttonY + 30);
+
+    // Adiciona evento de clique ao canvas
+    canvas.addEventListener("click", handleCanvasClick);
+
+    function handleCanvasClick(event) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // Verifica se o clique foi dentro do botão
+      if (
+        mouseX >= buttonX &&
+        mouseX <= buttonX + buttonWidth &&
+        mouseY >= buttonY &&
+        mouseY <= buttonY + buttonHeight
+      ) {
+        // Recarregar a página
+        window.location.reload();
+      }
+    }
+
+    if(Ended){
+      return;
+    } else {
+      backgroundMusic.pause();
+      gameOverSound.play();
+      console.log("game over"); // Inicia a reprodução da música
+      Ended = true;
+    }
   }
 
   updateCharacterMovement();
