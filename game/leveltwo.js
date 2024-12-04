@@ -125,11 +125,9 @@ let knownKey = true;
 var block = new Image();
 block.src = "img/block2.png";
 
-
 let blockX = 480;
 let blockY = 180;
 
-let Lost = false;
 let worldOffsetX = 2000; 
 
 
@@ -217,13 +215,12 @@ let CharStopMovement = function(e) {
     spriteIdle = true;     
   }
 };
-//dano 
 
+//dano 
 let playerDamage = false;
 let enemy1Damage = false;
 let enemyColided = false;
-
-
+let Finish = false;
 
 //som
 // Música de fundo
@@ -265,7 +262,6 @@ let playerHitbox = {
   width: (frameWidth - diminuicaoX)*0.75,  //opcional
   height: (frameHeight - diminuicaoY)*0.8 //opcional
 };
-
 
 let worldMovementSpeed = 2;
 
@@ -339,7 +335,6 @@ function drawPortal(){
   let portalImage = portal;
   desenhaImagem(portalImage, portalscreenX, portalscreenY, portalSegment.width, portalSegment.height);
 }
-
 
 //desenha o inimigo
 function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
@@ -450,6 +445,16 @@ function checkGroundCollision() {
 
 }
 
+function checkPortalCollision(){ 
+  if (
+    portalHitbox.x = 0 //coloquei isto só para n dar erro
+    // colocar condições ainda
+  ) {
+    Win = true; 
+    console.log("Win = true");
+  }
+}
+
 function checkEnemyCollision() {
   const screenX = hitBoxEnemy1.x - worldOffsetX; 
 
@@ -480,18 +485,6 @@ function checkEnemyCollision() {
   }
   return null;
 }
-
-function checkPortalCollision(){ 
-  if (
-    portalHitbox.x = 0 //coloquei isto só para n dar erro
-    // colocar condições ainda
-  ) {
-    Win = true; 
-    console.log("Win = true");
-  }
-}
-
-portalHitbox
 
 function checkPlatformCollision() {
   isOnPlatform = false; // Reseta o estado da colisão vertical
@@ -765,9 +758,12 @@ function gameLoop() {
 
   freezeParallax();
 
-  context.fillStyle = "white";  // Cor do texto
+  context.fillStyle = "white";  
+  drawRoundedRect(context, 5, 5, 120, 23, 10);
+
+  context.fillStyle = "black";  // Cor do texto
   context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Cogumelos Coletados: " + mushroomCount, 5, 30);  // Posição e texto
+  context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
 
   if(playerY > 250 || enemyColided){
     context.fillStyle = "white";
@@ -791,7 +787,7 @@ function gameLoop() {
     // Adiciona texto no botão
     context.fillStyle = "white";
     context.font = "10px Arial";
-    context.fillText("Tentar Novamente", buttonX + 35, buttonY + 13);
+    context.fillText("Tentar Novamente!", buttonX + 35, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
@@ -821,6 +817,60 @@ function gameLoop() {
       backgroundMusic.pause();
       gameOverSound.play();
       Ended = true;
+    }
+  }
+
+  if(Win){
+    context.fillStyle = "white";
+    drawRoundedRect(context, 130, 45, 175, 180, 15);
+    
+    context.fillStyle = "green";  
+    context.font = "20px Arial";  
+    context.fillText("Game Win!", 160, (canvas.height / 2) + 55); 
+
+    // Desenhar botão
+    const buttonX = canvas.width / 2 - 70; // Posição X
+    const buttonY = (canvas.height / 2) + 70;  // Posição Y
+    const buttonWidth = 150;
+    const buttonHeight = 20;
+    const borderRadius = 10; // Raio das bordas
+
+    // Configura cor do botão
+    context.fillStyle = "green";
+    drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
+
+    // Adiciona texto no botão
+    context.fillStyle = "white";
+    context.font = "10px Arial";
+    context.fillText("Start Again!", buttonX + 35, buttonY + 13);
+
+    drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
+
+    // Adiciona evento de clique ao canvas
+    canvas.addEventListener("click", handleCanvasClick);
+
+    function handleCanvasClick(event) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      // Verifica se o clique foi dentro do botão
+      if (
+        mouseX >= buttonX &&
+        mouseX <= buttonX + buttonWidth &&
+        mouseY >= buttonY &&
+        mouseY <= buttonY + buttonHeight
+      ) {
+        window.location.href = "home.html";
+      }
+    }
+
+    if(Finish){
+      return;
+    } else {
+      backgroundMusic.pause();
+      gameOverSound.play();
+      Finish = true;
     }
   }
 
