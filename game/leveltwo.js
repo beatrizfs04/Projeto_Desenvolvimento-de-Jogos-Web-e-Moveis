@@ -3,27 +3,27 @@ let Win = false;
 
 //player
 var player = new Image();
-player.src = "img2/antigos/boy_run_right.png";
+player.src = "img2/boy_run_right.png";
 diminuicaoX = 100;
 diminuicaoY = 115;
 
 var playerBack = new Image();
-playerBack.src = "img2/antigos/boy_run_left.png";
+playerBack.src = "img2/boy_run_left.png";
 
 var playerIdleRight = new Image();
-playerIdleRight.src = "img2/antigos/boy_idle_right.png";
+playerIdleRight.src = "img2/boy_idle_right.png";
 
 var playerIdleLeft = new Image();
-playerIdleLeft.src = "img2/antigos/boy_idle_left.png";
+playerIdleLeft.src = "img2/boy_idle_left.png";
 
 let freezedParallax = false;
 let fell = false;
 
 var playerDamageRight = new Image();
-playerDamageRight.src = "img2/antigos/boy_damage_right.png";
+playerDamageRight.src = "img2/boy_damage_right.png";
 
 var playerDamageLeft = new Image();
-playerDamageLeft.src = "img2/antigos/boy_damage_left.png";
+playerDamageLeft.src = "img2/boy_damage_left.png";
 
 let damageTimer = 0;// Temporizador para controlar a duração da sprite de dano
 const damageDuration = 200;//
