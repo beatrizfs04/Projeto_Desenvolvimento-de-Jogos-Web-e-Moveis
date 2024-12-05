@@ -128,7 +128,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 2000; 
+let worldOffsetX = 0; 
 
 
 //ground
@@ -189,10 +189,10 @@ let portalSegment = {
 }
 
 let portalHitbox = {
-  x: 2777.5, 
-  y: 140, 
-  width: 45, 
-  height: 114.5
+  x: portalSegment.x+44, 
+  y: portalSegment.y+40, 
+  width: portalSegment.width/4, 
+  height: portalSegment.height/2
 }
 
 const logo = new Image();
@@ -336,6 +336,12 @@ function drawPortal(){
   desenhaImagem(portalImage, portalscreenX, portalscreenY, portalSegment.width, portalSegment.height);
 }
 
+function drawHitboxPortal(){
+  const portalscreenX = portalHitbox.x - worldOffsetX; 
+  context.fillStyle = "red";  
+  context.fillRect(portalscreenX, portalHitbox.y, portalHitbox.width, portalHitbox.height);
+}
+
 //desenha o inimigo
 function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
 
@@ -445,13 +451,12 @@ function checkGroundCollision() {
 
 }
 
-function checkPortalCollision(){ 
+function checkPortalCollision(){
+  const screenX = portalHitbox.x - worldOffsetX; 
   if (
-    portalHitbox.x = 0 //coloquei isto só para n dar erro
-    // colocar condições ainda
+     playerHitbox.x + playerHitbox.width >= screenX
   ) {
     Win = true; 
-    console.log("Win = true");
   }
 }
 
@@ -698,7 +703,6 @@ function gameLoop() {
   context.fillStyle = "rgba(255, 0, 0, 0.5)";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-
   const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
   drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
 
@@ -720,6 +724,7 @@ function gameLoop() {
   drawPortal();
   checkPortalCollision();
 
+  drawHitboxPortal();
   animation();
 
   const frameX = currentFrame * frameWidth; 
