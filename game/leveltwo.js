@@ -338,7 +338,7 @@ function drawPortal(){
 
 function drawHitboxPortal(){
   const portalscreenX = portalHitbox.x - worldOffsetX; 
-  context.fillStyle = "red";  
+  context.fillStyle = "transparent";  
   context.fillRect(portalscreenX, portalHitbox.y, portalHitbox.width, portalHitbox.height);
 }
 
@@ -484,8 +484,9 @@ function checkEnemyCollision() {
       return "killed"; 
     } else {
       damageTimer = Date.now(); // Define o início do temporizador
-      playerDamage = true;
-      return "damage";
+      enemyColided = true;
+      //playerDamage = true;
+      //return "damage";
     }
   }
   return null;
@@ -831,7 +832,7 @@ function gameLoop() {
     
     context.fillStyle = "green";  
     context.font = "20px Arial";  
-    context.fillText("Game Win!", 160, (canvas.height / 2) + 55); 
+    context.fillText("Game Win!", 170, (canvas.height / 2) + 55); 
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
@@ -847,7 +848,7 @@ function gameLoop() {
     // Adiciona texto no botão
     context.fillStyle = "white";
     context.font = "10px Arial";
-    context.fillText("Start Again!", buttonX + 35, buttonY + 13);
+    context.fillText("Next Level!", buttonX + 50, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
@@ -874,7 +875,7 @@ function gameLoop() {
       return;
     } else {
       backgroundMusic.pause();
-      gameOverSound.play();
+      gameOverSound.play(); //Mudar para gameWinSound.play();
       Finish = true;
     }
   }
