@@ -235,8 +235,10 @@ var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu ar
 jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 var gameOverSound = new Audio("audio/gameover.mp3");
-gameOverSound.loop = false; // Define o volume entre 0 (mudo) e 1 (máximo)
 gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var gameWinSound = new Audio("audio/gamewin.mp3");
+gameWinSound.volume = 0.7; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 inicializar();
 
@@ -848,7 +850,7 @@ function gameLoop() {
     // Adiciona texto no botão
     context.fillStyle = "white";
     context.font = "10px Arial";
-    context.fillText("Next Level!", buttonX + 50, buttonY + 13);
+    context.fillText("Start Again!", buttonX + 50, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
@@ -875,7 +877,7 @@ function gameLoop() {
       return;
     } else {
       backgroundMusic.pause();
-      gameOverSound.play(); //Mudar para gameWinSound.play();
+      gameWinSound.play(); //Mudar para gameWinSound.play();
       Finish = true;
     }
   }
