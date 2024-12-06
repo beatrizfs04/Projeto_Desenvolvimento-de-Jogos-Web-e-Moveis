@@ -127,7 +127,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0; 
+let worldOffsetX = 750; 
 
 
 //ground
@@ -264,6 +264,46 @@ let playerHitbox = {
   height: frameHeight * 0.8 //opcional
 };
 
+let enemies = [
+  {
+    image: new Image(),
+    x: 1000,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20, 
+    direction: 1,
+    limits: { left: 998, right: 1380 }, //limites que o personagem pode andar de um lado para o outro
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
+  {
+    image: new Image(),
+    x: 1200,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 900, right: 1300 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
+];
+
+enemies[0].image.src = "img/enemy1new.png";
+enemies[1].image.src = "img/enemy1new.png";
+  
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
@@ -344,19 +384,36 @@ function drawHitboxPortal(){
 }
 
 //desenha o inimigo
-function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
+function drawEnemies() {
+  for (let enemy of enemies) {//itera nos inimigos
+    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame];//array das hitboxes por causa da animação do personagem
 
-  let currentHitbox = hitboxFramesEnemy1[currentFrameEnemy];
+    // pra atualização da hitbox
+    let hitBoxEnemy = {
+      x: enemy.x + currentHitbox.offsetX,
+      y: enemy.y + currentHitbox.offsetY,
+      width: currentHitbox.width,
+      height: currentHitbox.height,
+    };
 
-  hitBoxEnemy1.x = x + currentHitbox.offsetX; // Ajusta a posição X da hitbox
-  hitBoxEnemy1.y = y + currentHitbox.offsetY; // Ajusta a posição Y da hitbox
-  hitBoxEnemy1.width = currentHitbox.width;    // Atualiza a largura da hitbox
-  hitBoxEnemy1.height = currentHitbox.height;  // Atualiza a altura da hitbox
+    // desenha a hitbox (temporario)
+    context.fillStyle = "rgba(255, 0, 0, 0.5)";
+    context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
-  context.fillStyle = "rgba(255, 0, 0, 0.5)"; // Cor semi-transparente
-  context.fillRect(hitBoxEnemy1.x, hitBoxEnemy1.y, hitBoxEnemy1.width, hitBoxEnemy1.height);
-  context.drawImage(imagem, frameX, frameY, frameWidthEnemy1, frameHeightEnemy1, x, y, width, height);
-
+    // draw enemy
+    let frameX = enemy.currentFrame * enemy.frameWidth; //calcula qual frame o inimigo está
+    context.drawImage(
+      enemy.image,
+      frameX,
+      0,
+      enemy.frameWidth,
+      enemy.frameHeight,
+      enemy.x - worldOffsetX,
+      enemy.y,
+      enemy.frameWidth,
+      enemy.frameHeight
+    );
+  }
 }
 
 function drawGround() {
@@ -462,35 +519,46 @@ function checkPortalCollision(){
 }
 
 function checkEnemyCollision() {
-  const screenX = hitBoxEnemy1.x - worldOffsetX; 
+  for (let enemy of enemies) {
+    const enemyScreenX = enemy.x - worldOffsetX;
 
-  //colisao horizontal
-  const xCollision =
-    playerHitbox.x + playerHitbox.width > screenX &&
-    playerHitbox.x < screenX + hitBoxEnemy1.width;
+    // pega a hitbox do frame 
+    const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
+    const enemyHitbox = {
+      x: enemyScreenX + currentHitbox.offsetX,
+      y: enemy.y + currentHitbox.offsetY,
+      width: currentHitbox.width,
+      height: currentHitbox.height,
+    };
 
-  //colisao vertical
-  const yCollision =
-    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y &&
-    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height;
+    //  colisao horizontal
+    const xCollision =
+      playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
+      playerHitbox.x < enemyHitbox.x + enemyHitbox.width;
 
-  if (xCollision && yCollision) {
-    //verifica se a base do inimigo (player.y + player height)
-    //colide (<=) com o meio vertical do inimigo 
-    const isKillingEnemy =
-      playerHitbox.y + playerHitbox.height <= hitBoxEnemy1.y + hitBoxEnemy1.height / 2;
+    // colisao vertical
+    const yCollision =
+      playerHitbox.y + playerHitbox.height > enemyHitbox.y &&
+      playerHitbox.y < enemyHitbox.y + enemyHitbox.height;
 
-    if (isKillingEnemy) {
-      enemy1Y = enemy1Y + 25; //adicionar aqui uma logística para que o enemy caia pra fora da tela
-      return "killed"; 
-    } else {
-      damageTimer = Date.now(); // Define o início do temporizador
-      enemyColided = true;
-      //playerDamage = true;
-      //return "damage";
+    if (xCollision && yCollision) {
+      // verifica se existe ataque por cima
+      const isKillingEnemy =
+        playerHitbox.y + playerHitbox.height <=
+        enemyHitbox.y + enemyHitbox.height / 2;
+
+      if (isKillingEnemy) {
+        enemy.y += 25; 
+        enemy.direction = 0; 
+        return "killed";
+      } else {
+        damageTimer = Date.now(); // temporizador, não está sendo usado agora
+        enemyColided = true;
+        return "damage"; 
+      }
     }
   }
-  return null;
+  return null; 
 }
 
 function checkPlatformCollision() {
@@ -602,28 +670,29 @@ function applyGravityJump(){
   }
 }
 
-function animateEnemy() {
-  frameCountEnemy++;
+//altera os frames da animação e define a velocidade em que passam
+function animateEnemies() {
+  for (let enemy of enemies) {
+    enemy.frameCount++;
 
-  if (frameCountEnemy >= frameDelayEnemy) {
-    currentFrameEnemy = (currentFrameEnemy + 1) % numberOfFramesEnemy1; 
-    frameCountEnemy = 0;
+    if (enemy.frameCount >= enemy.frameDelay) {
+      enemy.currentFrame = (enemy.currentFrame + 1) % enemy.numberOfFrames;
+      enemy.frameCount = 0;
+    }
   }
 }
 
-let direction = 1; // 1 para direita, -1 para esquerda
+//de onde até onde onde o inimigo anda
+function updateEnemiesPosition() {
+  for (let enemy of enemies) {
+    enemy.x += 1 * enemy.direction;
 
-//as variáveis 1380 e 998 tem que ser 
-function updateEnemyPosition() {
-  enemy1X += 1 * direction; 
-
-  if (enemy1X >= 1380) {
-    direction = -1; // Muda a direção para a esquerda
-  }
-
-  // Verifica se atingiu o limite esquerdo (40)
-  if (enemy1X <= 998) {
-    direction = 1; // Muda a direção para a direita
+    if (enemy.x >= enemy.limits.right) {
+      enemy.direction = -1; // Vai para a esquerda
+    }
+    if (enemy.x <= enemy.limits.left) {
+      enemy.direction = 1; // Vai para a direita
+    }
   }
 }
 
@@ -706,18 +775,13 @@ function gameLoop() {
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
 
-  const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
-  drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
-
   playerHitbox.x = playerX;
   playerHitbox.y = playerY;
 
-  // Atualiza hitbox do inimigo
-  hitBoxEnemy1.x = enemy1X;
-  hitBoxEnemy1.y = enemy1Y;
-
-  animateEnemy(); 
-  updateEnemyPosition(); 
+  //inimigo
+  updateEnemiesPosition();
+  animateEnemies();
+  drawEnemies();
   checkEnemyCollision();
 
 
