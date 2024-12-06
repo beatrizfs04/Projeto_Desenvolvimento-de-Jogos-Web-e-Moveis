@@ -24,8 +24,8 @@ playerDamageRight.src = "img/damageright.png";
 var playerDamageLeft = new Image();
 playerDamageLeft.src = "img/damageleft.png";
 
-let damageTimer = 0;      // Temporizador para controlar a duração da sprite de dano
-const damageDuration = 200; //
+let playerTookDamage = false;
+let lifeBar = 10;
 
 //frames and sprites
 const frameWidth = 30;
@@ -281,7 +281,7 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-  },
+  }, 
   {
     image: new Image(),
     x: 1200,
@@ -541,7 +541,7 @@ function checkEnemyCollision() {
       playerHitbox.y + playerHitbox.height > enemyHitbox.y &&
       playerHitbox.y < enemyHitbox.y + enemyHitbox.height;
 
-    if (xCollision && yCollision) {
+    if (xCollision && yCollision && !playerTookDamage) {
       // verifica se existe ataque por cima
       const isKillingEnemy =
         playerHitbox.y + playerHitbox.height <=
@@ -552,8 +552,8 @@ function checkEnemyCollision() {
         enemy.direction = 0; 
         return "killed";
       } else {
-        damageTimer = Date.now(); // temporizador, não está sendo usado agora
         enemyColided = true;
+        playerTookDamage = true;
         return "damage"; 
       }
     }
@@ -712,6 +712,23 @@ function animation(){
   }
 }
 
+let lastDamageTime = 0; 
+const damageCooldown = 3000;  
+const damageAmount = 5;       
+
+function checkPlayerDamage() {
+  const currentTime = Date.now();
+
+  if (playerTookDamage && currentTime - lastDamageTime >= damageCooldown) {
+    lifeBar -= damageAmount;  
+    lastDamageTime = currentTime; 
+    playerTookDamage = false;  
+  }
+}
+
+
+
+
 function drawRoundedRect(context, x, y, width, height, radius) {
   context.beginPath();
   context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
@@ -794,6 +811,11 @@ function gameLoop() {
   drawHitboxPortal();
   animation();
 
+  console.log(lifeBar);
+  console.log(playerTookDamage);
+
+  checkPlayerDamage();
+
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
 
@@ -837,7 +859,7 @@ function gameLoop() {
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
 
-  if(playerY > 250 || enemyColided){
+  if(playerY > 250 || lifeBar <= 0){
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
