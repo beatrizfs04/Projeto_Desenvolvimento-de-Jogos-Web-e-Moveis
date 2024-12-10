@@ -127,7 +127,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 750; 
+let worldOffsetX = 0; 
 
 
 //ground
@@ -284,16 +284,16 @@ let enemies = [
   }, 
   {
     image: new Image(),
-    x: 1200,
-    y: 210,
+    x: 498,
+    y: 130,
     frameWidth: 50,
     frameHeight: 20,
     numberOfFrames: 2,
     currentFrame: 0,
     frameCount: 0,
     frameDelay: 20,
-    direction: -1,
-    limits: { left: 900, right: 1300 },
+    direction: 1,
+    limits: { left: 498, right: 648 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -397,7 +397,7 @@ function drawEnemies() {
     };
 
     // desenha a hitbox (temporario)
-    context.fillStyle = "rgba(255, 0, 0, 0.5)";
+    context.fillStyle = "transparent";
     context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
     // draw enemy
@@ -546,10 +546,9 @@ function checkEnemyCollision() {
       const isKillingEnemy =
         playerHitbox.y + playerHitbox.height <=
         enemyHitbox.y + enemyHitbox.height / 2;
-
       if (isKillingEnemy) {
-        enemy.y += 25; 
-        enemy.direction = 0; 
+          fell = true;
+          enemy.y += 200;
         return "killed";
       } else {
         enemyColided = true;
@@ -788,7 +787,7 @@ function gameLoop() {
   defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-  context.fillStyle = "rgba(255, 0, 0, 0.5)";  
+  context.fillStyle = "transparent";  
   context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
 
@@ -859,11 +858,11 @@ function gameLoop() {
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
 
-  if(playerY > 250 || lifeBar <= 0){
+  if(playerY > 250 || enemyColided ){ //lifebar <= 0
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
-    context.fillStyle = "red";  
+    context.fillStyle = "transparent";  
     context.font = "20px Arial";  
     context.fillText("Game Over!", 160, (canvas.height / 2) + 55); 
 
