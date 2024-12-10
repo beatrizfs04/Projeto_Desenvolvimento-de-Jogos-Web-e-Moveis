@@ -127,7 +127,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0; 
+let worldOffsetX = 1200; 
 
 
 //ground
@@ -276,7 +276,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20, 
     direction: 1,
-    limits: { left: 998, right: 1380 }, //limites que o personagem pode andar de um lado para o outro
+    limits: { left: 998, right: 1360 }, //limites que o personagem pode andar de um lado para o outro
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -862,7 +862,7 @@ function gameLoop() {
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
-    context.fillStyle = "transparent";  
+    context.fillStyle = "red";  
     context.font = "20px Arial";  
     context.fillText("Game Over!", 160, (canvas.height / 2) + 55); 
 

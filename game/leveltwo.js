@@ -224,9 +224,13 @@ let Finish = false;
 
 //som
 // Música de fundo
-var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+var backgroundMusic = new Audio("audio/mai2n.mp3"); // Substitua pelo caminho do seu arquivo de áudio
 backgroundMusic.loop = true; // Faz a música tocar em loop
 backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var caveSound = new Audio("audio/cave.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+caveSound.loop = true; // Faz a música tocar em loop
+caveSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 var walkingSound = new Audio("audio/walk.mp3");
 walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
@@ -288,7 +292,8 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-    backgroundMusic.play(); // Inicia a reprodu//ção da música
+    backgroundMusic.play(); 
+    caveSound.play();
 
     if (canMoveRight){
       if (playerX < canvas.width - 200) playerX += velPlayer;
@@ -306,7 +311,8 @@ let updateCharacterMovement = function() {
       spriteIdle = true;
       isOnGround = false; 
       isOnPlatform = false;
-      jumpSound.play(); // Toca o som do pulo
+      jumpSound.play();
+      caveSound.play();
 
     }
   }
@@ -780,6 +786,9 @@ function gameLoop() {
     context.fillStyle = "red";  
     context.font = "20px Arial";  
     context.fillText("Game Over!", 160, (canvas.height / 2) + 55); 
+    
+    backgroundMusic.pause();
+    caveSound.pause();
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
@@ -822,7 +831,6 @@ function gameLoop() {
     if(Ended){
       return;
     } else {
-      backgroundMusic.pause();
       gameOverSound.play();
       Ended = true;
     }
@@ -835,6 +843,9 @@ function gameLoop() {
     context.fillStyle = "green";  
     context.font = "20px Arial";  
     context.fillText("Game Win!", 170, (canvas.height / 2) + 55); 
+    
+    backgroundMusic.pause();
+    caveSound.pause();
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
@@ -876,7 +887,6 @@ function gameLoop() {
     if(Finish){
       return;
     } else {
-      backgroundMusic.pause();
       gameWinSound.play(); //Mudar para gameWinSound.play();
       Finish = true;
     }
