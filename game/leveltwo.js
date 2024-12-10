@@ -7,6 +7,8 @@ player.src = "img2/boy_run_right.png";
 diminuicaoX = 100;
 diminuicaoY = 115;
 
+
+
 var playerBack = new Image();
 playerBack.src = "img2/boy_run_left.png";
 
@@ -49,6 +51,10 @@ var enemy1 = new Image();
 enemy1.src = "img/enemy1new.png";
 let enemy1X = 1000;
 let enemy1Y = 210;
+
+var enemy2 = new Image();
+enemy2.src = "img2/enemy2.png";
+
 
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;

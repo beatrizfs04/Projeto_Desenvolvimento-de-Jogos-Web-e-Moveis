@@ -49,6 +49,8 @@ enemy1.src = "img/enemy1new.png";
 let enemy1X = 1000;
 let enemy1Y = 210;
 
+
+
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
 
