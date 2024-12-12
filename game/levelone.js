@@ -131,7 +131,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 3500; 
+let worldOffsetX = 2050; 
 
 
 //ground
@@ -158,7 +158,7 @@ let platforms = [
   {x: 1880, y: 130, width: 45, height:20, type: "block"},
   {x: 2000, y: 110, width: 45, height:20, type: "block"},
   {x: 2100, y: 150, width: 100, height:120, type: "earth"},
-  {x: 2300, y: 95, width: 45, height:20, type: "block"},
+  {x: 2260, y: 95, width: 45, height:20, type: "block"},
   {x: 2200, y: 200, width: 100, height:120, type: "earth"},
   {x: 2500, y: 200, width: 100, height:120, type: "earth"},
   {x: 2600, y: 170, width: 100, height:120, type: "earth"},
@@ -177,15 +177,19 @@ let platformImage;
 // deslocamento horizontal do mundo
 
 //mushroom
-const mushroom = new Image();
-mushroom.src = "img/mushroom.png";
+const mushroomYellow = new Image();
+mushroomYellow.src = "img/mushroom1.png";
+
+const mushroomPurple = new Image();
+mushroomPurple.src = "img/mushroom2.png";
 
 let mushrooms = [
-  { x: 740, y: 80, width: 10, height: 10 },
-  { x: 1050, y: 140, width: 10, height: 10 },
-  { x: 1645, y: 90, width: 10, height: 10 },
-  {x: 1950, y: 80, width: 10, height: 10 },
-]
+  { x: 740,  y: 80, width: 10, height: 10, type:"yellow" },
+  { x: 1645, y: 90, width: 10, height: 10, type:"yellow"  },
+  { x: 1950, y: 80, width: 10, height: 10, type:"yellow"  },
+  { x: 1050, y: 140, width: 10, height: 10, type:"yellow"  },
+  { x: 2400, y: 80, width: 10, height: 10, type:"purple"  },
+];
 
 //portal
 const portal = new Image();
@@ -468,7 +472,9 @@ let updateCharacterMovement = function() {
     velPlayer = 0; 
   }
   if(keysPressed[81]){
-    throwPower();
+    if(isPower){
+      throwPower();
+    }
   }
 };
 
@@ -587,27 +593,46 @@ function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
     const screenX = mushroomObj.x - worldOffsetX;
-    desenhaImagem(mushroom, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    if(mushroomObj.type == "yellow"){
+      desenhaImagem(mushroomYellow, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    }else{
+      desenhaImagem(mushroomPurple, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    }
   }
 }
+
+let isPower = false;
 
 function checkMushroomCollision() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];
     const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
-
-    // Verifica colisão com o cogumelo
+    
     if (
-      playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cogumelo
-      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cogumelo
-      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cogumelo
-      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cogumelo
+      playerHitbox.x + playerHitbox.width > screenX && 
+      playerHitbox.x < screenX + mushroomObj.width && 
+      playerHitbox.y + playerHitbox.height > mushroomObj.y && 
+      playerHitbox.y < mushroomObj.y + mushroomObj.height 
     ) {
-      mushrooms.splice(i, 1); // Remove o cogumelo da lista
-      i--; // Ajusta o índice devido à remoção
-      mushroomCount += 1; // Incrementa a pontuação
+      if(mushroomObj.type == "yellow"){
+      mushrooms.splice(i, 1); 
+      i--; 
+      mushroomCount += 1; 
+      }else{
+        isPower = true;
+        managePower();
+        mushrooms.splice(i, 1); 
+        i--;
+      }
     }
   }
+}
+
+function managePower() {
+  setTimeout(() => {
+    isPower = false;
+    console.log("Power deactivated!");
+  }, 8000); 
 }
 
 function checkGroundCollision() {
@@ -1001,7 +1026,7 @@ function updatePowers() {
       if (xCollision && yCollision) {
         console.log("poder matou o inimigo");
         enemies.splice(j, 1);
-        power.splice(i, 1);
+        powers.splice(i, 1);
         break;
       }
     }
