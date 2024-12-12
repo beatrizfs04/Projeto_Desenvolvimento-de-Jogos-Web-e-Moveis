@@ -50,6 +50,8 @@ enemy1.src = "img/enemy1new.png";
 let enemy1X = 1000;
 let enemy1Y = 210;
 
+var enemy2 = new Image();
+enemy2.src = "img2/enemy2.png";
 
 
 let frameWidthEnemy1 = 50;
@@ -131,7 +133,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 1200; 
+let worldOffsetX = 200; 
 
 
 //ground
@@ -309,10 +311,28 @@ let enemies = [
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
   },
+  {
+    image: new Image(),
+    x: 498,
+    y: 130,
+    frameWidth: 50,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 498, right: 648 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
 ];
 
 enemies[0].image.src = "img/enemy1new.png";
 enemies[1].image.src = "img/enemy1new.png";
+enemies[2].image.src = "img/enemy2.png";
   
 let worldMovementSpeed = 2;
 
@@ -852,7 +872,7 @@ function gameLoop() {
   console.log(playerTookDamage);
 
   checkPlayerDamage();
- // damageSoundTime(); bugou o jogo 
+ // damageSoundTime(); bugou o jogo
 
 
   const frameX = 5; 
