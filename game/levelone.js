@@ -25,7 +25,7 @@ var playerDamageLeft = new Image();
 playerDamageLeft.src = "img/damageleft.png";
 
 let playerTookDamage = false;
-let lifeBar = 10;
+var lifeBar = 10;
 
 //frames and sprites
 const frameWidth = 30;
@@ -34,6 +34,7 @@ const frameHeight = 48;
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 5;
 const numberOfFramesIdle = 5;
+const numberOfFramesDamage = 3;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
@@ -713,23 +714,35 @@ function animation(){
   }
 }
 
-let lastDamageTime = 0; 
-const damageCooldown = 3000;  
+//ta funcionando, como? não sei
 const damageAmount = 5;       
+let damageFlag = false;
 
 function checkPlayerDamage() {
-  const currentTime = Date.now();
-
-  if (playerTookDamage && currentTime - lastDamageTime >= damageCooldown) {
+  if (playerTookDamage && !damageFlag) {
     lifeBar -= damageAmount;  
-    lastDamageTime = currentTime; 
-    playerTookDamage = false;  
+    //lastDamageTime = currentTime; 
+    //playerTookDamage = false; 
+    damageFlag = true; // Ativar a flag de dano 
+    resetDamageFlag();
   }
 }
 
+function resetDamageFlag(){
+  setTimeout(() => {
+    damageFlag = false;
+    console.log("Flag de dano resetada.");
+  }, 2000); 
+}
 
+setInterval(() => {
+  if (playerTookDamage === true) { 
+    playerTookDamage = false;
+    checkPlayerDamage();
+  }
+}, 500); 
 
-
+//--------------------
 function drawRoundedRect(context, x, y, width, height, radius) {
   context.beginPath();
   context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
@@ -821,12 +834,8 @@ function gameLoop() {
   const frameY = currentFrame * frameHeight; 
 
   //desenha a bruxinha
-  if (playerDamage) {
-    // Verifica se o tempo do dano acabou
-    if (Date.now() - damageTimer > damageDuration) {
-      playerDamage = false; // Sai do estado de dano
-    }
-  
+  if (playerTookDamage) {
+
     // Renderiza a sprite de dano
     if (currentSprite == 0) {
       desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
@@ -843,9 +852,9 @@ function gameLoop() {
       }
     } else if (spriteIdle) {
       if (currentSpriteIdle == 0) {
-        desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+        desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
       } else {
-        desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+        desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
       }
     }
   }
@@ -860,7 +869,7 @@ function gameLoop() {
   context.font = "9px Arial";  // Tamanho da fonte
   context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
 
-  if(playerY > 250 || enemyColided ){ //lifebar <= 0
+  if(playerY > 250 || lifeBar <= 0 ){ //enemyCollided
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
