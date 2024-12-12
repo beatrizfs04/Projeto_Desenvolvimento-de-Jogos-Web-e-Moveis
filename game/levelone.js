@@ -34,7 +34,7 @@ const frameHeight = 48;
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 5;
 const numberOfFramesIdle = 5;
-const numberOfFramesDamage = 3;
+const numberOfFramesDamage = 2;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
@@ -105,6 +105,7 @@ let velPlayer = 0;
 //deixar a animção do player mais devagar
 let frameDelayRunning = 18; 
 let frameDelayIdle = 18; 
+let frameDelayDamage = 12;
 let frameCount = 0; 
 
 //deixa a animação do enemy mais devagar
@@ -218,6 +219,9 @@ let CharStopMovement = function(e) {
   }
 };
 
+let isDamaged = false;
+
+
 //dano 
 let playerDamage = false;
 let enemy1Damage = false;
@@ -225,22 +229,25 @@ let enemyColided = false;
 let Finish = false;
 
 //som
-// Música de fundo
-var backgroundMusic = new Audio("audio/main.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-backgroundMusic.loop = true; // Faz a música tocar em loop
-backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
-
+// musica de fundo
+var backgroundMusic = new Audio("audio/main.mp3");
+backgroundMusic.loop = true; 
+backgroundMusic.volume = 0.2; 
 var walkingSound = new Audio("audio/walk.mp3");
-walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+walkingSound.volume = 0.2; 
 
-var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+var jumpSound = new Audio("audio/jump.mp3"); 
+jumpSound.volume = 0.2; 
 
 var gameOverSound = new Audio("audio/gameover.mp3");
-gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+gameOverSound.volume = 0.2; 
 
 var gameWinSound = new Audio("audio/gamewin.mp3");
-gameWinSound.volume = 0.7; // Define o volume entre 0 (mudo) e 1 (máximo)
+gameWinSound.volume = 0.7; 
+
+var damageSound = new Audio("audio/damage.mp3");
+damageSound.volume = 0.2; 
+
 
 inicializar();
 
@@ -698,9 +705,16 @@ function updateEnemiesPosition() {
   }
 }
 
+//velocidade das sprites
 function animation(){
    //deixa as animações mais devagar
-   if (spriteRunning) {
+   if (isDamaged) {
+    if (frameCount >= frameDelayDamage) {
+      currentFrame = (currentFrame + 1) % numberOfFramesDamage; 
+      frameCount = 0; 
+    }
+  }
+   else if (spriteRunning) {
     if (frameCount >= frameDelayRunning) {
       currentFrame = (currentFrame + 1) % numberOfFrames;
       frameCount = 0; 
@@ -720,7 +734,8 @@ let damageFlag = false;
 
 function checkPlayerDamage() {
   if (playerTookDamage && !damageFlag) {
-    lifeBar -= damageAmount;  
+    lifeBar -= damageAmount; 
+    isDamaged = true; 
     //lastDamageTime = currentTime; 
     //playerTookDamage = false; 
     damageFlag = true; // Ativar a flag de dano 
@@ -731,8 +746,9 @@ function checkPlayerDamage() {
 function resetDamageFlag(){
   setTimeout(() => {
     damageFlag = false;
+    isDamaged = false;
     console.log("Flag de dano resetada.");
-  }, 2000); 
+  }, 1000); 
 }
 
 setInterval(() => {
@@ -742,7 +758,15 @@ setInterval(() => {
   }
 }, 500); 
 
-//--------------------
+function damageSoundTime(){
+  while(isDamaged){
+    damageSound.play(); 
+    damageSound.loop = true; 
+    damageSound.loop = true; 
+  }
+}
+
+//-------------------------------
 function drawRoundedRect(context, x, y, width, height, radius) {
   context.beginPath();
   context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
@@ -815,7 +839,6 @@ function gameLoop() {
   drawEnemies();
   checkEnemyCollision();
 
-
   drawMushrooms();
   checkMushroomCollision();
 
@@ -829,17 +852,18 @@ function gameLoop() {
   console.log(playerTookDamage);
 
   checkPlayerDamage();
+ // damageSoundTime(); bugou o jogo 
+
 
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
 
   //desenha a bruxinha
-  if (playerTookDamage) {
-
-    // Renderiza a sprite de dano
-    if (currentSprite == 0) {
+  if (isDamaged) {
+    if(currentSprite == 0){
       desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    } else {
+    }
+    else{
       desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   } else {
@@ -852,9 +876,9 @@ function gameLoop() {
       }
     } else if (spriteIdle) {
       if (currentSpriteIdle == 0) {
-        desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+        desenhaPlayer(playerIdleRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
       } else {
-        desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
+        desenhaPlayer(playerIdleLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
       }
     }
   }
