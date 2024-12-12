@@ -343,7 +343,7 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    // backgroundMusic.play(); comentado pq nao aguento mais ouvir essa música
+    backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
     if (canMoveLeft){
       playerX = Math.max(0, playerX + velPlayer);
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
@@ -359,7 +359,7 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-   // backgroundMusic.play(); comentado pq nao aguento mais ouvir essa música
+   backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
     if (canMoveRight){
       if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
@@ -383,7 +383,11 @@ let updateCharacterMovement = function() {
   if (keysPressed[37] && keysPressed[39]) { // Prevent movement if both keys are pressed
     velPlayer = 0; 
   }
+  if(keysPressed[81]){
+    throwPower();
+  }
 };
+
 
 function freezeParallax(){
   if(playerX < 6){
@@ -845,6 +849,94 @@ function drawRoundedImage(context, image, x, y, width, height, radius) {
   context.drawImage(image, x, y, width, height);
 }
 
+let projectiles = []; 
+let powerFlag = true;
+
+function throwPower() {
+  if (powerFlag){
+    if (currentSprite == 0){
+      direction = 1;
+    }else{
+      direction = -1;
+    }
+
+    projectiles.push({
+      x: (playerX + frameWidth/2), 
+      y: (playerY + frameHeight/2), 
+      width: 10, 
+      height: 10, 
+      speed: 5, 
+      direction: 1, 
+    });
+
+    powerFlag = false;
+
+    setTimeout(() => {
+      powerFlag = true;
+    }, 500);
+  }
+ 
+}
+let direction;
+
+// Atualiza as bolas lançadas
+function updateProjectiles() {
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    let projectile = projectiles[i];
+
+    projectile.x += projectile.speed * direction; // Move a bola
+
+    // Remove a bola se ela sair da tela
+    if (projectile.x > canvas.width || projectile.x < 0) {
+      projectiles.splice(i, 1);
+      continue;
+    }
+
+    // Verifica colisão com os inimigos
+    for (let j = enemies.length - 1; j >= 0; j--) {
+      let enemy = enemies[j];
+      const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
+      const enemyScreenX = enemy.x - worldOffsetX;
+
+      const enemyHitbox = {
+        x: enemyScreenX + currentHitbox.offsetX,
+        y: enemy.y + currentHitbox.offsetY,
+        width: currentHitbox.width,
+        height: currentHitbox.height,
+      };
+
+      // Verifica se há colisão
+      const xCollision =
+        projectile.x + projectile.width > enemyHitbox.x &&
+        projectile.x < enemyHitbox.x + enemyHitbox.width;
+
+      const yCollision =
+        projectile.y + projectile.height > enemyHitbox.y &&
+        projectile.y < enemyHitbox.y + enemyHitbox.height;
+
+      if (xCollision && yCollision) {
+        console.log("poder matou o inimigo");
+        enemies.splice(j, 1);
+        projectiles.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+// Renderiza as bolas
+function drawProjectiles() {
+
+  context.fillStyle = "pink";  
+  for (let projectile of projectiles) {
+    // Desenha uma bola (círculo) em vez de um retângulo
+    context.beginPath();
+    context.arc(projectile.x, projectile.y, projectile.width / 2, 0, Math.PI * 2); // Usando arc para desenhar um círculo
+    context.fill();  // Preenche a bola
+    context.closePath();
+  }
+}
+
 function gameLoop() {
   checkGroundCollision();
   checkPlatformCollision();  
@@ -874,6 +966,9 @@ function gameLoop() {
 
   playerHitbox.x = playerX;
   playerHitbox.y = playerY;
+//power
+
+  updateProjectiles();
 
   //inimigo
   updateEnemiesPosition();
@@ -889,6 +984,8 @@ function gameLoop() {
   
   drawHitboxPortal();
   animation();
+
+  drawProjectiles();
 
 
   checkPlayerDamage();
