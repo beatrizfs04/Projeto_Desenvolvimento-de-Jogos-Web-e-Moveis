@@ -131,7 +131,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0; 
+let worldOffsetX = 3500; 
 
 
 //ground
@@ -140,7 +140,8 @@ let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
   {x: 0, y: 229, width: 800, height:40, type: "ground"},
   {x: 1000, y: 229, width: 400, height:40, type: "ground"},
-  {x: 2300, y: 229, width: 800, height:40, type: "ground"},
+  { x: 3000, y: 180, width: 160, height: 150, type: "earth" },
+  {x: 2300, y: 229, width: 2200, height:40, type: "ground"},
 ];
 
 
@@ -157,7 +158,13 @@ let platforms = [
   {x: 1880, y: 130, width: 45, height:20, type: "block"},
   {x: 2000, y: 110, width: 45, height:20, type: "block"},
   {x: 2100, y: 150, width: 100, height:120, type: "earth"},
+  {x: 2300, y: 95, width: 45, height:20, type: "block"},
   {x: 2200, y: 200, width: 100, height:120, type: "earth"},
+  {x: 2500, y: 200, width: 100, height:120, type: "earth"},
+  {x: 2600, y: 170, width: 100, height:120, type: "earth"},
+  {x: 3700, y: 130, width: 100, height:120, type: "earth"},
+  {x: 3530, y: 190, width: 45, height: 20, type: "block" },
+  {x: 3620, y: 160, width: 45, height: 20, type: "block" },
 ];
 
 let Ended = false;
@@ -185,7 +192,7 @@ const portal = new Image();
 portal.src = "img/portal_floresta.png";
 
 let portalSegment = {
-  x: 2800, 
+  x: 4100, 
   y: 140, 
   width: 90, 
   height: 102
@@ -329,11 +336,88 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
   },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 2832.5,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2700, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3065,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2700, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3297.5,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2700, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3530,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2700, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+  },
 ];
 
 enemies[0].image.src = "img/enemy1new.png";
 enemies[1].image.src = "img/enemy1new.png";
 enemies[2].image.src = "img/enemy2.png";
+enemies[3].image.src = "img/enemy1new.png";
+enemies[4].image.src = "img/enemy1new.png";
+enemies[5].image.src = "img/enemy1new.png";
+enemies[6].image.src = "img/enemy1new.png";
+
   
 let worldMovementSpeed = 2;
 
@@ -849,8 +933,11 @@ function drawRoundedImage(context, image, x, y, width, height, radius) {
   context.drawImage(image, x, y, width, height);
 }
 
-let projectiles = []; 
+//cria um arraw de powers
+let powers = []; 
 let powerFlag = true;
+let direction; //direção das bolas lançadas ta com problema no movimento dela
+
 
 function throwPower() {
   if (powerFlag){
@@ -860,7 +947,7 @@ function throwPower() {
       direction = -1;
     }
 
-    projectiles.push({
+    powers.push({
       x: (playerX + frameWidth/2), 
       y: (playerY + frameHeight/2), 
       width: 10, 
@@ -877,22 +964,20 @@ function throwPower() {
   }
  
 }
-let direction;
 
-// Atualiza as bolas lançadas
-function updateProjectiles() {
-  for (let i = projectiles.length - 1; i >= 0; i--) {
-    let projectile = projectiles[i];
+function updatePowers() {
+  for (let i = powers.length - 1; i >= 0; i--) {
+    let power = powers[i];
 
-    projectile.x += projectile.speed * direction; // Move a bola
+    power.x += power.speed * direction; // movimento da bola (acho que ta com problema)
 
-    // Remove a bola se ela sair da tela
-    if (projectile.x > canvas.width || projectile.x < 0) {
-      projectiles.splice(i, 1);
+    // exclui a bola quando ela sair da tela
+    if (power.x > canvas.width || power.x < 0) {
+      powers.splice(i, 1);
       continue;
     }
 
-    // Verifica colisão com os inimigos
+    // mesma logística de colisão do check enemy
     for (let j = enemies.length - 1; j >= 0; j--) {
       let enemy = enemies[j];
       const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
@@ -905,34 +990,32 @@ function updateProjectiles() {
         height: currentHitbox.height,
       };
 
-      // Verifica se há colisão
       const xCollision =
-        projectile.x + projectile.width > enemyHitbox.x &&
-        projectile.x < enemyHitbox.x + enemyHitbox.width;
+        power.x + power.width > enemyHitbox.x &&
+        power.x < enemyHitbox.x + enemyHitbox.width;
 
       const yCollision =
-        projectile.y + projectile.height > enemyHitbox.y &&
-        projectile.y < enemyHitbox.y + enemyHitbox.height;
+        power.y + power.height > enemyHitbox.y &&
+        power.y < enemyHitbox.y + enemyHitbox.height;
 
       if (xCollision && yCollision) {
         console.log("poder matou o inimigo");
         enemies.splice(j, 1);
-        projectiles.splice(i, 1);
+        power.splice(i, 1);
         break;
       }
     }
   }
 }
 
-// Renderiza as bolas
-function drawProjectiles() {
+function drawPowers() {
 
-  context.fillStyle = "pink";  
-  for (let projectile of projectiles) {
-    // Desenha uma bola (círculo) em vez de um retângulo
+  context.fillStyle = "pink";  //nem ouse, vai ser rosa simmm!!!! :) 
+  for (let power of powers) {
+    //desenha a bola
     context.beginPath();
-    context.arc(projectile.x, projectile.y, projectile.width / 2, 0, Math.PI * 2); // Usando arc para desenhar um círculo
-    context.fill();  // Preenche a bola
+    context.arc(power.x, power.y, power.width / 2, 0, Math.PI * 2); 
+    context.fill();  
     context.closePath();
   }
 }
@@ -966,9 +1049,10 @@ function gameLoop() {
 
   playerHitbox.x = playerX;
   playerHitbox.y = playerY;
+
 //power
 
-  updateProjectiles();
+  updatePowers();
 
   //inimigo
   updateEnemiesPosition();
@@ -985,7 +1069,7 @@ function gameLoop() {
   drawHitboxPortal();
   animation();
 
-  drawProjectiles();
+  drawPowers();
 
 
   checkPlayerDamage();
