@@ -1,5 +1,3 @@
-
-
 let Win = false;
 
 //player
@@ -133,7 +131,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 200; 
+let worldOffsetX = 0; 
 
 
 //ground
@@ -279,6 +277,7 @@ let playerHitbox = {
 let enemies = [
   {
     image: new Image(),
+    id: "slime",
     x: 1000,
     y: 210,
     frameWidth: 50,
@@ -296,6 +295,7 @@ let enemies = [
   }, 
   {
     image: new Image(),
+    id: "slime",
     x: 498,
     y: 130,
     frameWidth: 50,
@@ -313,19 +313,20 @@ let enemies = [
   },
   {
     image: new Image(),
-    x: 498,
-    y: 130,
-    frameWidth: 50,
+    id: "spider",
+    x: 80,
+    y: 50,
+    frameWidth: 61.5,
     frameHeight: 43,
     numberOfFrames: 2,
     currentFrame: 0,
     frameCount: 0,
     frameDelay: 20,
-    direction: 1,
-    limits: { left: 498, right: 648 },
+    direction: -1,
+    limits: { left: 50, right: 180 },
     hitboxFrames: [
-      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
-      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
   },
 ];
@@ -342,11 +343,12 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    
+    // backgroundMusic.play(); comentado pq nao aguento mais ouvir essa música
     if (canMoveLeft){
       playerX = Math.max(0, playerX + velPlayer);
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
+      
       if (isOnGround || isOnPlatform){
         walkingSound.play(); 
       }
@@ -357,8 +359,7 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-    backgroundMusic.play(); // Inicia a reprodu//ção da música
-
+   // backgroundMusic.play(); comentado pq nao aguento mais ouvir essa música
     if (canMoveRight){
       if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
@@ -430,6 +431,14 @@ function drawEnemies() {
     context.fillStyle = "transparent";
     context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
+    if (enemy.id == "spider") {
+      const lineX = (enemy.x + enemy.frameWidth / 3.5) - worldOffsetX;
+      console.log(enemy.x);
+
+      context.fillStyle = "black"; // Define a cor de preenchimento
+      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Desenha o retângulo preenchido
+    }
+
     // draw enemy
     let frameX = enemy.currentFrame * enemy.frameWidth; //calcula qual frame o inimigo está
     context.drawImage(
@@ -443,6 +452,7 @@ function drawEnemies() {
       enemy.frameWidth,
       enemy.frameHeight
     );
+    
   }
 }
 
@@ -549,7 +559,8 @@ function checkPortalCollision(){
 }
 
 function checkEnemyCollision() {
-  for (let enemy of enemies) {
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
     const enemyScreenX = enemy.x - worldOffsetX;
 
     // pega a hitbox do frame 
@@ -576,8 +587,9 @@ function checkEnemyCollision() {
       const isKillingEnemy =
         playerHitbox.y + playerHitbox.height <=
         enemyHitbox.y + enemyHitbox.height / 2;
-      if (isKillingEnemy) {
+      if (isKillingEnemy && !isDamaged) {
           fell = true;
+          enemies.splice(i, 1); // remove o inimigo da lista "morre"
           enemy.y += 200;
         return "killed";
       } else {
@@ -711,10 +723,10 @@ function animateEnemies() {
   }
 }
 
-//de onde até onde onde o inimigo anda
 function updateEnemiesPosition() {
   for (let enemy of enemies) {
-    enemy.x += 1 * enemy.direction;
+    if(enemy.id == "slime"){
+    enemy.x += 1 * enemy.direction; 
 
     if (enemy.x >= enemy.limits.right) {
       enemy.direction = -1; // Vai para a esquerda
@@ -722,8 +734,19 @@ function updateEnemiesPosition() {
     if (enemy.x <= enemy.limits.left) {
       enemy.direction = 1; // Vai para a direita
     }
+  }else { 
+    enemy.y += 1 * enemy.direction; 
+
+    if (enemy.y >= enemy.limits.right) { // limite baixo
+      enemy.direction = -1; //começa a subir
+    }
+    if (enemy.y <= enemy.limits.left) { // limite superior
+      enemy.direction = 1; //começa a descer
+    }
+  } 
   }
 }
+
 
 //velocidade das sprites
 function animation(){
@@ -767,7 +790,6 @@ function resetDamageFlag(){
   setTimeout(() => {
     damageFlag = false;
     isDamaged = false;
-    console.log("Flag de dano resetada.");
   }, 1000); 
 }
 
@@ -868,8 +890,6 @@ function gameLoop() {
   drawHitboxPortal();
   animation();
 
-  console.log(lifeBar);
-  console.log(playerTookDamage);
 
   checkPlayerDamage();
  // damageSoundTime(); bugou o jogo
