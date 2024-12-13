@@ -51,6 +51,21 @@ let enemy1Y = 210;
 var enemy2 = new Image();
 enemy2.src = "img2/enemy2.png";
 
+//inimigo death 
+var enemy1Death = new Image();
+enemy1Death.src = "img/enemy1death.png";
+
+let isDying = false; // Controle se a animação está ativa
+let deathX = 300; // Posição x fixa onde a animação será desenhada
+let deathY = 200; // Posição y fixa onde a animação será desenhada
+let currentFrameDeath = 0; // Quadro atual da animação
+let frameCountDeath = 0; // Contador de frames
+let frameDelayDeath = 10; // Intervalo entre os frames
+const numberOfFramesDeath = 4; // Total de frames
+const frameWidthDeath = 100; // Largura de cada frame
+const frameHeightDeath = 34; // Altura de cada frame
+
+
 
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
@@ -131,10 +146,10 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 2050; 
+let worldOffsetX = 0;
 
 
-//ground
+//ground asalsidjhfakusdhh
 isOnGround = true;
 let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
@@ -303,6 +318,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   }, 
   {
     image: new Image(),
@@ -321,6 +339,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
   {
     image: new Image(),
@@ -339,6 +360,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
   {
     image: new Image(),
@@ -357,6 +381,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
   {
     image: new Image(),
@@ -375,6 +402,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
   {
     image: new Image(),
@@ -393,6 +423,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
   {
     image: new Image(),
@@ -411,6 +444,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
   },
 ];
 
@@ -421,6 +457,19 @@ enemies[3].image.src = "img/enemy1new.png";
 enemies[4].image.src = "img/enemy1new.png";
 enemies[5].image.src = "img/enemy1new.png";
 enemies[6].image.src = "img/enemy1new.png";
+
+
+//objeto para a animação de morte
+const deathAnimationConfig = {
+  image: new Image(), // Sprite de morte
+  frameWidth: 50, // Largura de cada frame de morte
+  frameHeight: 17, // Altura de cada frame de morte
+  numberOfFrames: 4, // Total de frames na animação de morte
+  frameDelay: 10, // Velocidade da animação de morte
+};
+
+deathAnimationConfig.image.src = "img/enemy1death.png"; // Caminho para o sprite
+
 
   
 let worldMovementSpeed = 2;
@@ -509,11 +558,12 @@ function drawHitboxPortal(){
 }
 
 //desenha o inimigo
+// Função para desenhar inimigos
 function drawEnemies() {
-  for (let enemy of enemies) {//itera nos inimigos
-    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame];//array das hitboxes por causa da animação do personagem
+  for (let enemy of enemies) {
+    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; // Atualiza a hitbox
 
-    // pra atualização da hitbox
+    // Desenha a hitbox temporária (opcional)
     let hitBoxEnemy = {
       x: enemy.x + currentHitbox.offsetX,
       y: enemy.y + currentHitbox.offsetY,
@@ -521,32 +571,58 @@ function drawEnemies() {
       height: currentHitbox.height,
     };
 
-    // desenha a hitbox (temporario)
+    // Desenha o retângulo da hitbox (para debug)
     context.fillStyle = "transparent";
     context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
-    if (enemy.id == "spider") {
+    // Lógica específica para o "spider"
+    if (enemy.id === "spider") {
       const lineX = (enemy.x + enemy.frameWidth / 3.5) - worldOffsetX;
-      console.log(enemy.x);
-
-      context.fillStyle = "black"; // Define a cor de preenchimento
-      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Desenha o retângulo preenchido
+      context.fillStyle = "black"; // Cor do retângulo
+      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Linha preta para a aranha
     }
 
-    // draw enemy
-    let frameX = enemy.currentFrame * enemy.frameWidth; //calcula qual frame o inimigo está
-    context.drawImage(
-      enemy.image,
-      frameX,
-      0,
-      enemy.frameWidth,
-      enemy.frameHeight,
-      enemy.x - worldOffsetX,
-      enemy.y,
-      enemy.frameWidth,
-      enemy.frameHeight
-    );
-    
+    // Se o inimigo estiver vivo, desenha sua animação normal
+    if (enemy.alive) {
+      let frameX = enemy.currentFrame * enemy.frameWidth;
+      context.drawImage(
+        enemy.image,
+        frameX,
+        0,
+        enemy.frameWidth,
+        enemy.frameHeight,
+        enemy.x - worldOffsetX,
+        enemy.y,
+        enemy.frameWidth,
+        enemy.frameHeight
+      );
+    } else if (enemy.id === "slime") { // Verifica se o inimigo é um "slime" para desenhar a animação de morte
+      // Desenha a animação de morte do "slime"
+      let frameX = enemy.currentFrameDeath * deathAnimationConfig.frameWidth;
+      context.drawImage(
+        deathAnimationConfig.image,
+        frameX,
+        0,
+        deathAnimationConfig.frameWidth,
+        deathAnimationConfig.frameHeight,
+        enemy.x - worldOffsetX,
+        enemy.y,
+        deathAnimationConfig.frameWidth,
+        deathAnimationConfig.frameHeight
+      );
+
+      // Atualiza a animação de morte
+      enemy.deathFrameCount++;
+      if (enemy.deathFrameCount >= deathAnimationConfig.frameDelay) {
+        enemy.currentFrameDeath++;
+        enemy.deathFrameCount = 0;
+
+        // Remove o "slime" após terminar a animação de morte
+        if (enemy.currentFrameDeath >= deathAnimationConfig.numberOfFrames) {
+          enemies.splice(enemies.indexOf(enemy), 1);
+        }
+      }
+    }
   }
 }
 
@@ -701,9 +777,8 @@ function checkEnemyCollision() {
         playerHitbox.y + playerHitbox.height <=
         enemyHitbox.y + enemyHitbox.height / 2;
       if (isKillingEnemy && !isDamaged) {
-          fell = true;
-          enemies.splice(i, 1); // remove o inimigo da lista "morre"
-          enemy.y += 200;
+          enemy.alive = false
+          //enemy.y += 200;
         return "killed";
       } else {
         enemyColided = true;
@@ -839,14 +914,16 @@ function animateEnemies() {
 function updateEnemiesPosition() {
   for (let enemy of enemies) {
     if(enemy.id == "slime"){
-    enemy.x += 1 * enemy.direction; 
+      if(enemy.alive == true){
+        enemy.x += 1 * enemy.direction; 
 
-    if (enemy.x >= enemy.limits.right) {
-      enemy.direction = -1; // Vai para a esquerda
-    }
-    if (enemy.x <= enemy.limits.left) {
-      enemy.direction = 1; // Vai para a direita
-    }
+        if (enemy.x >= enemy.limits.right) {
+          enemy.direction = -1; // Vai para a esquerda
+        }
+        if (enemy.x <= enemy.limits.left) {
+          enemy.direction = 1; // Vai para a direita
+        }
+      }
   }else { 
     enemy.y += 1 * enemy.direction; 
 
