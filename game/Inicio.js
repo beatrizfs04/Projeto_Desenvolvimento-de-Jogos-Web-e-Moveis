@@ -1416,7 +1416,7 @@ function showStartScreen() {
       mouseY <= buttonY + buttonHeight
     ) {
       // Iniciar o jogo
-      window.location.href = "home.html";
+      window.location.href = "home1.html";
       canvas.removeEventListener("click", handleStartClick); // Remove o evento de clique
       startGame(); // Chama a função para iniciar o jogo
     }
