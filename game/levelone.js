@@ -274,6 +274,8 @@ gameWinSound.volume = 0.7;
 var damageSound = new Audio("audio/damage.mp3");
 damageSound.volume = 0.2; 
 
+var slimeDeath = new Audio("audio/slimedeath.mp3");
+slimeDeath.volume = 0.2;
 
 inicializar();
 
@@ -558,31 +560,34 @@ function drawHitboxPortal(){
 }
 
 //desenha o inimigo
-// Função para desenhar inimigos
 function drawEnemies() {
   for (let enemy of enemies) {
-    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; // Atualiza a hitbox
+    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; // atualiza a hitbox
 
-    // Desenha a hitbox temporária (opcional)
-    let hitBoxEnemy = {
-      x: enemy.x + currentHitbox.offsetX,
-      y: enemy.y + currentHitbox.offsetY,
-      width: currentHitbox.width,
-      height: currentHitbox.height,
-    };
+    //desenha a hitbox só se estiver vivo (problema de ele morrer e ela tomar dano)
+    if (enemy.alive == true){
+      var hitBoxEnemy = {
+        x: enemy.x + currentHitbox.offsetX,
+        y: enemy.y + currentHitbox.offsetY,
+        width: currentHitbox.width,
+        height: currentHitbox.height,
+      };
+       //desenha o retangulo da hitbox (nao faz nada só a cor)
+      context.fillStyle = "red";
+      context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
-    // Desenha o retângulo da hitbox (para debug)
-    context.fillStyle = "transparent";
-    context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
-
-    // Lógica específica para o "spider"
+    }
+    
+   
+    // se o inimigo for "spider", desenha a linha com ele 
+    //pode-se alterar a posição da linha para 
     if (enemy.id === "spider") {
       const lineX = (enemy.x + enemy.frameWidth / 3.5) - worldOffsetX;
       context.fillStyle = "black"; // Cor do retângulo
       context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Linha preta para a aranha
     }
 
-    // Se o inimigo estiver vivo, desenha sua animação normal
+    // se o inimigo estiver vivo, desenha sua animação normal
     if (enemy.alive) {
       let frameX = enemy.currentFrame * enemy.frameWidth;
       context.drawImage(
@@ -596,13 +601,15 @@ function drawEnemies() {
         enemy.frameWidth,
         enemy.frameHeight
       );
-    } else if (enemy.id === "slime") { // Verifica se o inimigo é um "slime" para desenhar a animação de morte
-      // Desenha a animação de morte do "slime"
+      //verifica se nao estiver vivo e se o inimigo for um slime pq só ele tem animação
+    } else if (enemy.id === "slime") { // 
+      // desenha a animação de morte do "slime"
+      //usa o objeto "deathAnimationConfig" pra isso, definido lá em cima
       let frameX = enemy.currentFrameDeath * deathAnimationConfig.frameWidth;
       context.drawImage(
         deathAnimationConfig.image,
         frameX,
-        0,
+        -2, //menos 2 pq o slime a morrer tava voando
         deathAnimationConfig.frameWidth,
         deathAnimationConfig.frameHeight,
         enemy.x - worldOffsetX,
@@ -611,13 +618,13 @@ function drawEnemies() {
         deathAnimationConfig.frameHeight
       );
 
-      // Atualiza a animação de morte
+      // atualiza a animação de morte e a deixa mais devagar
       enemy.deathFrameCount++;
       if (enemy.deathFrameCount >= deathAnimationConfig.frameDelay) {
         enemy.currentFrameDeath++;
         enemy.deathFrameCount = 0;
 
-        // Remove o "slime" após terminar a animação de morte
+        // remove o "slime" após terminar a animação de morte
         if (enemy.currentFrameDeath >= deathAnimationConfig.numberOfFrames) {
           enemies.splice(enemies.indexOf(enemy), 1);
         }
@@ -750,6 +757,12 @@ function checkPortalCollision(){
 function checkEnemyCollision() {
   for (let i = 0; i < enemies.length; i++) {
     const enemy = enemies[i];
+
+
+    if (!enemy.alive) {
+      continue; // Pula a verificação de colisão para inimigos mortos
+    }
+
     const enemyScreenX = enemy.x - worldOffsetX;
 
     // pega a hitbox do frame 
@@ -777,7 +790,10 @@ function checkEnemyCollision() {
         playerHitbox.y + playerHitbox.height <=
         enemyHitbox.y + enemyHitbox.height / 2;
       if (isKillingEnemy && !isDamaged) {
-          enemy.alive = false
+          if(enemy.id == "slime"){
+            slimeDeath.play();
+          }
+          enemy.alive = false;
           //enemy.y += 200;
         return "killed";
       } else {
