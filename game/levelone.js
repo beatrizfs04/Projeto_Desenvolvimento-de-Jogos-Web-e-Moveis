@@ -190,6 +190,9 @@ let isCollidingBottom = false;
 let platformImage;
 
 // deslocamento horizontal do mundo
+//heart 
+const heartImage = new Image();
+heartImage.src = "img/heart.png";
 
 //mushroom
 const mushroomYellow = new Image();
@@ -573,7 +576,7 @@ function drawEnemies() {
         height: currentHitbox.height,
       };
        //desenha o retangulo da hitbox (nao faz nada só a cor)
-      context.fillStyle = "red";
+      context.fillStyle = "transparent";
       context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
     }
@@ -1138,6 +1141,32 @@ function drawPowers() {
   }
 }
 
+function drawGameInfo() {
+
+  context.drawImage(mushroomYellow, 10, 10, 15, 15); // Posição (10,10), tamanho (15x15)
+
+  const heartWidth = 15; // Largura de cada coração
+  const heartHeight = 15; // Altura de cada coração
+  const heartSpacing = 5; // Espaço entre os corações
+
+  let numHearts = 0;
+  if (lifeBar === 10) {
+    numHearts = 2; // 2 corações
+  } else if (lifeBar === 5) {
+    numHearts = 1; // 1 coração
+  }
+
+  for (let i = 0; i < numHearts; i++) {
+    context.drawImage(heartImage, ((canvas.width/2)-10) + (i * (heartWidth + heartSpacing)), 10, heartWidth, heartHeight);
+  }
+
+  // Exibe o número de cogumelos coletados
+  context.fillStyle = "white"; // Cor do texto
+  context.font = "12px Arial";  // Tamanho da fonte
+  context.fillText(": " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+}
+
+
 function gameLoop() {
   checkGroundCollision();
   checkPlatformCollision();  
@@ -1224,13 +1253,7 @@ function gameLoop() {
   
 
   freezeParallax();
-
-  context.fillStyle = "white";  
-  drawRoundedRect(context, 5, 5, 120, 23, 10);
-
-  context.fillStyle = "black";  // Cor do texto
-  context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
+  drawGameInfo();
 
   if(playerY > 250 || lifeBar <= 0 ){ //enemyCollided
     context.fillStyle = "white";
