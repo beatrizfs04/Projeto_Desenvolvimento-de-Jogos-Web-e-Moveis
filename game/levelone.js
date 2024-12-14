@@ -146,7 +146,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 2400;
+let worldOffsetX = 0;
 
 
 //ground asalsidjhfakusdhh
