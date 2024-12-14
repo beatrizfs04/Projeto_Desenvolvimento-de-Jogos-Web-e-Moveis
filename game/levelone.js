@@ -1398,3 +1398,4 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
+

@@ -141,42 +141,33 @@ let knownKey = true;
 
 //blocks
 var block = new Image();
-block.src = "img2/block2.png";
+block.src = "img/block2.png";
 
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0; 
+let worldOffsetX = 1400; 
 
 //ground
 isOnGround = true;
 let ground = [
-  { x: 520, y: 150, width: 160, height: 150, type: "earth" },
-  {x: 0, y: 229, width: 800, height:40, type: "ground"},
-  {x: 1000, y: 229, width: 400, height:40, type: "ground"},
-  { x: 3000, y: 180, width: 160, height: 150, type: "earth" },
-  {x: 2300, y: 229, width: 2200, height:40, type: "ground"},
+  {x: 0, y: 229, width: 1050, height:40, type: "ground"},
 ];
 
 //plataformas (blocos)
 let platforms = [
-  {x: 280, y: 189, width: 45, height: 20, type: "block" },
-  {x: 395, y: 170, width: 45, height: 20, type: "block" },
-  {x: 800, y: 150, width: 100, height: 150, type: "earth"},
-  {x: 900, y: 200, width: 100, height:80, type: "earth"},
-  {x: 1400, y: 200, width: 50, height:80, type: "earth"},
-  {x: 1500, y: 150, width: 100, height:120, type: "earth"}, // não está a colidir à direita
-  //{x: 1600, y: 200, width: 100, height:80, type: "earth"},
-  {x: 1700, y: 150, width: 100, height:120, type: "earth"},
-  {x: 1880, y: 130, width: 45, height:20, type: "block"},
-  {x: 2000, y: 110, width: 45, height:20, type: "block"},
-  {x: 2100, y: 150, width: 100, height:120, type: "earth"},
-  {x: 2260, y: 95, width: 45, height:20, type: "block"},
-  {x: 2200, y: 200, width: 100, height:120, type: "earth"},
-  {x: 2500, y: 200, width: 100, height:120, type: "earth"},
-  {x: 3700, y: 130, width: 100, height:120, type: "earth"},
-  {x: 3530, y: 190, width: 45, height: 20, type: "block" },
-  {x: 3620, y: 160, width: 45, height: 20, type: "block" },
+  {x: 300, y: 200, width: 100, height: 150, type: "earth"},
+  {x: 600, y: 180, width: 45, height:20, type: "block"},
+  {x: 643, y: 180, width: 45, height:20, type: "block"},
+  {x: 850, y: 200, width: 100, height:80, type: "earth"},
+  {x: 1100, y: 220, width: 100, height: 150, type: "earth"},
+  {x: 1300, y: 220, width: 100, height: 150, type: "earth"},
+  {x: 1100, y: 220, width: 150, height: 150, type: "earth"},
+  {x: 1450, y: 180, width: 45, height:20, type: "block"},
+  {x: 1550, y: 150, width: 100, height:120, type: "earth"}, 
+  {x: 1800, y: 150, width: 200, height:120, type: "earth"},
+  {x: 1700, y: 100, width: 45, height:20, type: "block"},
+  {x: 2000, y: 150, width: 500, height:120, type: "earth"},
 ];
 
 let Ended = false;
@@ -200,7 +191,7 @@ const mushroomPurple = new Image();
 mushroomPurple.src = "img/mushroom2.png";
 
 let mushrooms = [
-  { x: 740,  y: 80, width: 10, height: 10, type:"yellow" },
+  { x: 640,  y: 160, width: 10, height: 10, type:"yellow" },
   { x: 1645, y: 90, width: 10, height: 10, type:"yellow"  },
   { x: 1950, y: 80, width: 10, height: 10, type:"yellow"  },
   { x: 1050, y: 140, width: 10, height: 10, type:"yellow"  },
@@ -303,16 +294,16 @@ let playerY = 50;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: (frameWidth - diminuicaoX)*0.75,  //opcional
-  height: (frameHeight - diminuicaoY)*0.8 //opcional
+  width: (frameWidth - diminuicaoX)*0.6,  //opcional
+  height: (frameHeight - diminuicaoY)*0.7 //opcional
 };
 
 let enemies = [
   {
     image: new Image(),
     id: "slime",
-    x: 1000,
-    y: 210,
+    x: 800,
+    y: 215,
     frameWidth: 50,
     frameHeight: 20,
     numberOfFrames: 2,
@@ -320,7 +311,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20, 
     direction: 1,
-    limits: { left: 998, right: 1360 }, //limites que o personagem pode andar de um lado para o outro
+    limits: { left: 400, right: 800 }, //limites que o personagem pode andar de um lado para o outro
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -331,17 +322,38 @@ let enemies = [
   }, 
   {
     image: new Image(),
+    id: "slime",
+    x: 400,
+    y: 215,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 400, right: 800 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
     id: "spider",
-    x: 578,
-    y: 130,
+    x: 1350,
+    y: 50,
     frameWidth: 61.5,
     frameHeight: 43,
     numberOfFrames: 2,
     currentFrame: 0,
     frameCount: 0,
     frameDelay: 20,
-    direction: 1,
-    limits: { left: 50, right: 100 },
+    direction: -1,
+    limits: { left: 50, right: 180 },
     hitboxFrames: [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
@@ -353,8 +365,8 @@ let enemies = [
   {
     image: new Image(),
     id: "slime",
-    x: 2800.5,
-    y: 210,
+    x: 500,
+    y: 215,
     frameWidth: 50,
     frameHeight: 20,
     numberOfFrames: 2,
@@ -362,9 +374,9 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 400, right: 800 },
     hitboxFrames: [
-      { width: 28, height: 30, offsetX: 11, offsetY: 0 }, 
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
     alive: true, // Estado do inimigo
@@ -374,8 +386,8 @@ let enemies = [
   {
     image: new Image(),
     id: "slime",
-    x: 3065,
-    y: 210,
+    x: 600,
+    y: 215,
     frameWidth: 50,
     frameHeight: 20,
     numberOfFrames: 2,
@@ -383,7 +395,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 400, right: 800 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -434,14 +446,81 @@ let enemies = [
     currentFrameDeath: 0, // Quadro atual da animação de morte
     deathFrameCount: 0, // Contador de frames para a animação de morte
   },
+  {
+    image: new Image(),
+    id: "spider",
+    x: 1850,
+    y: 20,
+    frameWidth: 61.5,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 50, right: 140 },
+    hitboxFrames: [
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "spider",
+    x: 1960,
+    y: 20,
+    frameWidth: 61.5,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 20, right: 140 },
+    hitboxFrames: [
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "spider",
+    x: 2060,
+    y: 30,
+    frameWidth: 61.5,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 20, right: 180},
+    hitboxFrames: [
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
 ];
 
 enemies[0].image.src = "img/enemy1new.png";
-enemies[1].image.src = "img/enemy2.png";
-enemies[2].image.src = "img/enemy1new.png";
+enemies[1].image.src = "img/enemy1new.png";
+enemies[2].image.src = "img/enemy2.png";
 enemies[3].image.src = "img/enemy1new.png";
 enemies[4].image.src = "img/enemy1new.png";
 enemies[5].image.src = "img/enemy1new.png";
+enemies[6].image.src = "img/enemy1new.png";
+enemies[7].image.src = "img/enemy2.png";
+enemies[8].image.src = "img/enemy2.png";
+enemies[9].image.src = "img/enemy2.png";
 
 //objeto para a animação de morte
 const deathAnimationConfig = {
@@ -1165,10 +1244,10 @@ function gameLoop() {
 
   frameCount++; 
   //desenha o parallax
-  drawParallax(background5, background5X, backgroundY,425, 246);
-  drawParallax(background4, background4X, backgroundY,425, 246);
-  drawParallax(background3, background3X, backgroundY,425, 246);
-  drawParallax(background2, background2X, backgroundY,425, 246);
+  drawParallax(background5, background5X, backgroundY,424, 246);
+  drawParallax(background4, background4X, backgroundY,424, 246);
+  drawParallax(background3, background3X, backgroundY,424, 246);
+  drawParallax(background2, background2X, backgroundY,424, 246);
 
   applyGravity();
   applyGravityJump();
@@ -1178,8 +1257,8 @@ function gameLoop() {
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  defineHitboxX = playerX + 4;
-  defineHitboxY = playerY + 2;
+  defineHitboxX = playerX + 5;
+  defineHitboxY = playerY + 3;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
 
@@ -1374,3 +1453,4 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
+
