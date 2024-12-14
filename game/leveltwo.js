@@ -146,7 +146,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 2000; 
+let worldOffsetX = 0; 
 
 //ground
 isOnGround = true;
@@ -1336,18 +1336,21 @@ function gameLoop() {
 
   if(Win){
     context.fillStyle = "white";
-    drawRoundedRect(context, 130, 45, 175, 180, 15);
+    drawRoundedRect(context, 130, 45, 175, 190, 15);
     
     context.fillStyle = "green";  
     context.font = "20px Arial";  
-    context.fillText("Game Win!", 170, (canvas.height / 2) + 55); 
-    
+    context.fillText("Level Win!", 170, (canvas.height / 2) + 50); 
+    context.font = "10px Arial";  
+    context.fillText("You collected:         " + mushroomCount + " out of 5", 155, (canvas.height / 2 + 10) + 60); 
+    context.drawImage(mushroomYellow, 222, (canvas.height / 2 + 61), 12, 12); 
+
     backgroundMusic.pause();
     caveSound.pause();
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
-    const buttonY = (canvas.height / 2) + 70;  // Posição Y
+    const buttonY = (canvas.height / 2) + 85;  // Posição Y
     const buttonWidth = 150;
     const buttonHeight = 20;
     const borderRadius = 10; // Raio das bordas

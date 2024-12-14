@@ -1335,7 +1335,6 @@ function gameLoop() {
     context.fillText("You collected:         " + mushroomCount + " out of 5", 155, (canvas.height / 2 + 10) + 60); 
     context.drawImage(mushroomYellow, 222, (canvas.height / 2 + 61), 12, 12); 
 
-
     backgroundMusic.pause();
 
     // Desenhar botão
@@ -1355,7 +1354,6 @@ function gameLoop() {
     context.fillText("Next Level!", buttonX + 50, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
-
 
     // Adiciona evento de clique ao canvas
     canvas.addEventListener("click", handleCanvasClick);
