@@ -31,19 +31,14 @@ var lifeBar = 10;
 //frames and sprites
 const frameWidth = 129;
 const frameHeight = 150;
-
-//number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 8;
 const numberOfFramesIdle = 4;
 const numberOfFramesDamage = 4;
-
 let currentFrame = 0;
-let currentSprite = 0; // 0: right, 1: left
-let currentSpriteIdle = 0; // 0: right, 1: left
-
+let currentSprite = 0;
+let currentSpriteIdle = 0; 
 let spriteRunning = false;
 let spriteIdle = true;
-
 
 //Inimigo
 var enemy1 = new Image();
@@ -54,38 +49,38 @@ let enemy1Y = 210;
 var enemy2 = new Image();
 enemy2.src = "img2/enemy2.png";
 
-//inimigo death 
-var enemy1Death = new Image();
-enemy1Death.src = "img/enemy1death.png";
-
-let isDying = false; // Controle se a animação está ativa
-let deathX = 300; // Posição x fixa onde a animação será desenhada
-let deathY = 200; // Posição y fixa onde a animação será desenhada
-let currentFrameDeath = 0; // Quadro atual da animação
-let frameCountDeath = 0; // Contador de frames
-let frameDelayDeath = 10; // Intervalo entre os frames
-const numberOfFramesDeath = 4; // Total de frames
-const frameWidthDeath = 100; // Largura de cada frame
-const frameHeightDeath = 34; // Altura de cada frame
-
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
 const numberOfFramesEnemy1 = 2;
 let currentFrameEnemy = 0;
-
 let enemyFrameX = 1;
 let enemyFrameY = 1;
+
+//inimigo death 
+var enemy1Death = new Image();
+enemy1Death.src = "img/enemy1death.png";
+
+let isDying = false; 
+let deathX = 300; 
+let deathY = 200; 
+
+let currentFrameDeath = 0; 
+let frameCountDeath = 0; 
+let frameDelayDeath = 10;
+const numberOfFramesDeath = 4;
+const frameWidthDeath = 100
+const frameHeightDeath = 34;
 
 let hitBoxEnemy1 = {
 	x: enemy1X,
 	y: enemy1Y,
-	width: frameWidthEnemy1 * 0.1, //opcional
-	height: frameHeightEnemy1 * 0.6, //opcional
+	width: frameWidthEnemy1 * 0.1,
+	height: frameHeightEnemy1 * 0.6,
 }
 
 let hitboxFramesEnemy1 = [
-  { width: 28, height: 20, offsetX: 11, offsetY: 0 },  // Para o frame 0
-  { width: 30, height: 18, offsetX: 8, offsetY: 2},   // Para o frame 1
+  { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+  { width: 30, height: 18, offsetX: 8, offsetY: 2}, 
 ];
 
 //backgrounds
@@ -113,17 +108,13 @@ ground1X = 0;
 const earth = new Image();
 earth.src = "img2/highground.png";
 
-//não me parece que esteja sendo usada. é definida no keydown
 let velPlayer = 0;
 
-
-//deixar a animção do player mais devagar
+// delay animação 
 let frameDelayRunning = 12; 
 let frameDelayIdle = 12; 
 let frameDelayDamage = 12;
 let frameCount = 0; 
-
-//deixa a animação do enemy mais devagar
 let frameDelayEnemy = 30; 
 let frameCountEnemy = 0;
 
@@ -186,8 +177,6 @@ let isCollidingLeft = false;
 let isCollidingBottom = false;
 let platformImage;
 
-// deslocamento horizontal do mundo
-
 //heart 
 const heartImage = new Image();
 heartImage.src = "img/heart.png";
@@ -226,12 +215,14 @@ let portalHitbox = {
   height: portalSegment.height/2
 }
 
+// logo
 const logo = new Image();
 logo.src = 'img/logo_game.png';
 
 //pontuação
 mushroomCount = 0;
 
+// movimento
 let keysPressed = {};
 
 let CharMovement = function(e) {
@@ -247,35 +238,33 @@ let CharStopMovement = function(e) {
   }
 };
 
-let isDamaged = false;
-
 //dano 
+let isDamaged = false;
 let playerDamage = false;
 let enemy1Damage = false;
 let enemyColided = false;
 let Finish = false;
 
-//som
-// Música de fundo
-var backgroundMusic = new Audio("audio/main2.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-backgroundMusic.loop = true; // Faz a música tocar em loop
-backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+// Som e Música de fundo
+var backgroundMusic = new Audio("audio/main2.mp3"); 
+backgroundMusic.loop = true; 
+backgroundMusic.volume = 0.2;
 
-var caveSound = new Audio("audio/cave.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-caveSound.loop = true; // Faz a música tocar em loop
-caveSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+var caveSound = new Audio("audio/cave.mp3");
+caveSound.loop = true; 
+caveSound.volume = 0.2;
 
 var walkingSound = new Audio("audio/walk.mp3");
-walkingSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+walkingSound.volume = 0.2; 
 
-var jumpSound = new Audio("audio/jump.mp3"); // Substitua pelo caminho do seu arquivo de áudio
-jumpSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+var jumpSound = new Audio("audio/jump.mp3"); 
+jumpSound.volume = 0.2; 
 
 var gameOverSound = new Audio("audio/gameover.mp3");
-gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
+gameOverSound.volume = 0.2;
 
 var gameWinSound = new Audio("audio/gamewin.mp3");
-gameWinSound.volume = 0.7; // Define o volume entre 0 (mudo) e 1 (máximo)
+gameWinSound.volume = 0.7;
 
 var damageSound = new Audio("audio/damage.mp3");
 damageSound.volume = 0.2; 
@@ -295,17 +284,17 @@ function inicializar() {
   requestAnimationFrame(gameLoop);
 }
 
-
-let playerX = 200; // Centraliza o player
+// centralizar
+let playerX = 200; 
 let playerY = 50;
 
 
-//player hitbox
+// player hitbox
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: (frameWidth - diminuicaoX)*0.6,  //opcional
-  height: (frameHeight - diminuicaoY)*0.7 //opcional
+  width: (frameWidth - diminuicaoX)*0.6,  
+  height: (frameHeight - diminuicaoY)*0.7 
 };
 
 let enemies = [
@@ -321,14 +310,14 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20, 
     direction: 1,
-    limits: { left: 400, right: 800 }, //limites que o personagem pode andar de um lado para o outro
+    limits: { left: 400, right: 800 }, 
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   }, 
   {
     image: new Image(),
@@ -347,9 +336,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 },
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -368,9 +357,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -389,9 +378,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -410,9 +399,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true,
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -431,9 +420,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -452,9 +441,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -473,9 +462,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -494,9 +483,9 @@ let enemies = [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true,
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -515,9 +504,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -536,9 +525,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -557,9 +546,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -578,9 +567,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0, 
   },
   {
     image: new Image(),
@@ -599,9 +588,9 @@ let enemies = [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
     ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
+    alive: true, 
+    currentFrameDeath: 0, 
+    deathFrameCount: 0,
   },
 ];
 
@@ -620,21 +609,22 @@ enemies[11].image.src = "img/enemy2.png";
 enemies[12].image.src = "img/enemy2.png";
 enemies[13].image.src = "img/enemy2.png";
 
-//objeto para a animação de morte
+//animação de morte
 const deathAnimationConfig = {
-  image: new Image(), // Sprite de morte
-  frameWidth: 50, // Largura de cada frame de morte
-  frameHeight: 17, // Altura de cada frame de morte
-  numberOfFrames: 4, // Total de frames na animação de morte
-  frameDelay: 10, // Velocidade da animação de morte
+  image: new Image(), 
+  frameWidth: 50, 
+  frameHeight: 17,
+  numberOfFrames: 4, 
+  frameDelay: 10,
 };
 
-deathAnimationConfig.image.src = "img/enemy1death.png"; // Caminho para o sprite
+deathAnimationConfig.image.src = "img/enemy1death.png"; 
 
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
-  if (keysPressed[37]) { // Esquerda
+  // Esquerda
+  if (keysPressed[37]) { 
     currentSprite = 1;
     currentSpriteIdle = 1;
     spriteRunning = true;
@@ -655,10 +645,8 @@ let updateCharacterMovement = function() {
       }
     }
   }
-
-
-
-  if (keysPressed[39]) { // Direita
+  // Direita
+  if (keysPressed[39]) { 
     currentSprite = 0;
     currentSpriteIdle = 0;
     spriteRunning = true;
@@ -674,8 +662,9 @@ let updateCharacterMovement = function() {
       }
     }
   }
-  if (keysPressed[38]) { //salto
-    if (!isJumping && (isOnGround || isOnPlatform)) { // Inicia o salto somente se não estiver no ar
+  //salto
+  if (keysPressed[38]) { 
+    if (!isJumping && (isOnGround || isOnPlatform)) { 
       isJumping = true;
       jumpFrameCount = 0; 
       spriteIdle = true;
@@ -686,7 +675,7 @@ let updateCharacterMovement = function() {
 
     }
   }
-  if (keysPressed[37] && keysPressed[39]) { // Prevent movement if both keys are pressed
+  if (keysPressed[37] && keysPressed[39]) { 
     velPlayer = 0; 
   }
   if(keysPressed[81]){
@@ -725,12 +714,9 @@ function drawHitboxPortal(){
   context.fillRect(portalscreenX, portalHitbox.y, portalHitbox.width, portalHitbox.height);
 }
 
-//desenha o inimigo
 function drawEnemies() {
   for (let enemy of enemies) {
-    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; // atualiza a hitbox
-
-    //desenha a hitbox só se estiver vivo (problema de ele morrer e ela tomar dano)
+    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; 
     if (enemy.alive == true){
       var hitBoxEnemy = {
         x: enemy.x + currentHitbox.offsetX,
@@ -738,22 +724,15 @@ function drawEnemies() {
         width: currentHitbox.width,
         height: currentHitbox.height,
       };
-       //desenha o retangulo da hitbox (nao faz nada só a cor)
       context.fillStyle = "transparent";
       context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
     }
-    
-   
-    // se o inimigo for "spider", desenha a linha com ele 
-    //pode-se alterar a posição da linha para 
     if (enemy.id === "spider") {
       const lineX = (enemy.x + enemy.frameWidth / 3.5) - worldOffsetX;
-      context.fillStyle = "black"; // Cor do retângulo
-      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Linha preta para a aranha
+      context.fillStyle = "black"; 
+      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); 
     }
-
-    // se o inimigo estiver vivo, desenha sua animação normal
     if (enemy.alive) {
       let frameX = enemy.currentFrame * enemy.frameWidth;
       context.drawImage(
@@ -767,15 +746,12 @@ function drawEnemies() {
         enemy.frameWidth,
         enemy.frameHeight
       );
-      //verifica se nao estiver vivo e se o inimigo for um slime pq só ele tem animação
-    } else if (enemy.id === "slime") { // 
-      // desenha a animação de morte do "slime"
-      //usa o objeto "deathAnimationConfig" pra isso, definido lá em cima
+    } else if (enemy.id === "slime") { 
       let frameX = enemy.currentFrameDeath * deathAnimationConfig.frameWidth;
       context.drawImage(
         deathAnimationConfig.image,
         frameX,
-        -4, //menos 5 pq o slime a morrer tava voando
+        -4, 
         deathAnimationConfig.frameWidth,
         deathAnimationConfig.frameHeight,
         enemy.x - worldOffsetX,
@@ -784,13 +760,11 @@ function drawEnemies() {
         deathAnimationConfig.frameHeight
       );
 
-      // atualiza a animação de morte e a deixa mais devagar
       enemy.deathFrameCount++;
       if (enemy.deathFrameCount >= deathAnimationConfig.frameDelay) {
         enemy.currentFrameDeath++;
         enemy.deathFrameCount = 0;
 
-        // remove o "slime" após terminar a animação de morte
         if (enemy.currentFrameDeath >= deathAnimationConfig.numberOfFrames) {
           enemies.splice(enemies.indexOf(enemy), 1);
         }
@@ -802,8 +776,8 @@ function drawEnemies() {
 function drawGround() {
   for (let i = 0; i < ground.length; i++) {
     const groundSegment = ground[i];
-    const screenX = groundSegment.x - worldOffsetX; // ajusta a posição no eixo X
-    const screenY = groundSegment.y * 0.97; //ajusta o chão com a hitbox do chão (o fillrect)
+    const screenX = groundSegment.x - worldOffsetX; 
+    const screenY = groundSegment.y * 0.97; 
     context.fillStyle = "transparent";  
     context.fillRect(screenX, groundSegment.y, groundSegment.width, groundSegment.height);
     let groundImage;
@@ -842,7 +816,7 @@ let isPower = false;
 
 function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
-    const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
+    const mushroomObj = mushrooms[i]; 
     const screenX = mushroomObj.x - worldOffsetX;
     if(mushroomObj.type == "yellow"){
       desenhaImagem(mushroomYellow, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
@@ -855,7 +829,7 @@ function drawMushrooms() {
 function checkMushroomCollision() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];
-    const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
+    const screenX = mushroomObj.x - worldOffsetX; 
     
     if (
       playerHitbox.x + playerHitbox.width > screenX && 
@@ -879,14 +853,11 @@ function checkMushroomCollision() {
 
 function checkGroundCollision() {
   let onGround = false; 
-  let isCollidingLeft = false; // Colisão à esquerda
-  let isCollidingRight = false; // Colisão à direita
 
   for (let i = 0; i < ground.length; i++) { 
     let groundElement = ground[i];   
     const groundScreenX = groundElement.x - worldOffsetX;
 
-    // Verificação de colisão vertical (em cima do chão)
     if (
       playerHitbox.x + playerHitbox.width > groundScreenX &&
       playerHitbox.x < groundScreenX + groundElement.width &&
@@ -899,7 +870,6 @@ function checkGroundCollision() {
       }
     }
   }
-  // Atualiza estados de colisão
   isOnGround = onGround; 
 
 }
@@ -919,12 +889,11 @@ function checkEnemyCollision() {
 
 
     if (!enemy.alive) {
-      continue; // Pula a verificação de colisão para inimigos mortos
+      continue;
     }
 
     const enemyScreenX = enemy.x - worldOffsetX;
 
-    // pega a hitbox do frame 
     const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
     const enemyHitbox = {
       x: enemyScreenX + currentHitbox.offsetX,
@@ -933,18 +902,15 @@ function checkEnemyCollision() {
       height: currentHitbox.height,
     };
 
-    //  colisao horizontal
     const xCollision =
       playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
       playerHitbox.x < enemyHitbox.x + enemyHitbox.width;
 
-    // colisao vertical
     const yCollision =
       playerHitbox.y + playerHitbox.height > enemyHitbox.y &&
       playerHitbox.y < enemyHitbox.y + enemyHitbox.height;
 
     if (xCollision && yCollision && !playerTookDamage) {
-      // verifica se existe ataque por cima
       const isKillingEnemy =
         playerHitbox.y + playerHitbox.height <=
         enemyHitbox.y + enemyHitbox.height / 2;
@@ -953,7 +919,6 @@ function checkEnemyCollision() {
             slimeDeath.play();
           }
           enemy.alive = false;
-          //enemy.y += 200;
         return "killed";
       } else {
         enemyColided = true;
@@ -966,47 +931,42 @@ function checkEnemyCollision() {
 }
 
 function checkPlatformCollision() {
-  isOnPlatform = false; // Reseta o estado da colisão vertical
-  let isCollidingLeft = false; // Colisão à esquerda
-  let isCollidingRight = false; // Colisão à direita
+  isOnPlatform = false; 
+  let isCollidingLeft = false; 
+  let isCollidingRight = false;
 
   for (let i = 0; i < platforms.length; i++) {
     const platform = platforms[i];
-    const platformScreenX = platform.x - worldOffsetX; // Ajusta a posição da plataforma com base no deslocamento do mundo
+    const platformScreenX = platform.x - worldOffsetX; 
 
-    // Colisão vertical (em cima da plataforma)
     if (
-      playerHitbox.x + playerHitbox.width > platformScreenX && // Jogador dentro da largura da plataforma
+      playerHitbox.x + playerHitbox.width > platformScreenX && 
       playerHitbox.x < platformScreenX + platform.width &&
-      playerHitbox.y + playerHitbox.height >= platform.y && // Jogador encostando no topo
-      playerHitbox.y + playerHitbox.height <= platform.y + gravityAction // Não atravessou a plataforma
+      playerHitbox.y + playerHitbox.height >= platform.y && 
+      playerHitbox.y + playerHitbox.height <= platform.y + gravityAction
     ) {
-      isOnPlatform = true; // Sai do loop, pois já está em cima de uma plataforma
+      isOnPlatform = true; 
     }
 
-    // Colisão lateral à esquerda
     if (
-      playerHitbox.x <= platformScreenX + platform.width && // Lado esquerdo do jogador encosta
-      playerHitbox.x + playerHitbox.width > platformScreenX + platform.width && // Dentro do limite direito da plataforma
-      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && !isOnPlatform // Garante que a colisão lateral não interfira na vertical
+      playerHitbox.x <= platformScreenX + platform.width &&
+      playerHitbox.x + playerHitbox.width > platformScreenX + platform.width && 
+      playerHitbox.y + playerHitbox.height > platform.y && 
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform 
     ) {
       isCollidingLeft = true;
     }
-
-     // Colisão lateral à direita
      if (
-      playerHitbox.x + playerHitbox.width >= platformScreenX && // Lado direito do jogador encosta
-      playerHitbox.x <= platformScreenX && // Dentro do limite esquerdo da plataforma
-      playerHitbox.y + playerHitbox.height > platform.y && // Dentro da altura da plataforma
-      playerHitbox.y < platform.y + platform.height && !isOnPlatform// Garante que a colisão lateral não interfira na vertical
+      playerHitbox.x + playerHitbox.width >= platformScreenX && 
+      playerHitbox.x <= platformScreenX && 
+      playerHitbox.y + playerHitbox.height > platform.y && 
+      playerHitbox.y < platform.y + platform.height && !isOnPlatform
     ) {
       isCollidingRight = true;
     }
 
   }
 
-  // Impede movimento horizontal baseado nas colisões laterais
   if (isCollidingRight) {
     canMoveRight = false;
   } else {
@@ -1027,7 +987,6 @@ function drawParallax(imagem, x, y, width, height){
 }
 
 
-//função para mover o parallax quando aperto as teclas
 function moveParallaxRight() {
   background5X += 0.1;
   background4X += 0.25;
@@ -1056,7 +1015,6 @@ function moveParallaxLeft() {
   if (ground1X < -424) ground1X = 0;
 }
 
-// Adjusting gravity more smoothly
 function applyGravity() {
   if (!isOnGround && !isOnPlatform) {
     playerY += gravityAction; 
@@ -1074,7 +1032,6 @@ function applyGravityJump(){
   }
 }
 
-//altera os frames da animação e define a velocidade em que passam
 function animateEnemies() {
   for (let enemy of enemies) {
     enemy.frameCount++;
@@ -1093,28 +1050,26 @@ function updateEnemiesPosition() {
         enemy.x += 1 * enemy.direction; 
 
         if (enemy.x >= enemy.limits.right) {
-          enemy.direction = -1; // Vai para a esquerda
+          enemy.direction = -1;
         }
         if (enemy.x <= enemy.limits.left) {
-          enemy.direction = 1; // Vai para a direita
+          enemy.direction = 1; 
         }
       }
   }else { 
     enemy.y += 1 * enemy.direction; 
 
-    if (enemy.y >= enemy.limits.right) { // limite baixo
-      enemy.direction = -1; //começa a subir
+    if (enemy.y >= enemy.limits.right) { 
+      enemy.direction = -1; 
     }
-    if (enemy.y <= enemy.limits.left) { // limite superior
-      enemy.direction = 1; //começa a descer
+    if (enemy.y <= enemy.limits.left) { 
+      enemy.direction = 1; 
     }
   } 
   }
 }
 
-//velocidade das sprites
 function animation(){
-  //deixa as animações mais devagar
   if (isDamaged) {
    if (frameCount >= frameDelayDamage) {
      currentFrame = (currentFrame + 1) % numberOfFramesDamage; 
@@ -1135,7 +1090,6 @@ function animation(){
  }
 }
 
-//ta funcionando, como? não sei
 const damageAmount = 5;       
 let damageFlag = false;
 
@@ -1143,9 +1097,7 @@ function checkPlayerDamage() {
   if (playerTookDamage && !damageFlag) {
     lifeBar -= damageAmount; 
     isDamaged = true; 
-    //lastDamageTime = currentTime; 
-    //playerTookDamage = false; 
-    damageFlag = true; // Ativar a flag de dano 
+    damageFlag = true; 
     resetDamageFlag();
   }
 }
@@ -1172,24 +1124,22 @@ function damageSoundTime(){
   }
 }
 
-//-------------------------------
 function drawRoundedRect(context, x, y, width, height, radius) {
   context.beginPath();
-  context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
-  context.lineTo(x + width - radius, y); // Linha superior
-  context.arcTo(x + width, y, x + width, y + radius, radius); // Canto superior direito
-  context.lineTo(x + width, y + height - radius); // Linha direita
-  context.arcTo(x + width, y + height, x + width - radius, y + height, radius); // Canto inferior direito
-  context.lineTo(x + radius, y + height); // Linha inferior
-  context.arcTo(x, y + height, x, y + height - radius, radius); // Canto inferior esquerdo
-  context.lineTo(x, y + radius); // Linha esquerda
-  context.arcTo(x, y, x + radius, y, radius); // Canto superior esquerdo
+  context.moveTo(x + radius, y); 
+  context.lineTo(x + width - radius, y); 
+  context.arcTo(x + width, y, x + width, y + radius, radius); 
+  context.lineTo(x + width, y + height - radius); 
+  context.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  context.lineTo(x + radius, y + height); 
+  context.arcTo(x, y + height, x, y + height - radius, radius); 
+  context.lineTo(x, y + radius); 
+  context.arcTo(x, y, x + radius, y, radius); 
   context.closePath();
-  context.fill(); // Preencher o retângulo
+  context.fill(); 
 }
 
 function drawRoundedImage(context, image, x, y, width, height, radius) {
-  // Criar o caminho do retângulo arredondado
   context.beginPath();
   context.moveTo(x + radius, y);
   context.lineTo(x + width - radius, y);
@@ -1201,18 +1151,13 @@ function drawRoundedImage(context, image, x, y, width, height, radius) {
   context.lineTo(x, y + radius);
   context.arcTo(x, y, x + radius, y, radius);
   context.closePath();
-
-  // Aplicar o recorte
   context.clip();
-
-  // Desenhar a imagem dentro do recorte
   context.drawImage(image, x, y, width, height);
 }
 
-//cria um arraw de powers
 let powers = []; 
 let powerFlag = true;
-let direction; //direção das bolas lançadas ta com problema no movimento dela
+let direction;
 
 function throwPower() {
   if (powerFlag){
@@ -1244,15 +1189,13 @@ function updatePowers() {
   for (let i = powers.length - 1; i >= 0; i--) {
     let power = powers[i];
 
-    power.x += power.speed * direction; // movimento da bola (acho que ta com problema)
+    power.x += power.speed * direction;
 
-    // exclui a bola quando ela sair da tela
     if (power.x > canvas.width || power.x < 0) {
       powers.splice(i, 1);
       continue;
     }
 
-    // mesma logística de colisão do check enemy
     for (let j = enemies.length - 1; j >= 0; j--) {
       let enemy = enemies[j];
       const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
@@ -1284,9 +1227,8 @@ function updatePowers() {
 }
 
 function drawPowers() {
-  context.fillStyle = "pink";  //nem ouse, vai ser rosa simmm!!!! :) 
+  context.fillStyle = "pink";
   for (let power of powers) {
-    //desenha a bola
     context.beginPath();
     context.arc(power.x, power.y, power.width / 2, 0, Math.PI * 2); 
     context.fill();  
@@ -1304,10 +1246,10 @@ let powerTimer = 10;
 
 function timerPower(){
   if (isPower && powerTimer > 0) {
-    powerTimer -= 1 / 60; // Reduz o tempo a cada frame (60 FPS)
+    powerTimer -= 1 / 60; 
     if (powerTimer <= 0) {
       powerTimer = 0;
-      isPower = false; // Desativa o power-up quando o timer chega a 0
+      isPower = false; 
       console.log("Power deactivated!");
     }
   }
@@ -1319,9 +1261,9 @@ function timerPower(){
 function drawGameInfo() {
   let numHearts = 0;
   if (lifeBar === 10) {
-    numHearts = 2; // 2 corações
+    numHearts = 2; 
   } else if (lifeBar === 5) {
-    numHearts = 1; // 1 coração
+    numHearts = 1; 
   }
 
   for (let i = 0; i < numHearts; i++) {
@@ -1330,9 +1272,9 @@ function drawGameInfo() {
 
   timerPower();
 
-  context.fillStyle = "white"; // Cor do texto
-  context.font = "13px Arial";  // Tamanho da fonte
-  context.fillText("= " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+  context.fillStyle = "white"; 
+  context.font = "13px Arial"; 
+  context.fillText("= " + mushroomCount, 30, 21); 
   context.drawImage(mushroomYellow, 10, 10, 15, 15); 
 
   context.drawImage(mushroomPurple, canvas.width - 60, 10, 15, 15); 
@@ -1340,7 +1282,7 @@ function drawGameInfo() {
   if (isPower) {
     context.fillStyle = "pink";
     context.font = "13px Arial"; 
-    context.fillText( + powerTimer.toFixed(1) + "s", canvas.width - 40, 22); // Timer no canto superior direito
+    context.fillText( + powerTimer.toFixed(1) + "s", canvas.width - 40, 22); 
   }
 }
 
@@ -1349,7 +1291,6 @@ function gameLoop() {
   checkPlatformCollision();  
 
   frameCount++; 
-  //desenha o parallax
   drawParallax(background5, background5X, backgroundY,425, 246);
   drawParallax(background4, background4X, backgroundY,425, 246);
   drawParallax(background3, background3X, backgroundY,425, 246);
@@ -1361,8 +1302,6 @@ function gameLoop() {
   drawGround();
   drawPlatforms();
   
-  //definindo a hitbox para ficar na posição certa da boneca
-  //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
   defineHitboxX = playerX + 5;
   defineHitboxY = playerY + 3;
   playerHitbox.x = defineHitboxX; 
@@ -1385,10 +1324,8 @@ function gameLoop() {
   playerHitbox.x = playerX;
   playerHitbox.y = playerY; 
 
-  //power
   updatePowers();
 
-  //inimigo
   updateEnemiesPosition();
   animateEnemies();
   drawEnemies();
@@ -1407,12 +1344,10 @@ function gameLoop() {
 
 
   checkPlayerDamage();
-  // damageSoundTime(); bugou o jogo
 
   const frameX = currentFrame * frameWidth; 
   const frameY = 4; 
 
-  //desenha a bruxinha
   if (isDamaged) {
     if(currentSprite == 0){
       desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
@@ -1421,7 +1356,6 @@ function gameLoop() {
       desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   } else {
-    // Renderiza os outros estados do jogador
     if (spriteRunning) {
       if (currentSprite == 0) {
         desenhaPlayer(player, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
@@ -1440,7 +1374,7 @@ function gameLoop() {
   freezeParallax();
   drawGameInfo();
 
-  if(playerY > 250 || lifeBar <= 0 ){ //enemyCollided
+  if(playerY > 250 || lifeBar <= 0 ){ 
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
@@ -1451,25 +1385,21 @@ function gameLoop() {
     backgroundMusic.pause();
     caveSound.pause();
 
-    // Desenhar botão
-    const buttonX = canvas.width / 2 - 70; // Posição X
-    const buttonY = (canvas.height / 2) + 70;  // Posição Y
+    const buttonX = canvas.width / 2 - 70;
+    const buttonY = (canvas.height / 2) + 70; 
     const buttonWidth = 150;
     const buttonHeight = 20;
-    const borderRadius = 10; // Raio das bordas
+    const borderRadius = 10;
 
-    // Configura cor do botão
     context.fillStyle = "green";
     drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
 
-    // Adiciona texto no botão
     context.fillStyle = "white";
     context.font = "10px Arial";
     context.fillText("Tentar Novamente!", buttonX + 35, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
-    // Adiciona evento de clique ao canvas
     canvas.addEventListener("click", handleCanvasClick);
 
     function handleCanvasClick(event) {
@@ -1477,14 +1407,12 @@ function gameLoop() {
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
 
-      // Verifica se o clique foi dentro do botão
       if (
         mouseX >= buttonX &&
         mouseX <= buttonX + buttonWidth &&
         mouseY >= buttonY &&
         mouseY <= buttonY + buttonHeight
       ) {
-        // Recarregar a página
         window.location.reload();
       }
     }
@@ -1512,25 +1440,21 @@ function gameLoop() {
     backgroundMusic.pause();
     caveSound.pause();
 
-    // Desenhar botão
-    const buttonX = canvas.width / 2 - 70; // Posição X
-    const buttonY = (canvas.height / 2) + 85;  // Posição Y
+    const buttonX = canvas.width / 2 - 70;
+    const buttonY = (canvas.height / 2) + 85;  
     const buttonWidth = 150;
     const buttonHeight = 20;
-    const borderRadius = 10; // Raio das bordas
+    const borderRadius = 10; 
 
-    // Configura cor do botão
     context.fillStyle = "green";
     drawRoundedRect(context, buttonX, buttonY, buttonWidth, buttonHeight, borderRadius);
 
-    // Adiciona texto no botão
     context.fillStyle = "white";
     context.font = "10px Arial";
     context.fillText("Start Again!", buttonX + 50, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
 
-    // Adiciona evento de clique ao canvas
     canvas.addEventListener("click", handleCanvasClick);
 
     function handleCanvasClick(event) {
@@ -1538,7 +1462,6 @@ function gameLoop() {
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
 
-      // Verifica se o clique foi dentro do botão
       if (
         mouseX >= buttonX &&
         mouseX <= buttonX + buttonWidth &&
@@ -1552,11 +1475,11 @@ function gameLoop() {
     if(Finish){
       return;
     } else {
-      gameWinSound.play(); //Mudar para gameWinSound.play();
+      gameWinSound.play(); 
       Finish = true;
     }
   }
 
   updateCharacterMovement();
-  requestAnimationFrame(gameLoop); // Chama o loop novamente
+  requestAnimationFrame(gameLoop);
 }
