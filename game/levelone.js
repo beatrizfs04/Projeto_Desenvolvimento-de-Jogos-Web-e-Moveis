@@ -454,17 +454,24 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
-    if (canMoveLeft){
+    backgroundMusic.play(); // Comentado porque você mencionou que não quer ouvir a música
+    
+    if (canMoveLeft) {
       if (playerX > 200) playerX += velPlayer; 
-      worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
-      moveParallaxRight();
       
-      if (isOnGround || isOnPlatform){
+      // Impede o parallax no início do jogo
+      if (worldOffsetX > 0) {
+        worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
+        moveParallaxRight(); // Apenas move o parallax se worldOffsetX > 0
+      }
+      
+      if (isOnGround || isOnPlatform) {
         walkingSound.play(); 
       }
     }
   }
+
+
   if (keysPressed[39]) { // Direita
     currentSprite = 0;
     currentSpriteIdle = 0;
@@ -1398,4 +1405,3 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
-
