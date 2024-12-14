@@ -929,10 +929,10 @@ function moveParallaxRight() {
   background2X += 0.75;
   ground1X += 1;
 
-  if (background5X > 425) background5X = 0;
-  if (background4X > 425) background4X = 0;
-  if (background3X > 425) background3X = 0;
-  if (background2X > 425) background2X = 0;
+  if (background5X > 424) background5X = 0;
+  if (background4X > 424) background4X = 0;
+  if (background3X > 424) background3X = 0;
+  if (background2X > 424) background2X = 0;
   if (ground1X > 424) ground1X = 0;
 }
 
@@ -1244,10 +1244,10 @@ function gameLoop() {
 
   frameCount++; 
   //desenha o parallax
-  drawParallax(background5, background5X, backgroundY,424, 246);
-  drawParallax(background4, background4X, backgroundY,424, 246);
-  drawParallax(background3, background3X, backgroundY,424, 246);
-  drawParallax(background2, background2X, backgroundY,424, 246);
+  drawParallax(background5, background5X, backgroundY,425, 246);
+  drawParallax(background4, background4X, backgroundY,425, 246);
+  drawParallax(background3, background3X, backgroundY,425, 246);
+  drawParallax(background2, background2X, backgroundY,425, 246);
 
   applyGravity();
   applyGravityJump();
