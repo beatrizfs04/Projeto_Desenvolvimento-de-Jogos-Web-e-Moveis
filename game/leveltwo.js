@@ -421,7 +421,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 2600, right: 3150 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -442,7 +442,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: 1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 2600, right: 3150 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -463,7 +463,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 2600, right: 3150 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -484,7 +484,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2600, right: 3450 },
+    limits: { left: 2600, right: 3150 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
