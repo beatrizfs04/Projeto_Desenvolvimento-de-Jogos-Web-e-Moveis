@@ -146,7 +146,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0;
+let worldOffsetX = 2000;
 
 
 //ground asalsidjhfakusdhh
@@ -1159,11 +1159,6 @@ function timerPower(){
 
 function drawGameInfo() {
 
-  context.drawImage(mushroomYellow, 10, 10, 15, 15); 
-
-  const heartWidth = 15; 
-  const heartHeight = 15; // Altura de cada coração
-  const heartSpacing = 5; // Espaço entre os corações
 
   let numHearts = 0;
   if (lifeBar === 10) {
@@ -1173,15 +1168,15 @@ function drawGameInfo() {
   }
 
   for (let i = 0; i < numHearts; i++) {
-    context.drawImage(heartImage, ((canvas.width/2)-10) + (i * (heartWidth + heartSpacing)), 10, heartWidth, heartHeight);
+    context.drawImage(heartImage, ((canvas.width/2)-10) + (i * (20)), 10, 15, 15);
   }
 
   timerPower();
 
-  // Exibe o número de cogumelos coletados
   context.fillStyle = "white"; // Cor do texto
   context.font = "13px Arial";  // Tamanho da fonte
   context.fillText(": " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+  context.drawImage(mushroomYellow, 10, 10, 15, 15); 
 
   context.drawImage(mushroomPurple, canvas.width - 60, 10, 15, 15); 
 
@@ -1351,15 +1346,19 @@ function gameLoop() {
 
   if(Win){
     context.fillStyle = "white";
-    drawRoundedRect(context, 130, 45, 175, 180, 15);
+    drawRoundedRect(context, 130, 45, 175, 190, 15);
     
     context.fillStyle = "green";  
     context.font = "20px Arial";  
-    context.fillText("Level Win!", 170, (canvas.height / 2) + 55); 
+    context.fillText("Level Win!", 170, (canvas.height / 2) + 50); 
+    context.font = "10px Arial";  
+    context.fillText("You collected:         " + mushroomCount + " out of 5", 155, (canvas.height / 2 + 10) + 60); 
+    context.drawImage(mushroomYellow, 222, (canvas.height / 2 + 61), 12, 12); 
+
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
-    const buttonY = (canvas.height / 2) + 70;  // Posição Y
+    const buttonY = (canvas.height / 2) + 85;  // Posição Y
     const buttonWidth = 150;
     const buttonHeight = 20;
     const borderRadius = 10; // Raio das bordas
@@ -1374,6 +1373,7 @@ function gameLoop() {
     context.fillText("Next Level!", buttonX + 50, buttonY + 13);
 
     drawRoundedImage(context, logo, 135, 50, 165, 100, 15);
+
 
     // Adiciona evento de clique ao canvas
     canvas.addEventListener("click", handleCanvasClick);
