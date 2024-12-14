@@ -55,22 +55,12 @@ enemy2.src = "img2/enemy2.png";
 var enemy1Death = new Image();
 enemy1Death.src = "img/enemy1death.png";
 
-let isDying = false; // Controle se a animação está ativa
-let deathX = 300; // Posição x fixa onde a animação será desenhada
-let deathY = 200; // Posição y fixa onde a animação será desenhada
-let currentFrameDeath = 0; // Quadro atual da animação
-let frameCountDeath = 0; // Contador de frames
-let frameDelayDeath = 10; // Intervalo entre os frames
-const numberOfFramesDeath = 4; // Total de frames
-const frameWidthDeath = 100; // Largura de cada frame
-const frameHeightDeath = 34; // Altura de cada frame
+//definição das variáveis
 
+let frameWidthEnemy1 = 0;
+let frameHeightEnemy1 = 0;
 
-
-let frameWidthEnemy1 = 50;
-let frameHeightEnemy1 = 20;
-
-const numberOfFramesEnemy1 = 2;
+const numberOfFramesEnemy1 = 0;
 let currentFrameEnemy = 0;
 
 let enemyFrameX = 1;
@@ -145,8 +135,7 @@ block.src = "img/block2.png";
 
 let blockX = 480;
 let blockY = 180;
-
-let worldOffsetX = 2000;
+let worldOffsetX = 0;
 
 
 //ground asalsidjhfakusdhh
@@ -472,7 +461,7 @@ const deathAnimationConfig = {
   frameDelay: 10, // Velocidade da animação de morte
 };
 
-deathAnimationConfig.image.src = "img/enemy1death.png"; // Caminho para o sprite
+deathAnimationConfig.image.src = "img/enemy1death.png"; 
 
 
   

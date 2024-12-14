@@ -174,7 +174,7 @@ let platformImage;
 
 //mushroom
 const mushroom = new Image();
-mushroom.src = "img/mushroom.png";
+mushroom.src = "img2/mushroom.png";
 
 let mushrooms = [
   { x: 740, y: 80, width: 10, height: 10 },
