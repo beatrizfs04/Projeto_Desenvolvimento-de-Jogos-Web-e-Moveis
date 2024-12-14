@@ -1332,7 +1332,7 @@ function gameLoop() {
     context.font = "20px Arial";  
     context.fillText("Level Win!", 170, (canvas.height / 2) + 50); 
     context.font = "10px Arial";  
-    context.fillText("You collected:         " + mushroomCount + " out of 5", 155, (canvas.height / 2 + 10) + 60); 
+    context.fillText("You collected:         " + mushroomCount + " out of 4", 155, (canvas.height / 2 + 10) + 60); 
     context.drawImage(mushroomYellow, 222, (canvas.height / 2 + 61), 12, 12); 
 
     backgroundMusic.pause();
