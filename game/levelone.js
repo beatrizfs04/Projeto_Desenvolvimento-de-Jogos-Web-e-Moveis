@@ -443,10 +443,14 @@ let updateCharacterMovement = function() {
     backgroundMusic.play(); 
     if (canMoveLeft){
       if (playerX > 200) playerX += velPlayer; 
-      worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
-      moveParallaxRight();
       
-      if (isOnGround || isOnPlatform){
+      // Impede o parallax no início do jogo
+      if (worldOffsetX > 0) {
+        worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
+        moveParallaxRight(); // Apenas move o parallax se worldOffsetX > 0
+      }
+      
+      if (isOnGround || isOnPlatform) {
         walkingSound.play(); 
       }
     }
@@ -1323,4 +1327,3 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); 
 }
-
