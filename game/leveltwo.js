@@ -441,6 +441,48 @@ let enemies = [
     currentFrame: 0,
     frameCount: 0,
     frameDelay: 20,
+    direction: 1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3800,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3390,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
     direction: -1,
     limits: { left: 2600, right: 3450 },
     hitboxFrames: [
@@ -544,10 +586,12 @@ enemies[3].image.src = "img/enemy1new.png";
 enemies[4].image.src = "img/enemy1new.png";
 enemies[5].image.src = "img/enemy1new.png";
 enemies[6].image.src = "img/enemy1new.png";
-enemies[7].image.src = "img/enemy2.png";
-enemies[8].image.src = "img/enemy2.png";
+enemies[7].image.src = "img/enemy1new.png";
+enemies[8].image.src = "img/enemy1new.png";
 enemies[9].image.src = "img/enemy2.png";
 enemies[10].image.src = "img/enemy2.png";
+enemies[11].image.src = "img/enemy2.png";
+enemies[12].image.src = "img/enemy2.png";
 
 //objeto para a animação de morte
 const deathAnimationConfig = {
