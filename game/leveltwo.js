@@ -633,11 +633,9 @@ let updateCharacterMovement = function() {
     caveSound.play();
     if (canMoveLeft) {
       if (playerX > 200) playerX += velPlayer; 
-      
-      // Condição para impedir o parallax no início do jogo
       if (worldOffsetX > 0) {
         worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
-        moveParallaxRight(); // Só move o parallax se worldOffsetX > 0
+        moveParallaxRight(); 
       }
 
       if (isOnGround || isOnPlatform) {
