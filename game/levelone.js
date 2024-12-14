@@ -146,7 +146,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0;
+let worldOffsetX = 2400;
 
 
 //ground asalsidjhfakusdhh
@@ -176,7 +176,6 @@ let platforms = [
   {x: 2260, y: 95, width: 45, height:20, type: "block"},
   {x: 2200, y: 200, width: 100, height:120, type: "earth"},
   {x: 2500, y: 200, width: 100, height:120, type: "earth"},
-  {x: 2600, y: 170, width: 100, height:120, type: "earth"},
   {x: 3700, y: 130, width: 100, height:120, type: "earth"},
   {x: 3530, y: 190, width: 45, height: 20, type: "block" },
   {x: 3620, y: 160, width: 45, height: 20, type: "block" },
@@ -372,7 +371,7 @@ let enemies = [
   {
     image: new Image(),
     id: "slime",
-    x: 2832.5,
+    x: 2600.5,
     y: 210,
     frameWidth: 50,
     frameHeight: 20,
@@ -381,7 +380,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2700, right: 3450 },
+    limits: { left: 2600, right: 3450 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -402,7 +401,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2700, right: 3450 },
+    limits: { left: 2600, right: 3450 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -423,7 +422,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2700, right: 3450 },
+    limits: { left: 2600, right: 3450 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -444,7 +443,7 @@ let enemies = [
     frameCount: 0,
     frameDelay: 20,
     direction: -1,
-    limits: { left: 2700, right: 3450 },
+    limits: { left: 2600, right: 3450 },
     hitboxFrames: [
       { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
@@ -487,7 +486,7 @@ let updateCharacterMovement = function() {
     velPlayer = -1;
     backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
     if (canMoveLeft){
-      playerX = Math.max(0, playerX + velPlayer);
+      if (playerX > 200) playerX += velPlayer; 
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
       
@@ -612,7 +611,7 @@ function drawEnemies() {
       context.drawImage(
         deathAnimationConfig.image,
         frameX,
-        -2, //menos 2 pq o slime a morrer tava voando
+        -4, //menos 5 pq o slime a morrer tava voando
         deathAnimationConfig.frameWidth,
         deathAnimationConfig.frameHeight,
         enemy.x - worldOffsetX,
@@ -714,12 +713,7 @@ function checkMushroomCollision() {
   }
 }
 
-function managePower() {
-  setTimeout(() => {
-    isPower = false;
-    console.log("Power deactivated!");
-  }, 8000); 
-}
+
 
 function checkGroundCollision() {
   let onGround = false; 
@@ -1141,11 +1135,33 @@ function drawPowers() {
   }
 }
 
+function managePower() {
+  isPower = true; 
+  powerTimer = 10; 
+  console.log("Power activated!");
+}
+
+let powerTimer = 10;
+
+function timerPower(){
+  if (isPower && powerTimer > 0) {
+    powerTimer -= 1 / 60; // Reduz o tempo a cada frame (60 FPS)
+    if (powerTimer <= 0) {
+      powerTimer = 0;
+      isPower = false; // Desativa o power-up quando o timer chega a 0
+      console.log("Power deactivated!");
+    }
+  }
+}
+
+
+
+
 function drawGameInfo() {
 
-  context.drawImage(mushroomYellow, 10, 10, 15, 15); // Posição (10,10), tamanho (15x15)
+  context.drawImage(mushroomYellow, 10, 10, 15, 15); 
 
-  const heartWidth = 15; // Largura de cada coração
+  const heartWidth = 15; 
   const heartHeight = 15; // Altura de cada coração
   const heartSpacing = 5; // Espaço entre os corações
 
@@ -1160,10 +1176,21 @@ function drawGameInfo() {
     context.drawImage(heartImage, ((canvas.width/2)-10) + (i * (heartWidth + heartSpacing)), 10, heartWidth, heartHeight);
   }
 
+  timerPower();
+
   // Exibe o número de cogumelos coletados
   context.fillStyle = "white"; // Cor do texto
-  context.font = "12px Arial";  // Tamanho da fonte
+  context.font = "13px Arial";  // Tamanho da fonte
   context.fillText(": " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+
+  context.drawImage(mushroomPurple, canvas.width - 60, 10, 15, 15); 
+
+  if (isPower) {
+    context.fillStyle = "pink";
+    context.font = "13px Arial"; 
+    context.fillText( + powerTimer.toFixed(1) + "s", canvas.width - 40, 22); // Timer no canto superior direito
+  }
+
 }
 
 
@@ -1190,9 +1217,21 @@ function gameLoop() {
   defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-  context.fillStyle = "transparent";  
-  context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
+  if (isPower) {
+    context.save();
+    
+    context.filter = "blur(4px)";
+    
+    context.fillStyle = "rgba(255, 105, 180, 0.5)"; 
+    context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
+    
+    context.restore();
+  } else {
+    context.fillStyle = "transparent";  
+    context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
+  }
+  
 
   playerHitbox.x = playerX;
   playerHitbox.y = playerY;
