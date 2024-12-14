@@ -70,7 +70,6 @@ const frameHeightDeath = 34; // Altura de cada frame
 
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
-
 const numberOfFramesEnemy1 = 2;
 let currentFrameEnemy = 0;
 
@@ -152,13 +151,16 @@ let worldOffsetX = 0;
 isOnGround = true;
 let ground = [
   {x: 0, y: 229, width: 1050, height:40, type: "ground"},
+  {x: 2500, y: 228, width: 1050, height:40, type: "ground"},
+  {x: 3100, y: 228, width: 1050, height:40, type: "ground"},
+  {x: 4100, y: 228, width: 1050, height:40, type: "ground"}
 ];
 
 //plataformas (blocos)
 let platforms = [
   {x: 300, y: 200, width: 100, height: 150, type: "earth"},
-  {x: 600, y: 180, width: 45, height:20, type: "block"},
-  {x: 643, y: 180, width: 45, height:20, type: "block"},
+  {x: 570, y: 180, width: 45, height:20, type: "block"},
+  {x: 663, y: 180, width: 45, height:20, type: "block"},
   {x: 850, y: 200, width: 100, height:80, type: "earth"},
   {x: 1100, y: 220, width: 100, height: 150, type: "earth"},
   {x: 1300, y: 220, width: 100, height: 150, type: "earth"},
@@ -172,7 +174,9 @@ let platforms = [
   {x: 2745, y: 100, width: 45, height: 20, type: "block"},
   {x: 2930, y: 100, width: 45, height: 20, type: "block"},
   {x: 2530, y: 165, width: 20, height: 20, type: "block"},
-  {x: 2500, y: 228, width: 1050, height: 150, type: "earth"},
+  {x: 3500, y: 165, width: 45, height: 20, type: "block"},
+  {x: 3850, y: 150, width: 100, height:120, type: "earth"},
+  {x: 3700, y: 165, width: 45, height: 20, type: "block"},
 ];
 
 let Ended = false;
@@ -201,6 +205,7 @@ let mushrooms = [
   { x: 1950, y: 80, width: 10, height: 10, type:"yellow"  },
   { x: 1050, y: 140, width: 10, height: 10, type:"yellow"  },
   { x: 2400, y: 80, width: 10, height: 10, type:"purple"  },
+  { x: 3060,  y: 60, width: 10, height: 10, type:"yellow" },
 ];
 
 //portal
@@ -1483,6 +1488,7 @@ function gameLoop() {
       Ended = true;
     }
   }
+  console.log(worldOffsetX);
 
   if(Win){
     context.fillStyle = "white";
