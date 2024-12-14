@@ -266,6 +266,11 @@ damageSound.volume = 0.2;
 var slimeDeath = new Audio("audio/slimedeath.mp3");
 slimeDeath.volume = 0.2;
 
+var howToPlay = new Image();
+howToPlay.src = "img/howtoplay.png"
+
+showHowToPlay = true;
+
 inicializar();
 
 function inicializar() {
@@ -280,7 +285,7 @@ function inicializar() {
 
 
 let playerX = 200; // Centraliza o player
-let playerY = 50;
+let playerY = 180;
 
 
 //player hitbox
@@ -524,6 +529,20 @@ function freezeParallax(){
     freezedParallax = true;
   }
 }
+
+
+function drawHowToPlay() {
+  if (showHowToPlay) {
+      context.drawImage(howToPlay, 0, 0, canvas.width, canvas.height); // Desenha a imagem
+  }
+}
+
+document.addEventListener('keydown', function () {
+  if (showHowToPlay) {
+      showHowToPlay = false; // Desativa a tela inicial
+  }
+});
+
 
 function desenhaImagem(imagem, x, y, width, height) {
   context.drawImage(imagem, x, y, width, height);
@@ -1099,9 +1118,13 @@ function updatePowers() {
         power.y < enemyHitbox.y + enemyHitbox.height;
 
       if (xCollision && yCollision) {
-        console.log("poder matou o inimigo");
-        enemies.splice(j, 1);
-        powers.splice(i, 1);
+          console.log("poder matou o inimigo");
+          enemies.splice(j, 1);
+          enemy.alive = false;
+          powers.splice(i, 1);
+          if(enemy.id == "slime"){
+            slimeDeath.play();
+          }
         break;
       }
     }
@@ -1171,6 +1194,18 @@ function drawGameInfo() {
 
 
 function gameLoop() {
+  if (showHowToPlay) {
+    drawParallax(background5, background5X, backgroundY,424, 246);
+    drawParallax(background4, background4X, backgroundY,424, 246);
+    drawParallax(background3, background3X, backgroundY,424, 246);
+    drawParallax(background2, background2X, backgroundY,424, 246);
+    drawGround();
+    drawHowToPlay(); 
+
+    requestAnimationFrame(gameLoop); 
+    return; 
+  }
+
   checkGroundCollision();
   checkPlatformCollision();  
 

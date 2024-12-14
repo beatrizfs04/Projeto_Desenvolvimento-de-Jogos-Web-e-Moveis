@@ -303,8 +303,8 @@ let playerY = 50;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: (frameWidth - diminuicaoX)*0.75,  //opcional
-  height: (frameHeight - diminuicaoY)*0.8 //opcional
+  width: (frameWidth - diminuicaoX)*0.6,  //opcional
+  height: (frameHeight - diminuicaoY)*0.7 //opcional
 };
 
 let enemies = [
@@ -1200,8 +1200,8 @@ function gameLoop() {
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  defineHitboxX = playerX + 4;
-  defineHitboxY = playerY + 2;
+  defineHitboxX = playerX + 5;
+  defineHitboxY = playerY + 3;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
 
