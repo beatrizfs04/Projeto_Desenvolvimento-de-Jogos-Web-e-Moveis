@@ -303,8 +303,8 @@ let playerY = 50;
 let playerHitbox = {
   x: playerX ,
   y: playerY ,
-  width: (frameWidth - diminuicaoX)*0.6,  //opcional
-  height: (frameHeight - diminuicaoY)*0.7 //opcional
+  width: (frameWidth - diminuicaoX)*0.75,  //opcional
+  height: (frameHeight - diminuicaoY)*0.8 //opcional
 };
 
 let enemies = [
@@ -331,38 +331,17 @@ let enemies = [
   }, 
   {
     image: new Image(),
-    id: "slime",
-    x: 498,
-    y: 130,
-    frameWidth: 50,
-    frameHeight: 20,
-    numberOfFrames: 2,
-    currentFrame: 0,
-    frameCount: 0,
-    frameDelay: 20,
-    direction: 1,
-    limits: { left: 498, right: 648 },
-    hitboxFrames: [
-      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
-      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
-    ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
-  },
-  {
-    image: new Image(),
     id: "spider",
-    x: 80,
-    y: 50,
+    x: 578,
+    y: 130,
     frameWidth: 61.5,
     frameHeight: 43,
     numberOfFrames: 2,
     currentFrame: 0,
     frameCount: 0,
     frameDelay: 20,
-    direction: -1,
-    limits: { left: 50, right: 180 },
+    direction: 1,
+    limits: { left: 50, right: 100 },
     hitboxFrames: [
       { width: 30, height: 38, offsetX: 4, offsetY: 0 },
       { width: 30, height: 38, offsetX: 4, offsetY: 2 },
@@ -374,7 +353,7 @@ let enemies = [
   {
     image: new Image(),
     id: "slime",
-    x: 2600.5,
+    x: 2800.5,
     y: 210,
     frameWidth: 50,
     frameHeight: 20,
@@ -385,7 +364,7 @@ let enemies = [
     direction: -1,
     limits: { left: 2600, right: 3450 },
     hitboxFrames: [
-      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 28, height: 30, offsetX: 11, offsetY: 0 }, 
       { width: 30, height: 18, offsetX: 8, offsetY: 2 },
     ],
     alive: true, // Estado do inimigo
@@ -458,12 +437,11 @@ let enemies = [
 ];
 
 enemies[0].image.src = "img/enemy1new.png";
-enemies[1].image.src = "img/enemy1new.png";
-enemies[2].image.src = "img/enemy2.png";
+enemies[1].image.src = "img/enemy2.png";
+enemies[2].image.src = "img/enemy1new.png";
 enemies[3].image.src = "img/enemy1new.png";
 enemies[4].image.src = "img/enemy1new.png";
 enemies[5].image.src = "img/enemy1new.png";
-enemies[6].image.src = "img/enemy1new.png";
 
 //objeto para a animação de morte
 const deathAnimationConfig = {
@@ -1187,10 +1165,10 @@ function gameLoop() {
 
   frameCount++; 
   //desenha o parallax
-  drawParallax(background5, background5X, backgroundY,424, 246);
-  drawParallax(background4, background4X, backgroundY,424, 246);
-  drawParallax(background3, background3X, backgroundY,424, 246);
-  drawParallax(background2, background2X, backgroundY,424, 246);
+  drawParallax(background5, background5X, backgroundY,425, 246);
+  drawParallax(background4, background4X, backgroundY,425, 246);
+  drawParallax(background3, background3X, backgroundY,425, 246);
+  drawParallax(background2, background2X, backgroundY,425, 246);
 
   applyGravity();
   applyGravityJump();
@@ -1200,8 +1178,8 @@ function gameLoop() {
   
   //definindo a hitbox para ficar na posição certa da boneca
   //a largura e altura são definidas lá em cima (playerHitbox.width, playerHitbox.height)
-  defineHitboxX = playerX + 5;
-  defineHitboxY = playerY + 3;
+  defineHitboxX = playerX + 4;
+  defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
 
@@ -1396,4 +1374,3 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
-
