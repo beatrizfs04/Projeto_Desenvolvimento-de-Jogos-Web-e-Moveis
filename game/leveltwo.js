@@ -642,7 +642,7 @@ let updateCharacterMovement = function() {
     backgroundMusic.play();
     caveSound.play();
     if (canMoveLeft){
-      playerX = Math.max(0, playerX + velPlayer);
+      if (playerX > 200) playerX += velPlayer; 
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
       moveParallaxRight();
       if (isOnGround || isOnPlatform){
