@@ -141,7 +141,7 @@ let knownKey = true;
 
 //blocks
 var block = new Image();
-block.src = "img/block2.png";
+block.src = "img2/block2.png";
 
 let blockX = 480;
 let blockY = 180;
