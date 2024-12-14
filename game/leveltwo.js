@@ -146,7 +146,7 @@ block.src = "img/block2.png";
 let blockX = 480;
 let blockY = 180;
 
-let worldOffsetX = 0; 
+let worldOffsetX = 2100; 
 
 //ground
 isOnGround = true;
@@ -168,6 +168,11 @@ let platforms = [
   {x: 1800, y: 150, width: 200, height:120, type: "earth"},
   {x: 1700, y: 100, width: 45, height:20, type: "block"},
   {x: 2000, y: 150, width: 500, height:120, type: "earth"},
+  {x: 2575, y: 100, width: 45, height: 20, type: "block"},
+  {x: 2760, y: 100, width: 45, height: 20, type: "block"},
+  {x: 2930, y: 100, width: 45, height: 20, type: "block"},
+  {x: 2530, y: 165, width: 20, height: 20, type: "block"},
+  {x: 2500, y: 228, width: 1050, height: 150, type: "earth"},
 ];
 
 let Ended = false;
@@ -509,6 +514,27 @@ let enemies = [
     currentFrameDeath: 0, // Quadro atual da animação de morte
     deathFrameCount: 0, // Contador de frames para a animação de morte
   },
+  {
+    image: new Image(),
+    id: "spider",
+    x: 2860,
+    y: 30,
+    frameWidth: 61.5,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 20, right: 180},
+    hitboxFrames: [
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
 ];
 
 enemies[0].image.src = "img/enemy1new.png";
@@ -521,6 +547,7 @@ enemies[6].image.src = "img/enemy1new.png";
 enemies[7].image.src = "img/enemy2.png";
 enemies[8].image.src = "img/enemy2.png";
 enemies[9].image.src = "img/enemy2.png";
+enemies[10].image.src = "img/enemy2.png";
 
 //objeto para a animação de morte
 const deathAnimationConfig = {
