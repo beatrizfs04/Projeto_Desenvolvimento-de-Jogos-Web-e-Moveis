@@ -1109,7 +1109,6 @@ function updatePowers() {
 }
 
 function drawPowers() {
-
   context.fillStyle = "pink";  //nem ouse, vai ser rosa simmm!!!! :) 
   for (let power of powers) {
     //desenha a bola
@@ -1143,8 +1142,6 @@ function timerPower(){
 
 
 function drawGameInfo() {
-
-
   let numHearts = 0;
   if (lifeBar === 10) {
     numHearts = 2; // 2 corações
@@ -1160,7 +1157,7 @@ function drawGameInfo() {
 
   context.fillStyle = "white"; // Cor do texto
   context.font = "13px Arial";  // Tamanho da fonte
-  context.fillText(": " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+  context.fillText("= " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
   context.drawImage(mushroomYellow, 10, 10, 15, 15); 
 
   context.drawImage(mushroomPurple, canvas.width - 60, 10, 15, 15); 
@@ -1170,7 +1167,6 @@ function drawGameInfo() {
     context.font = "13px Arial"; 
     context.fillText( + powerTimer.toFixed(1) + "s", canvas.width - 40, 22); // Timer no canto superior direito
   }
-
 }
 
 
