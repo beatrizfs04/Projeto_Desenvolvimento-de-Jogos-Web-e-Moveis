@@ -341,27 +341,6 @@ let enemies = [
   },
   {
     image: new Image(),
-    id: "spider",
-    x: 80,
-    y: 50,
-    frameWidth: 61.5,
-    frameHeight: 43,
-    numberOfFrames: 2,
-    currentFrame: 0,
-    frameCount: 0,
-    frameDelay: 20,
-    direction: -1,
-    limits: { left: 50, right: 180 },
-    hitboxFrames: [
-      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
-      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
-    ],
-    alive: true, // Estado do inimigo
-    currentFrameDeath: 0, // Quadro atual da animação de morte
-    deathFrameCount: 0, // Contador de frames para a animação de morte
-  },
-  {
-    image: new Image(),
     id: "slime",
     x: 2600.5,
     y: 210,
@@ -448,11 +427,10 @@ let enemies = [
 
 enemies[0].image.src = "img/enemy1new.png";
 enemies[1].image.src = "img/enemy1new.png";
-enemies[2].image.src = "img/enemy2.png";
+enemies[2].image.src = "img/enemy1new.png";
 enemies[3].image.src = "img/enemy1new.png";
 enemies[4].image.src = "img/enemy1new.png";
 enemies[5].image.src = "img/enemy1new.png";
-enemies[6].image.src = "img/enemy1new.png";
 
 
 //objeto para a animação de morte
@@ -1420,4 +1398,3 @@ function gameLoop() {
   updateCharacterMovement();
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
-
