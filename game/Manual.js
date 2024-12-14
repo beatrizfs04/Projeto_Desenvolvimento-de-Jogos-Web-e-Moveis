@@ -4,7 +4,18 @@ const context = canvas.getContext("2d");
 
 // Carregar a imagem de fundo
 const backgroundImage = new Image();
-backgroundImage.src = "img/Fundo.jpg"; // Substitua pelo caminho da sua imagem de fundo
+backgroundImage.src = "img/Fundo.jpg";
+
+// Carregar a imagem que será desenhada no retângulo
+const Image1 = new Image();
+Image1.src = "img/Teclas.jpg";
+
+const Image2 = new Image();
+Image2.src = "img/mushroom.png";
+
+const Image3 = new Image();
+Image3.src = "img/seta.png";
+
 
 // Variáveis do retângulo branco
 const rectWidth = 300; // Largura do retângulo
@@ -26,6 +37,57 @@ function drawStartScreen() {
   // Desenhar a imagem de fundo
   backgroundImage.onload = () => {
     context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+    // Desenhar a imagem
+    Image1.onload = () => {
+        const imgWidth = rectWidth * 0.3; // Ajuste a largura da imagem
+        const imgHeight = rectHeight * 0.4; // Ajuste a altura da imagem
+        const imgX = rectX + (rectWidth - imgWidth) / 2 - 70; // Centraliza a imagem no eixo X
+        const imgY = rectY + (rectHeight - imgHeight) / 2 + 30; // Centraliza a imagem no eixo Y
+  
+        context.drawImage(Image1, imgX, imgY, imgWidth, imgHeight); // Desenha a imagem sobre o retângulo
+
+        // Desenhar o texto sobre a imagem
+        context.fillStyle = "black"; // Cor do texto (branca para contraste)
+        context.font = "17px Arial"; // Tamanho e fonte do texto
+        context.fillText("Andar", rectX + rectWidth / 2 - 70, rectY + rectHeight / 2 - 20); // Posição do texto
+      };
+
+
+    // Desenhar a imagem
+    Image2.onload = () => {
+        const imgWidth = rectWidth * 0.05; // Ajuste a largura da imagem
+        const imgHeight = rectHeight * 0.1; // Ajuste a altura da imagem
+        const imgX = rectX + (rectWidth - imgWidth) / 2 + 70; // Centraliza a imagem no eixo X
+        const imgY = rectY + (rectHeight - imgHeight) / 2 + 5; // Centraliza a imagem no eixo Y
+  
+        context.drawImage(Image2, imgX, imgY, imgWidth, imgHeight); // Desenha a imagem sobre o retângulo
+
+        // Desenhar o texto sobre a imagem
+        context.fillStyle = "black"; // Cor do texto (branca para contraste)
+        context.font = "17px Arial"; // Tamanho e fonte do texto
+        context.fillText("Atacar", rectX + rectWidth / 2 + 70, rectY + rectHeight / 2 - 20); // Posição do texto
+      };
+
+      // Desenhar a imagem
+    Image3.onload = () => {
+        const imgWidth = rectWidth * 0.05; // Ajuste a largura da imagem
+        const imgHeight = rectHeight * 0.1; // Ajuste a altura da imagem
+        const imgX = rectX + (rectWidth - imgWidth) / 2 + 70; // Centraliza a imagem no eixo X
+        const imgY = rectY + (rectHeight - imgHeight) / 2 + 27; // Centraliza a imagem no eixo Y
+  
+        context.drawImage(Image3, imgX, imgY, imgWidth, imgHeight); // Desenha a imagem sobre o retângulo
+
+        // Desenhar o texto sobre a imagem
+        context.fillStyle = "black"; // Cor do texto (branca para contraste)
+        context.font = "17px Arial"; // Tamanho e fonte do texto
+        context.fillText("Atacar", rectX + rectWidth / 2 + 70, rectY + rectHeight / 2 - 20); // Posição do texto
+
+        // Desenhar o texto sobre a imagem
+        context.fillStyle = "black"; // Cor do texto (branca para contraste)
+        context.font = "17px Arial"; // Tamanho e fonte do texto
+        context.fillText("Q", rectX + rectWidth / 2 + 70, rectY + rectHeight / 2 + 55); // Posição do texto
+      };
 
     // Desenhar o retângulo branco
     context.fillStyle = "white";
