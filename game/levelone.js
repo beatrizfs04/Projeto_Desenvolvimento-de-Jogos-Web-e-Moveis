@@ -57,10 +57,10 @@ enemy1Death.src = "img/enemy1death.png";
 
 //definição das variáveis
 
-let frameWidthEnemy1 = 0;
-let frameHeightEnemy1 = 0;
+let frameWidthEnemy1 = 50;
+let frameHeightEnemy1 = 20;
 
-const numberOfFramesEnemy1 = 0;
+const numberOfFramesEnemy1 = 2;
 let currentFrameEnemy = 0;
 
 let enemyFrameX = 1;
@@ -117,7 +117,6 @@ let frameCount = 0;
 let frameDelayEnemy = 30; 
 let frameCountEnemy = 0;
 
-
 //salto 
 let isJumping = false; 
 let jumpFrameCount = 0; 
@@ -137,8 +136,7 @@ let blockX = 480;
 let blockY = 180;
 let worldOffsetX = 0;
 
-
-//ground asalsidjhfakusdhh
+//ground 
 isOnGround = true;
 let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
@@ -178,6 +176,7 @@ let isCollidingBottom = false;
 let platformImage;
 
 // deslocamento horizontal do mundo
+
 //heart 
 const heartImage = new Image();
 heartImage.src = "img/heart.png";
@@ -237,7 +236,6 @@ let CharStopMovement = function(e) {
 };
 
 let isDamaged = false;
-
 
 //dano 
 let playerDamage = false;
@@ -489,7 +487,7 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 0;
     spriteRunning = true;
     velPlayer = 1;
-   backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
+    backgroundMusic.play(); //comentado pq nao aguento mais ouvir essa música
     if (canMoveRight){
       if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
@@ -701,8 +699,6 @@ function checkMushroomCollision() {
     }
   }
 }
-
-
 
 function checkGroundCollision() {
   let onGround = false; 
@@ -1220,8 +1216,7 @@ function gameLoop() {
   playerHitbox.x = playerX;
   playerHitbox.y = playerY;
 
-//power
-
+  //power
   updatePowers();
 
   //inimigo
@@ -1243,8 +1238,7 @@ function gameLoop() {
 
 
   checkPlayerDamage();
- // damageSoundTime(); bugou o jogo
-
+  // damageSoundTime(); bugou o jogo
 
   const frameX = 5; 
   const frameY = currentFrame * frameHeight; 
@@ -1285,6 +1279,8 @@ function gameLoop() {
     context.fillStyle = "red";  
     context.font = "20px Arial";  
     context.fillText("Game Over!", 160, (canvas.height / 2) + 55); 
+
+    backgroundMusic.pause();
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
@@ -1327,7 +1323,6 @@ function gameLoop() {
     if(Ended){
       return;
     } else {
-      backgroundMusic.pause();
       gameOverSound.play();
       Ended = true;
     }
@@ -1344,6 +1339,8 @@ function gameLoop() {
     context.fillText("You collected:         " + mushroomCount + " out of 5", 155, (canvas.height / 2 + 10) + 60); 
     context.drawImage(mushroomYellow, 222, (canvas.height / 2 + 61), 12, 12); 
 
+
+    backgroundMusic.pause();
 
     // Desenhar botão
     const buttonX = canvas.width / 2 - 70; // Posição X
@@ -1386,7 +1383,6 @@ function gameLoop() {
     if(Finish){
       return;
     } else {
-      backgroundMusic.pause();
       gameWinSound.play(); //Mudar para gameWinSound.play();
       Finish = true;
     }

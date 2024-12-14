@@ -7,8 +7,6 @@ player.src = "img2/boy_run_right.png";
 diminuicaoX = 100;
 diminuicaoY = 115;
 
-
-
 var playerBack = new Image();
 playerBack.src = "img2/boy_run_left.png";
 
@@ -27,8 +25,8 @@ playerDamageRight.src = "img2/boy_damage_right.png";
 var playerDamageLeft = new Image();
 playerDamageLeft.src = "img2/boy_damage_left.png";
 
-let damageTimer = 0;// Temporizador para controlar a duração da sprite de dano
-const damageDuration = 200;//
+let playerTookDamage = false;
+var lifeBar = 10;
 
 //frames and sprites
 const frameWidth = 129;
@@ -37,6 +35,7 @@ const frameHeight = 150;
 //number of frames tem a ver com a quantidade de imagens da boneca na image original.
 const numberOfFrames = 8;
 const numberOfFramesIdle = 4;
+const numberOfFramesDamage = 4;
 
 let currentFrame = 0;
 let currentSprite = 0; // 0: right, 1: left
@@ -55,6 +54,19 @@ let enemy1Y = 210;
 var enemy2 = new Image();
 enemy2.src = "img2/enemy2.png";
 
+//inimigo death 
+var enemy1Death = new Image();
+enemy1Death.src = "img/enemy1death.png";
+
+let isDying = false; // Controle se a animação está ativa
+let deathX = 300; // Posição x fixa onde a animação será desenhada
+let deathY = 200; // Posição y fixa onde a animação será desenhada
+let currentFrameDeath = 0; // Quadro atual da animação
+let frameCountDeath = 0; // Contador de frames
+let frameDelayDeath = 10; // Intervalo entre os frames
+const numberOfFramesDeath = 4; // Total de frames
+const frameWidthDeath = 100; // Largura de cada frame
+const frameHeightDeath = 34; // Altura de cada frame
 
 let frameWidthEnemy1 = 50;
 let frameHeightEnemy1 = 20;
@@ -109,12 +121,12 @@ let velPlayer = 0;
 //deixar a animção do player mais devagar
 let frameDelayRunning = 12; 
 let frameDelayIdle = 12; 
+let frameDelayDamage = 12;
 let frameCount = 0; 
 
 //deixa a animação do enemy mais devagar
 let frameDelayEnemy = 30; 
 let frameCountEnemy = 0;
-
 
 //salto 
 let isJumping = false; 
@@ -136,16 +148,15 @@ let blockY = 180;
 
 let worldOffsetX = 0; 
 
-
 //ground
 isOnGround = true;
 let ground = [
   { x: 520, y: 150, width: 160, height: 150, type: "earth" },
   {x: 0, y: 229, width: 800, height:40, type: "ground"},
   {x: 1000, y: 229, width: 400, height:40, type: "ground"},
-  {x: 2300, y: 229, width: 800, height:40, type: "ground"},
+  { x: 3000, y: 180, width: 160, height: 150, type: "earth" },
+  {x: 2300, y: 229, width: 2200, height:40, type: "ground"},
 ];
-
 
 //plataformas (blocos)
 let platforms = [
@@ -160,7 +171,12 @@ let platforms = [
   {x: 1880, y: 130, width: 45, height:20, type: "block"},
   {x: 2000, y: 110, width: 45, height:20, type: "block"},
   {x: 2100, y: 150, width: 100, height:120, type: "earth"},
+  {x: 2260, y: 95, width: 45, height:20, type: "block"},
   {x: 2200, y: 200, width: 100, height:120, type: "earth"},
+  {x: 2500, y: 200, width: 100, height:120, type: "earth"},
+  {x: 3700, y: 130, width: 100, height:120, type: "earth"},
+  {x: 3530, y: 190, width: 45, height: 20, type: "block" },
+  {x: 3620, y: 160, width: 45, height: 20, type: "block" },
 ];
 
 let Ended = false;
@@ -172,23 +188,31 @@ let platformImage;
 
 // deslocamento horizontal do mundo
 
+//heart 
+const heartImage = new Image();
+heartImage.src = "img/heart.png";
+
 //mushroom
-const mushroom = new Image();
-mushroom.src = "img2/mushroom.png";
+const mushroomYellow = new Image();
+mushroomYellow.src = "img/mushroom1.png";
+
+const mushroomPurple = new Image();
+mushroomPurple.src = "img/mushroom2.png";
 
 let mushrooms = [
-  { x: 740, y: 80, width: 10, height: 10 },
-  { x: 1050, y: 140, width: 10, height: 10 },
-  { x: 1645, y: 90, width: 10, height: 10 },
-  {x: 1950, y: 80, width: 10, height: 10 },
-]
+  { x: 740,  y: 80, width: 10, height: 10, type:"yellow" },
+  { x: 1645, y: 90, width: 10, height: 10, type:"yellow"  },
+  { x: 1950, y: 80, width: 10, height: 10, type:"yellow"  },
+  { x: 1050, y: 140, width: 10, height: 10, type:"yellow"  },
+  { x: 2400, y: 80, width: 10, height: 10, type:"purple"  },
+];
 
 //portal
 const portal = new Image();
 portal.src = "img2/portal_gruta.png";
 
 let portalSegment = {
-  x: 2800, 
+  x: 4100, 
   y: 140, 
   width: 90, 
   height: 102
@@ -222,6 +246,8 @@ let CharStopMovement = function(e) {
   }
 };
 
+let isDamaged = false;
+
 //dano 
 let playerDamage = false;
 let enemy1Damage = false;
@@ -230,7 +256,7 @@ let Finish = false;
 
 //som
 // Música de fundo
-var backgroundMusic = new Audio("audio/mai2n.mp3"); // Substitua pelo caminho do seu arquivo de áudio
+var backgroundMusic = new Audio("audio/main2.mp3"); // Substitua pelo caminho do seu arquivo de áudio
 backgroundMusic.loop = true; // Faz a música tocar em loop
 backgroundMusic.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
@@ -249,6 +275,12 @@ gameOverSound.volume = 0.2; // Define o volume entre 0 (mudo) e 1 (máximo)
 
 var gameWinSound = new Audio("audio/gamewin.mp3");
 gameWinSound.volume = 0.7; // Define o volume entre 0 (mudo) e 1 (máximo)
+
+var damageSound = new Audio("audio/damage.mp3");
+damageSound.volume = 0.2; 
+
+var slimeDeath = new Audio("audio/slimedeath.mp3");
+slimeDeath.volume = 0.2;
 
 inicializar();
 
@@ -275,6 +307,175 @@ let playerHitbox = {
   height: (frameHeight - diminuicaoY)*0.8 //opcional
 };
 
+let enemies = [
+  {
+    image: new Image(),
+    id: "slime",
+    x: 1000,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20, 
+    direction: 1,
+    limits: { left: 998, right: 1360 }, //limites que o personagem pode andar de um lado para o outro
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  }, 
+  {
+    image: new Image(),
+    id: "slime",
+    x: 498,
+    y: 130,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: 1,
+    limits: { left: 498, right: 648 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 },
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "spider",
+    x: 80,
+    y: 50,
+    frameWidth: 61.5,
+    frameHeight: 43,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 50, right: 180 },
+    hitboxFrames: [
+      { width: 30, height: 38, offsetX: 4, offsetY: 0 },
+      { width: 30, height: 38, offsetX: 4, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 2600.5,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3065,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3297.5,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+  {
+    image: new Image(),
+    id: "slime",
+    x: 3530,
+    y: 210,
+    frameWidth: 50,
+    frameHeight: 20,
+    numberOfFrames: 2,
+    currentFrame: 0,
+    frameCount: 0,
+    frameDelay: 20,
+    direction: -1,
+    limits: { left: 2600, right: 3450 },
+    hitboxFrames: [
+      { width: 28, height: 20, offsetX: 11, offsetY: 0 }, 
+      { width: 30, height: 18, offsetX: 8, offsetY: 2 },
+    ],
+    alive: true, // Estado do inimigo
+    currentFrameDeath: 0, // Quadro atual da animação de morte
+    deathFrameCount: 0, // Contador de frames para a animação de morte
+  },
+];
+
+enemies[0].image.src = "img/enemy1new.png";
+enemies[1].image.src = "img/enemy1new.png";
+enemies[2].image.src = "img/enemy2.png";
+enemies[3].image.src = "img/enemy1new.png";
+enemies[4].image.src = "img/enemy1new.png";
+enemies[5].image.src = "img/enemy1new.png";
+enemies[6].image.src = "img/enemy1new.png";
+
+//objeto para a animação de morte
+const deathAnimationConfig = {
+  image: new Image(), // Sprite de morte
+  frameWidth: 50, // Largura de cada frame de morte
+  frameHeight: 17, // Altura de cada frame de morte
+  numberOfFrames: 4, // Total de frames na animação de morte
+  frameDelay: 10, // Velocidade da animação de morte
+};
+
+deathAnimationConfig.image.src = "img/enemy1death.png"; // Caminho para o sprite
+
 let worldMovementSpeed = 2;
 
 let updateCharacterMovement = function() {
@@ -283,7 +484,8 @@ let updateCharacterMovement = function() {
     currentSpriteIdle = 1;
     spriteRunning = true;
     velPlayer = -1;
-    
+    backgroundMusic.play();
+    caveSound.play();
     if (canMoveLeft){
       playerX = Math.max(0, playerX + velPlayer);
       worldOffsetX = Math.max(0, worldOffsetX + velPlayer * worldMovementSpeed);
@@ -300,7 +502,6 @@ let updateCharacterMovement = function() {
     velPlayer = 1;
     backgroundMusic.play(); 
     caveSound.play();
-
     if (canMoveRight){
       if (playerX < canvas.width - 200) playerX += velPlayer;
       moveParallaxLeft();
@@ -324,6 +525,11 @@ let updateCharacterMovement = function() {
   }
   if (keysPressed[37] && keysPressed[39]) { // Prevent movement if both keys are pressed
     velPlayer = 0; 
+  }
+  if(keysPressed[81]){
+    if(isPower){
+      throwPower();
+    }
   }
 };
 
@@ -357,19 +563,77 @@ function drawHitboxPortal(){
 }
 
 //desenha o inimigo
-function drawEnemy(imagem, x, y, width, height, frameX, frameY) {
+function drawEnemies() {
+  for (let enemy of enemies) {
+    let currentHitbox = enemy.hitboxFrames[enemy.currentFrame]; // atualiza a hitbox
 
-  let currentHitbox = hitboxFramesEnemy1[currentFrameEnemy];
+    //desenha a hitbox só se estiver vivo (problema de ele morrer e ela tomar dano)
+    if (enemy.alive == true){
+      var hitBoxEnemy = {
+        x: enemy.x + currentHitbox.offsetX,
+        y: enemy.y + currentHitbox.offsetY,
+        width: currentHitbox.width,
+        height: currentHitbox.height,
+      };
+       //desenha o retangulo da hitbox (nao faz nada só a cor)
+      context.fillStyle = "transparent";
+      context.fillRect(hitBoxEnemy.x - worldOffsetX, hitBoxEnemy.y, hitBoxEnemy.width, hitBoxEnemy.height);
 
-  hitBoxEnemy1.x = x + currentHitbox.offsetX; // Ajusta a posição X da hitbox
-  hitBoxEnemy1.y = y + currentHitbox.offsetY; // Ajusta a posição Y da hitbox
-  hitBoxEnemy1.width = currentHitbox.width;    // Atualiza a largura da hitbox
-  hitBoxEnemy1.height = currentHitbox.height;  // Atualiza a altura da hitbox
+    }
+    
+   
+    // se o inimigo for "spider", desenha a linha com ele 
+    //pode-se alterar a posição da linha para 
+    if (enemy.id === "spider") {
+      const lineX = (enemy.x + enemy.frameWidth / 3.5) - worldOffsetX;
+      context.fillStyle = "black"; // Cor do retângulo
+      context.fillRect(lineX, 0, 2, enemy.limits.right + 12); // Linha preta para a aranha
+    }
 
-  context.fillStyle = "rgba(255, 0, 0, 0.5)"; // Cor semi-transparente
-  context.fillRect(hitBoxEnemy1.x, hitBoxEnemy1.y, hitBoxEnemy1.width, hitBoxEnemy1.height);
-  context.drawImage(imagem, frameX, frameY, frameWidthEnemy1, frameHeightEnemy1, x, y, width, height);
+    // se o inimigo estiver vivo, desenha sua animação normal
+    if (enemy.alive) {
+      let frameX = enemy.currentFrame * enemy.frameWidth;
+      context.drawImage(
+        enemy.image,
+        frameX,
+        0,
+        enemy.frameWidth,
+        enemy.frameHeight,
+        enemy.x - worldOffsetX,
+        enemy.y,
+        enemy.frameWidth,
+        enemy.frameHeight
+      );
+      //verifica se nao estiver vivo e se o inimigo for um slime pq só ele tem animação
+    } else if (enemy.id === "slime") { // 
+      // desenha a animação de morte do "slime"
+      //usa o objeto "deathAnimationConfig" pra isso, definido lá em cima
+      let frameX = enemy.currentFrameDeath * deathAnimationConfig.frameWidth;
+      context.drawImage(
+        deathAnimationConfig.image,
+        frameX,
+        -4, //menos 5 pq o slime a morrer tava voando
+        deathAnimationConfig.frameWidth,
+        deathAnimationConfig.frameHeight,
+        enemy.x - worldOffsetX,
+        enemy.y,
+        deathAnimationConfig.frameWidth,
+        deathAnimationConfig.frameHeight
+      );
 
+      // atualiza a animação de morte e a deixa mais devagar
+      enemy.deathFrameCount++;
+      if (enemy.deathFrameCount >= deathAnimationConfig.frameDelay) {
+        enemy.currentFrameDeath++;
+        enemy.deathFrameCount = 0;
+
+        // remove o "slime" após terminar a animação de morte
+        if (enemy.currentFrameDeath >= deathAnimationConfig.numberOfFrames) {
+          enemies.splice(enemies.indexOf(enemy), 1);
+        }
+      }
+    }
+  }
 }
 
 function drawGround() {
@@ -411,11 +675,17 @@ function drawPlatforms() {
   }
 }
 
+let isPower = false;
+
 function drawMushrooms() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];  // nome da variável na lista de cogumelos
     const screenX = mushroomObj.x - worldOffsetX;
-    desenhaImagem(mushroom, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    if(mushroomObj.type == "yellow"){
+      desenhaImagem(mushroomYellow, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    }else{
+      desenhaImagem(mushroomPurple, screenX, mushroomObj.y, mushroomObj.width, mushroomObj.height);
+    }
   }
 }
 
@@ -423,17 +693,23 @@ function checkMushroomCollision() {
   for (let i = 0; i < mushrooms.length; i++) {
     const mushroomObj = mushrooms[i];
     const screenX = mushroomObj.x - worldOffsetX; // Considera o deslocamento do mundo
-
-    // Verifica colisão com o cogumelo
+    
     if (
-      playerHitbox.x + playerHitbox.width > screenX && // O player está à direita do cogumelo
-      playerHitbox.x < screenX + mushroomObj.width && // O player está à esquerda do cogumelo
-      playerHitbox.y + playerHitbox.height > mushroomObj.y && // O player está abaixo do cogumelo
-      playerHitbox.y < mushroomObj.y + mushroomObj.height // O player está acima do cogumelo
+      playerHitbox.x + playerHitbox.width > screenX && 
+      playerHitbox.x < screenX + mushroomObj.width && 
+      playerHitbox.y + playerHitbox.height > mushroomObj.y && 
+      playerHitbox.y < mushroomObj.y + mushroomObj.height 
     ) {
-      mushrooms.splice(i, 1); // Remove o cogumelo da lista
-      i--; // Ajusta o índice devido à remoção
-      mushroomCount += 1; // Incrementa a pontuação
+      if(mushroomObj.type == "yellow"){
+      mushrooms.splice(i, 1); 
+      i--; 
+      mushroomCount += 1; 
+      }else{
+        isPower = true;
+        managePower();
+        mushrooms.splice(i, 1); 
+        i--;
+      }
     }
   }
 }
@@ -475,35 +751,55 @@ function checkPortalCollision(){
 }
 
 function checkEnemyCollision() {
-  const screenX = hitBoxEnemy1.x - worldOffsetX; 
+  for (let i = 0; i < enemies.length; i++) {
+    const enemy = enemies[i];
 
-  //colisao horizontal
-  const xCollision =
-    playerHitbox.x + playerHitbox.width > screenX &&
-    playerHitbox.x < screenX + hitBoxEnemy1.width;
 
-  //colisao vertical
-  const yCollision =
-    playerHitbox.y + playerHitbox.height > hitBoxEnemy1.y &&
-    playerHitbox.y < hitBoxEnemy1.y + hitBoxEnemy1.height;
+    if (!enemy.alive) {
+      continue; // Pula a verificação de colisão para inimigos mortos
+    }
 
-  if (xCollision && yCollision) {
-    //verifica se a base do inimigo (player.y + player height)
-    //colide (<=) com o meio vertical do inimigo 
-    const isKillingEnemy =
-      playerHitbox.y + playerHitbox.height <= hitBoxEnemy1.y + hitBoxEnemy1.height / 2;
+    const enemyScreenX = enemy.x - worldOffsetX;
 
-    if (isKillingEnemy) {
-      enemy1Y = enemy1Y + 25; //adicionar aqui uma logística para que o enemy caia pra fora da tela
-      return "killed"; 
-    } else {
-      damageTimer = Date.now(); // Define o início do temporizador
-      enemyColided = true;
-      //playerDamage = true;
-      //return "damage";
+    // pega a hitbox do frame 
+    const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
+    const enemyHitbox = {
+      x: enemyScreenX + currentHitbox.offsetX,
+      y: enemy.y + currentHitbox.offsetY,
+      width: currentHitbox.width,
+      height: currentHitbox.height,
+    };
+
+    //  colisao horizontal
+    const xCollision =
+      playerHitbox.x + playerHitbox.width > enemyHitbox.x &&
+      playerHitbox.x < enemyHitbox.x + enemyHitbox.width;
+
+    // colisao vertical
+    const yCollision =
+      playerHitbox.y + playerHitbox.height > enemyHitbox.y &&
+      playerHitbox.y < enemyHitbox.y + enemyHitbox.height;
+
+    if (xCollision && yCollision && !playerTookDamage) {
+      // verifica se existe ataque por cima
+      const isKillingEnemy =
+        playerHitbox.y + playerHitbox.height <=
+        enemyHitbox.y + enemyHitbox.height / 2;
+      if (isKillingEnemy && !isDamaged) {
+          if(enemy.id == "slime"){
+            slimeDeath.play();
+          }
+          enemy.alive = false;
+          //enemy.y += 200;
+        return "killed";
+      } else {
+        enemyColided = true;
+        playerTookDamage = true;
+        return "damage"; 
+      }
     }
   }
-  return null;
+  return null; 
 }
 
 function checkPlatformCollision() {
@@ -615,47 +911,105 @@ function applyGravityJump(){
   }
 }
 
-function animateEnemy() {
-  frameCountEnemy++;
+//altera os frames da animação e define a velocidade em que passam
+function animateEnemies() {
+  for (let enemy of enemies) {
+    enemy.frameCount++;
 
-  if (frameCountEnemy >= frameDelayEnemy) {
-    currentFrameEnemy = (currentFrameEnemy + 1) % numberOfFramesEnemy1; 
-    frameCountEnemy = 0;
+    if (enemy.frameCount >= enemy.frameDelay) {
+      enemy.currentFrame = (enemy.currentFrame + 1) % enemy.numberOfFrames;
+      enemy.frameCount = 0;
+    }
   }
 }
 
-let direction = 1; // 1 para direita, -1 para esquerda
+function updateEnemiesPosition() {
+  for (let enemy of enemies) {
+    if(enemy.id == "slime"){
+      if(enemy.alive == true){
+        enemy.x += 1 * enemy.direction; 
 
-//as variáveis 1380 e 998 tem que ser 
-function updateEnemyPosition() {
-  enemy1X += 1 * direction; 
+        if (enemy.x >= enemy.limits.right) {
+          enemy.direction = -1; // Vai para a esquerda
+        }
+        if (enemy.x <= enemy.limits.left) {
+          enemy.direction = 1; // Vai para a direita
+        }
+      }
+  }else { 
+    enemy.y += 1 * enemy.direction; 
 
-  if (enemy1X >= 1380) {
-    direction = -1; // Muda a direção para a esquerda
-  }
-
-  // Verifica se atingiu o limite esquerdo (40)
-  if (enemy1X <= 998) {
-    direction = 1; // Muda a direção para a direita
-  }
-}
-
-function animation(){
-   //deixa as animações mais devagar
-   if (spriteRunning) {
-    if (frameCount >= frameDelayRunning) {
-      currentFrame = (currentFrame + 1) % numberOfFrames;
-      frameCount = 0; 
+    if (enemy.y >= enemy.limits.right) { // limite baixo
+      enemy.direction = -1; //começa a subir
+    }
+    if (enemy.y <= enemy.limits.left) { // limite superior
+      enemy.direction = 1; //começa a descer
     }
   } 
-  else if (spriteIdle) {
-    if (frameCount >= frameDelayIdle) {
-      currentFrame = (currentFrame + 1) % numberOfFramesIdle; 
-      frameCount = 0; 
-    }
   }
 }
 
+//velocidade das sprites
+function animation(){
+  //deixa as animações mais devagar
+  if (isDamaged) {
+   if (frameCount >= frameDelayDamage) {
+     currentFrame = (currentFrame + 1) % numberOfFramesDamage; 
+     frameCount = 0; 
+   }
+ }
+  else if (spriteRunning) {
+   if (frameCount >= frameDelayRunning) {
+     currentFrame = (currentFrame + 1) % numberOfFrames;
+     frameCount = 0; 
+   }
+ } 
+ else if (spriteIdle) {
+   if (frameCount >= frameDelayIdle) {
+     currentFrame = (currentFrame + 1) % numberOfFramesIdle; 
+     frameCount = 0; 
+   }
+ }
+}
+
+//ta funcionando, como? não sei
+const damageAmount = 5;       
+let damageFlag = false;
+
+function checkPlayerDamage() {
+  if (playerTookDamage && !damageFlag) {
+    lifeBar -= damageAmount; 
+    isDamaged = true; 
+    //lastDamageTime = currentTime; 
+    //playerTookDamage = false; 
+    damageFlag = true; // Ativar a flag de dano 
+    resetDamageFlag();
+  }
+}
+
+function resetDamageFlag(){
+  setTimeout(() => {
+    damageFlag = false;
+    isDamaged = false;
+  }, 1000); 
+}
+
+setInterval(() => {
+  if (playerTookDamage === true) { 
+    playerTookDamage = false;
+    checkPlayerDamage();
+  }
+}, 500); 
+
+function damageSoundTime(){
+  while(isDamaged){
+    damageSound.play(); 
+    damageSound.loop = true; 
+    damageSound.loop = true; 
+  }
+}
+
+//-------------------------------
 function drawRoundedRect(context, x, y, width, height, radius) {
   context.beginPath();
   context.moveTo(x + radius, y); // Início no canto superior esquerdo (ajustado pelo raio)
@@ -692,6 +1046,150 @@ function drawRoundedImage(context, image, x, y, width, height, radius) {
   context.drawImage(image, x, y, width, height);
 }
 
+//cria um arraw de powers
+let powers = []; 
+let powerFlag = true;
+let direction; //direção das bolas lançadas ta com problema no movimento dela
+
+function throwPower() {
+  if (powerFlag){
+    if (currentSprite == 0){
+      direction = 1;
+    }else{
+      direction = -1;
+    }
+
+    powers.push({
+      x: (playerX + frameWidth/2), 
+      y: (playerY + frameHeight/2), 
+      width: 10, 
+      height: 10, 
+      speed: 5, 
+      direction: 1, 
+    });
+
+    powerFlag = false;
+
+    setTimeout(() => {
+      powerFlag = true;
+    }, 500);
+  }
+ 
+}
+
+function updatePowers() {
+  for (let i = powers.length - 1; i >= 0; i--) {
+    let power = powers[i];
+
+    power.x += power.speed * direction; // movimento da bola (acho que ta com problema)
+
+    // exclui a bola quando ela sair da tela
+    if (power.x > canvas.width || power.x < 0) {
+      powers.splice(i, 1);
+      continue;
+    }
+
+    // mesma logística de colisão do check enemy
+    for (let j = enemies.length - 1; j >= 0; j--) {
+      let enemy = enemies[j];
+      const currentHitbox = enemy.hitboxFrames[enemy.currentFrame];
+      const enemyScreenX = enemy.x - worldOffsetX;
+
+      const enemyHitbox = {
+        x: enemyScreenX + currentHitbox.offsetX,
+        y: enemy.y + currentHitbox.offsetY,
+        width: currentHitbox.width,
+        height: currentHitbox.height,
+      };
+
+      const xCollision =
+        power.x + power.width > enemyHitbox.x &&
+        power.x < enemyHitbox.x + enemyHitbox.width;
+
+      const yCollision =
+        power.y + power.height > enemyHitbox.y &&
+        power.y < enemyHitbox.y + enemyHitbox.height;
+
+      if (xCollision && yCollision) {
+        console.log("poder matou o inimigo");
+        enemies.splice(j, 1);
+        powers.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+function drawPowers() {
+
+  context.fillStyle = "pink";  //nem ouse, vai ser rosa simmm!!!! :) 
+  for (let power of powers) {
+    //desenha a bola
+    context.beginPath();
+    context.arc(power.x, power.y, power.width / 2, 0, Math.PI * 2); 
+    context.fill();  
+    context.closePath();
+  }
+}
+
+function managePower() {
+  isPower = true; 
+  powerTimer = 10; 
+  console.log("Power activated!");
+}
+
+let powerTimer = 10;
+
+function timerPower(){
+  if (isPower && powerTimer > 0) {
+    powerTimer -= 1 / 60; // Reduz o tempo a cada frame (60 FPS)
+    if (powerTimer <= 0) {
+      powerTimer = 0;
+      isPower = false; // Desativa o power-up quando o timer chega a 0
+      console.log("Power deactivated!");
+    }
+  }
+}
+
+
+
+
+function drawGameInfo() {
+
+  context.drawImage(mushroomYellow, 10, 10, 15, 15); 
+
+  const heartWidth = 15; 
+  const heartHeight = 15; // Altura de cada coração
+  const heartSpacing = 5; // Espaço entre os corações
+
+  let numHearts = 0;
+  if (lifeBar === 10) {
+    numHearts = 2; // 2 corações
+  } else if (lifeBar === 5) {
+    numHearts = 1; // 1 coração
+  }
+
+  for (let i = 0; i < numHearts; i++) {
+    context.drawImage(heartImage, ((canvas.width/2)-10) + (i * (heartWidth + heartSpacing)), 10, heartWidth, heartHeight);
+  }
+
+  timerPower();
+
+  // Exibe o número de cogumelos coletados
+  context.fillStyle = "white"; // Cor do texto
+  context.font = "13px Arial";  // Tamanho da fonte
+  context.fillText(": " + mushroomCount, 30, 21); // Posição do texto ao lado da imagem
+
+  context.drawImage(mushroomPurple, canvas.width - 60, 10, 15, 15); 
+
+  if (isPower) {
+    context.fillStyle = "pink";
+    context.font = "13px Arial"; 
+    context.fillText( + powerTimer.toFixed(1) + "s", canvas.width - 40, 22); // Timer no canto superior direito
+  }
+
+}
+
 function gameLoop() {
   checkGroundCollision();
   checkPlatformCollision();  
@@ -715,47 +1213,57 @@ function gameLoop() {
   defineHitboxY = playerY + 2;
   playerHitbox.x = defineHitboxX; 
   playerHitbox.y = defineHitboxY; 
-  context.fillStyle = "rgba(255, 0, 0, 0.5)";  
-  context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
 
-  const enemyFrameX = currentFrameEnemy * frameWidthEnemy1;  // Calcula o frame X
-  drawEnemy(enemy1, enemy1X - worldOffsetX, enemy1Y, frameWidthEnemy1, frameHeightEnemy1, enemyFrameX, 0);
-
+  if (isPower) {
+    context.save();
+    
+    context.filter = "blur(4px)";
+    
+    context.fillStyle = "rgba(255, 105, 180, 0.5)"; 
+    context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
+    
+    context.restore();
+  } else {
+    context.fillStyle = "transparent";  
+    context.fillRect(playerHitbox.x, playerHitbox.y, playerHitbox.width, playerHitbox.height);
+  }
+  
   playerHitbox.x = playerX;
-  playerHitbox.y = playerY;
+  playerHitbox.y = playerY; 
 
-  // Atualiza hitbox do inimigo
-  hitBoxEnemy1.x = enemy1X;
-  hitBoxEnemy1.y = enemy1Y;
+  //power
+  updatePowers();
 
-  animateEnemy(); 
-  updateEnemyPosition(); 
+  //inimigo
+  updateEnemiesPosition();
+  animateEnemies();
+  drawEnemies();
   checkEnemyCollision();
-
 
   drawMushrooms();
   checkMushroomCollision();
 
   drawPortal();
   checkPortalCollision();
-
+  
   drawHitboxPortal();
   animation();
+
+  drawPowers();
+
+
+  checkPlayerDamage();
+  // damageSoundTime(); bugou o jogo
 
   const frameX = currentFrame * frameWidth; 
   const frameY = 4; 
 
   //desenha a bruxinha
-  if (playerDamage) {
-    // Verifica se o tempo do dano acabou
-    if (Date.now() - damageTimer > damageDuration) {
-      playerDamage = false; // Sai do estado de dano
-    }
-  
-    // Renderiza a sprite de dano
-    if (currentSprite == 0) {
+  if (isDamaged) {
+    if(currentSprite == 0){
       desenhaPlayer(playerDamageRight, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
-    } else {
+    }
+    else{
       desenhaPlayer(playerDamageLeft, playerX, playerY, frameWidth, frameHeight, frameX, frameY);
     }
   } else {
@@ -775,17 +1283,10 @@ function gameLoop() {
     }
   }
   
-
   freezeParallax();
+  drawGameInfo();
 
-  context.fillStyle = "white";  
-  drawRoundedRect(context, 5, 5, 120, 23, 10);
-
-  context.fillStyle = "black";  // Cor do texto
-  context.font = "9px Arial";  // Tamanho da fonte
-  context.fillText("Cogumelos Coletados: " + mushroomCount, 15, 20);  // Posição e texto
-
-  if(playerY > 250 || enemyColided){
+  if(playerY > 250 || lifeBar <= 0 ){ //enemyCollided
     context.fillStyle = "white";
     drawRoundedRect(context, 130, 45, 175, 180, 15);
     
